@@ -44,14 +44,28 @@ if "%~1"=="" (
 echo Adding files...
 git add . >nul 2>&1
 
+REM Check if there are any changes to commit
+git diff --cached --quiet --exit-code
+if %errorlevel% equ 0 (
+    git diff --quiet --exit-code
+    if %errorlevel% equ 0 (
+        echo [INFO] No changes to commit. Working tree is clean.
+        echo.
+        timeout /t 2 >nul
+        exit /b 0
+    )
+)
+
 echo Creating commit: !commit_message!
 git commit -m "!commit_message!" 2>&1
 if %errorlevel% neq 0 (
     echo.
-    echo Git commit failed. Possible reasons:
-    echo   - No changes to commit
+    echo [ERROR] Git commit failed!
+    echo.
+    echo Possible reasons:
     echo   - Git repository not initialized
     echo   - Invalid commit message
+    echo   - Git configuration issues
     echo.
     pause
     exit /b 1
