@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://пф.рф/ПУ/типы/2023-01-10" xmlns:УТ6="http://пф.рф/УТ/2023-01-10" xmlns:АФ6="http://пф.рф/АФ/2023-01-10" targetNamespace="http://пф.рф/ПУ/типы/2023-01-10" elementFormDefault="qualified" version="2.0">
+	<xs:import namespace="http://пф.рф/УТ/2023-01-10" schemaLocation="УнифТипы_2023-01-10.xsd"/>
+	<xs:import namespace="http://пф.рф/АФ/2023-01-10" schemaLocation="ТипыАФ_2023-01-10.xsd"/>
+	<!-- Данный тип при разработке новых проектов форматов не использовать, использовать УТ6:ТипРеквизитыДокумента -->
+	<xs:complexType name="ТипРеквизитыДокументаСПУ">
+		<xs:annotation>
+			<xs:documentation>Системный номер, дата приема</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="СистемныйНомер" type="УТ6:ТипНепустаяСтрока">
+				<xs:annotation>
+					<xs:documentation>Системный номер документа</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ДатаПриема" type="xs:date">
+				<xs:annotation>
+					<xs:documentation>Дата приема документа</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ТипПериодКалендарный">
+		<xs:annotation>
+			<xs:documentation>Тип для представления сведений о выработке в годах, месяцах и днях</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:group ref="ГрПериодКалендарный">
+				<xs:annotation>
+					<xs:documentation>Сведения о выработке в годах, месяцах и днях</xs:documentation>
+				</xs:annotation>
+			</xs:group>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="Стаж" type="ТипПериодКалендарный">
+		<xs:annotation>
+			<xs:documentation>Сведения о стаже в годах, месяцах и днях</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:group name="ГрПериодКалендарный">
+		<xs:annotation>
+			<xs:documentation>Группа элементов со сведениями о выработке в годах, месяцах и днях</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="ВсеГоды" type="xs:nonNegativeInteger" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Количество лет</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ВсеМесяцы" type="УТ6:ТипКоличествоМесяцев" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Количество месяцев</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ВсеДни" type="УТ6:ТипКоличествоДней" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Количество дней</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:group>
+	<xs:simpleType name="ТипИПК">
+		<xs:annotation>
+			<xs:documentation>Тип для величины индивидуального пенсионного коэффициента (ИПК). В случае дробных чисел значение должно округляться до трех знаков после запятой</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:decimal">
+			<xs:fractionDigits value="3"/>
+			<xs:pattern value="\d+\.\d{3}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:element name="ИПК" type="ТипИПК">
+		<xs:annotation>
+			<xs:documentation>Индивидуальный пенсионный коэффициент (ИПК). В случае дробных чисел значение должно округляться до трех знаков после запятой</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+</xs:schema>

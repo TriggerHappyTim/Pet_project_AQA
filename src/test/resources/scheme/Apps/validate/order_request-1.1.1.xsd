@@ -1,0 +1,561 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2023 sp1 (x64) (http://www.altova.com) by  () -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn://iis.ecp.ru/tsr_order/1.1.1" targetNamespace="urn://iis.ecp.ru/tsr_order/1.1.1" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:element name="Request">
+		<xs:annotation>
+			<xs:documentation>Запрос сведений обо всех заказах гражданина на ТСР и их статусах</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="ExternalRegistrationData" type="ExternalRegistrationDataType">
+					<xs:annotation>
+						<xs:documentation xml:lang="ru">Регистрационные данные обращения в МФЦ/ЕПГУ				</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="Applicant" type="PersonalDataType">
+					<xs:annotation>
+						<xs:documentation>Данные о заявителе</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="Response" type="ApplicationResponseType">
+		<xs:annotation>
+			<xs:documentation>Ответ, содержащий сведения обо всех заказах гражданина на ТСР и их статусах</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<!-- ========================== SIMPLE TYPES ========================== -->
+	<xs:simpleType name="string-10">
+		<xs:annotation>
+			<xs:documentation>Текстовый тип, длина до 10 символов</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="10"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="string-20">
+		<xs:annotation>
+			<xs:documentation>Текстовый тип, длина до 20 символов</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="20"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="string-50">
+		<xs:annotation>
+			<xs:documentation>Текстовый тип, длина до 50 символов</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="50"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="string-200">
+		<xs:annotation>
+			<xs:documentation>Текстовый тип, длина до 200 символов</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="200"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="string-4000">
+		<xs:annotation>
+			<xs:documentation>Текстовый тип, длина до 4000 символов</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="4000"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="GUIDType">
+		<xs:annotation>
+			<xs:documentation>Тип, используемый для глобального уникального идентификатора адресного объекта или уникальный идентификатор записи дома</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:pattern value="([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})|(\{[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\})"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="SNILSType">
+		<xs:annotation>
+			<xs:documentation>Тип, используемый для представления СНИЛС</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:length value="11"/>
+			<xs:pattern value="\d{11}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="DayType">
+		<xs:annotation>
+			<xs:documentation>Тип, используемый для представления календарного номера дня в месяце</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:integer">
+			<xs:minInclusive value="1"/>
+			<xs:maxInclusive value="31"/>
+			<xs:totalDigits value="2"/>
+			<xs:pattern value="\d+"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="MonthType">
+		<xs:annotation>
+			<xs:documentation>Тип, используемый для представления календарного (порядкового) номера месяца в году</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:integer">
+			<xs:maxInclusive value="12"/>
+			<xs:minInclusive value="1"/>
+			<xs:pattern value="\d+"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="IndeksType">
+		<xs:annotation>
+			<xs:documentation>Тип, используемый для почтового индекса</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:pattern value="\d{5,7}"/>
+			<xs:pattern value=""/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="NumPhoneType">
+		<xs:annotation>
+			<xs:documentation>Тип для представления номера телефона</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="15"/>
+			<xs:pattern value="\d*"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="EmailType">
+		<xs:annotation>
+			<xs:documentation>Тип для представления эл. почты</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:normalizedString">
+			<xs:pattern value="[^@]+@[^\.]+\..+"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!-- ========================== COMPLEX TYPES ========================== -->
+	<xs:complexType name="StatusType">
+		<xs:annotation>
+			<xs:documentation>Унифицированный тип для ответа сервисов подачи заявлений
+                </xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="OrderStatus" type="string-200">
+				<xs:annotation>
+					<xs:documentation xml:lang="ru">Cтатус заказа
+                        </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="OrderStatusCode" type="xs:int">
+				<xs:annotation>
+					<xs:documentation xml:lang="ru">Код статуса заказа
+                        </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ApplicationResponseType">
+		<xs:annotation>
+			<xs:documentation>Унифицированный тип для ответа сервисов подачи заявлений
+                </xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="ExternalRegistrationNumber" type="string-50">
+				<xs:annotation>
+					<xs:documentation xml:lang="ru">Регистрационный номер обращения, переданный в запросе          </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ProcessingStatus" type="string-200">
+				<xs:annotation>
+					<xs:documentation xml:lang="ru">Cтатус обработки
+                        </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ProcessingStatusCode" type="xs:int">
+				<xs:annotation>
+					<xs:documentation xml:lang="ru">Код статуса обработки
+                        </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ProcessingStatusComment" type="string-4000" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation xml:lang="ru">Комментарий к статусу</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="OrderList" type="OrderListType" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>Данные по заказам</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="OrderListType">
+		<xs:sequence>
+			<xs:element name="OrderNumber" type="string-200">
+				<xs:annotation>
+					<xs:documentation>Номер заказа</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="OrderDate" type="xs:date">
+				<xs:annotation>
+					<xs:documentation>Дата заказа</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Status" type="StatusType">
+				<xs:annotation>
+					<xs:documentation>Статус заказа</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TSR">
+				<xs:annotation>
+					<xs:documentation>Информация о ТСР</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:complexContent>
+						<xs:extension base="TSRType"/>
+					</xs:complexContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="TSRAmount" type="xs:integer" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Количество ТСР </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TSRSum" type="string-50" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Сумма заказа</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ContactInformationApplicant" type="ContactInformationType">
+				<xs:annotation>
+					<xs:documentation>Контактная информация</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="AdditionalOptions" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>Дополнительные опции заказа</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="CodeOption" type="xs:int">
+							<xs:annotation>
+								<xs:documentation xml:lang="ru">Код опции</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="NameOption" type="string-4000">
+							<xs:annotation>
+								<xs:documentation xml:lang="ru">Наименование опции</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="DateDelivery" type="xs:dateTime" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Дата и время доставки заказа</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Comment" type="string-4000" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Дополнительная информация по заказу</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="PersonalDataType">
+		<xs:annotation>
+			<xs:documentation>Тип, используемый для представления содержания ФИО, даты рождения и СНИЛС физичесткого лица.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="FIO" type="FIOType">
+				<xs:annotation>
+					<xs:documentation>Фамилия, имя, отчество </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="SNILS" type="SNILSType">
+				<xs:annotation>
+					<xs:documentation>СНИЛС </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:group ref="GrDateBirth">
+				<xs:annotation>
+					<xs:documentation>Группа, содежржащая сведения о дате рождения</xs:documentation>
+				</xs:annotation>
+			</xs:group>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="FIOType">
+		<xs:annotation>
+			<xs:documentation>Базовый унифицированный тип, использующийся для представления ФИО физ. лица.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:group ref="GrFIO">
+				<xs:annotation>
+					<xs:documentation>Фамилия, имя, отчетсво (при наличии)</xs:documentation>
+				</xs:annotation>
+			</xs:group>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:group name="GrFIO">
+		<xs:annotation>
+			<xs:documentation>Базовая унифицированная группа элементов, использующаяся для представления ФИО физ. лица.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="FirstName" type="string-4000" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Фамилия</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Name" type="string-4000" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Имя</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Surname" type="string-4000" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Отчество</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:group>
+	<xs:element name="FIO" type="FIOType">
+		<xs:annotation>
+			<xs:documentation>Фамилия, имя, отчество</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:group name="GrDateBirth">
+		<xs:annotation>
+			<xs:documentation>Группа, содержащая сведения о дате рождения</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:choice>
+				<xs:annotation>
+					<xs:documentation>В случае, если отсутствует месяц иили день месяца рождения, то используется компонент DataRozhdeniyaOsobaya. В случае, если присутсвует день месяца, месяц и год рождения, то используют компонент DataRozhdeniya</xs:documentation>
+				</xs:annotation>
+				<xs:element name="DateBirth" type="xs:date">
+					<xs:annotation>
+						<xs:documentation>Дата рождения</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="SpecialDateBirth" type="SpecialDateType">
+					<xs:annotation>
+						<xs:documentation>Дата рождения без указания месяца и/или дня месяца рождения</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:choice>
+		</xs:sequence>
+	</xs:group>
+	<xs:element name="Den" type="DayType">
+		<xs:annotation>
+			<xs:documentation>День</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:complexType name="SpecialDateType">
+		<xs:annotation>
+			<xs:documentation>Тип дата для особых случаев когда: 1) известен только год; 2) известен только месяц и год; 3) указанные день, месяц и год при объединении не могут давать правильную дату</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Day" type="DayType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>День</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Month" type="MonthType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Месяц</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Year" type="xs:gYear">
+				<xs:annotation>
+					<xs:documentation>Год</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ContactInformationType">
+		<xs:annotation>
+			<xs:documentation>Тип, используемый для предоставления контактной информации, включающий адрес, телефоны и эл. почту</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Adress" type="AdresFIASType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Адрес доставки</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Phone" type="PhoneType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Телефон</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Email" type="EmailType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Адрес электронной почты</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:group name="GrAdres">
+		<xs:annotation>
+			<xs:documentation>Группа элементов для представления структурных сведений о российском адресе</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Region" type="GeographyType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Регион</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="County" type="GeographyType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Округ (Автономия)</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Area" type="GeographyType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Район</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="City" type="GeographyType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Город</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="InnerCityArea" type="GeographyType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Внутригородской район</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Locality" type="GeographyType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Населенный пункт</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Street" type="GeographyType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Улица</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="House" type="string-10" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Номер дома</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Structure" type="string-10" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Номер строения</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Possession" type="string-10" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Номер владения</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Frame" type="string-10" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Номер корпуса</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Room" type="string-10" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Квартира</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:group>
+	<xs:complexType name="AdresFIASType">
+		<xs:annotation>
+			<xs:documentation>Тип, использующийся для представления российского адреса</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="GUID" type="GUIDType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Глобальный уникальный идентификатор адресного объекта или уникальный идентификатор записи дома</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element ref="Indeks" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Почтовый индекс</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:group ref="GrAdres">
+				<xs:annotation>
+					<xs:documentation>Группа элементов отражаемых структуру российского адреса</xs:documentation>
+				</xs:annotation>
+			</xs:group>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="Indeks" type="IndeksType">
+		<xs:annotation>
+			<xs:documentation>Почтовый индекс</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:complexType name="GeographyType">
+		<xs:annotation>
+			<xs:documentation>Тип для представления структурированного представления части адреса</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Name" type="string-200">
+				<xs:annotation>
+					<xs:documentation>Географическое наименование объекта</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Reduction" type="string-200" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Сокращение адресного объекта, например, "г." (город), "обл." (область)</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="PhoneType">
+		<xs:annotation>
+			<xs:documentation>Тип списка телефонов</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Phone" type="NumPhoneType" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>Контактный номер телефона</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="Phones" type="NumPhoneType">
+		<xs:annotation>
+			<xs:documentation>Перечень контактных номеров</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:complexType name="ExternalRegistrationDataType">
+		<xs:annotation>
+			<xs:documentation xml:lang="ru">Регистрационные данные во внешней системе
+      </xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="ExternalRegistrationNumber" type="string-50">
+				<xs:annotation>
+					<xs:documentation xml:lang="ru">
+            Регистрационный номер обращения, присвоенный в МФЦ/ЕПГУ
+          </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ExternalRegistrationDate" type="xs:date">
+				<xs:annotation>
+					<xs:documentation xml:lang="ru">
+            Дата и время регистрации обращения в МФЦ/ЕПГУ
+          </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="TSRType">
+		<xs:annotation>
+			<xs:documentation>Тип, передаваемый сведения о ТСР</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="TSRCode" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Код в каталоге</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="TSRTypeCode" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Код вида ТСР</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

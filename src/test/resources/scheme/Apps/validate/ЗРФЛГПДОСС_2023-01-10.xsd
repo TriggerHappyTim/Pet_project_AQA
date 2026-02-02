@@ -1,0 +1,396 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2021 (x64) (http://www.altova.com) by Victor Rozhkov (BFT-Razrabotka) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://пф.рф/ВС/ЗРФЛГПДОСС/2023-01-10"
+	xmlns:АФ6="http://пф.рф/АФ/2023-01-10" xmlns:УТ6="http://пф.рф/УТ/2023-01-10"
+	xmlns:sig="http://iis.ecp.ru/SignInfo/2023-01-10" xmlns:ns1="http://www.w3.org/2000/09/xmldsig#"
+	targetNamespace="http://пф.рф/ВС/ЗРФЛГПДОСС/2023-01-10" elementFormDefault="qualified"
+	version="2.0">
+	<xs:import namespace="http://пф.рф/УТ/2023-01-10" schemaLocation="УнифТипы_2023-01-10.xsd"/>
+	<xs:import namespace="http://пф.рф/АФ/2023-01-10" schemaLocation="ТипыАФ_2023-01-10.xsd"/>
+	<xs:import namespace="http://www.w3.org/2000/09/xmldsig#"
+		schemaLocation="xmldsig_core_schema.xsd"/>
+	<xs:import namespace="http://iis.ecp.ru/SignInfo/2023-01-10"
+		schemaLocation="SignInfo_2023-01-10.xsd"/>
+	<xs:annotation>
+		<xs:documentation>Схема проверки документа содержащего Заявление о регистрации в качестве страхователя
+            физического лица (обязанного уплачивать страховые взносы в связи с заключением гражданско-правового
+            договора)
+        </xs:documentation>
+	</xs:annotation>
+	<xs:element name="ЭДПФР">
+		<xs:annotation>
+			<xs:documentation>Корневой элемент. Содержит сведения самого документа и служебную информацию об электронном
+                документе ЗРФЛГПДОСС.
+            </xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="ЗРФЛГПДОСС">
+					<xs:annotation>
+						<xs:documentation>Заявление о регистрации в качестве страхователя физического лица (обязанного
+                            уплачивать страховые взносы в связи с заключением гражданско-правового договора)
+                        </xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="ТОПФР" type="УТ6:ТипТОПФР">
+								<xs:annotation>
+									<xs:documentation>Территориальный орган ПФР, в который подается заявление
+                                    </xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Заявитель">
+								<xs:annotation>
+									<xs:documentation>Анкетные данные заявителя</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element ref="УТ6:ФИО">
+											<xs:annotation>
+												<xs:documentation>Фамилия, имя, отчество заявителя</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element ref="УТ6:Адрес">
+											<xs:annotation>
+												<xs:documentation>Сведения об адресе заявителя</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element ref="УТ6:Телефон">
+											<xs:annotation>
+												<xs:documentation>Контактный номер телефона заявителя.
+                                                </xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element ref="УТ6:АдресЭлПочты">
+											<xs:annotation>
+												<xs:documentation>Адрес электронной почты</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element ref="УТ6:СНИЛС">
+											<xs:annotation>
+												<xs:documentation>Страховой номер индивидуального лицевого счета
+                                                    гражданина в соответствии со страховым свидетельством обязательного
+                                                    пенсионного страхования
+                                                </xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element ref="УТ6:УдостоверяющийДокумент">
+											<xs:annotation>
+												<xs:documentation>Удостоверяющий документ заявителя</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element ref="УТ6:ДатаРождения">
+											<xs:annotation>
+												<xs:documentation>Дата рождения заявителя</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element ref="УТ6:МестоРождения" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>Место рождения</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="ЕдиныйРегНомер" type="УТ6:ТипРегНомер"
+											minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>Единый регистрационный номер - 10 знаков
+                                                </xs:documentation>
+											</xs:annotation>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="Представитель" type="УТ6:ТипПредставительФЛ-ЮЛ"
+								minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Сведения о представителе заявителя</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="РегДанныеЗаявителя">
+								<xs:annotation>
+									<xs:documentation>Сведения о государственной регистрации заявителя
+                                    </xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="СведенияОЛицензиях" minOccurs="0">
+											<xs:complexType>
+												<xs:sequence>
+												<xs:element ref="УТ6:Наименование">
+												<xs:annotation>
+												<xs:documentation>Наименование документа</xs:documentation>
+												</xs:annotation>
+												</xs:element>
+												<xs:group ref="УТ6:ГрСведенияДокумента"/>
+												<xs:element name="ДатаОкончанияСрока"
+												type="xs:date" minOccurs="0">
+												<xs:annotation>
+												<xs:documentation>. Дата окончания срока действия
+                                                                документа
+                                                            </xs:documentation>
+												</xs:annotation>
+												</xs:element>
+												<xs:element name="НаименованиеОргана"
+												type="УТ6:ТипНепустаяСтрока">
+												<xs:annotation>
+												<xs:documentation>Наименование органа, выдавшего документ
+                                                            </xs:documentation>
+												</xs:annotation>
+												</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="СведОГосРегистрации" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>Блок обязательный для следующих категорий
+                                                    страхователей:
+                                                    14 - ИП01 - Индивидуальные предприниматели
+                                                    15 - ИП02 - Главы крестьянских (фермерских) хозяйств,
+                                                    зарегистрированные в качестве индивидуального предпринимателя
+                                                    (ЕГРИП)
+                                                </xs:documentation>
+											</xs:annotation>
+											<xs:complexType>
+												<xs:sequence>
+												<xs:element name="НаименованиеОргана"
+												type="УТ6:ТипНепустаяСтрока">
+												<xs:annotation>
+												<xs:documentation>Наименование органа, осуществившего
+                                                                государственную регистрацию
+                                                            </xs:documentation>
+												</xs:annotation>
+												</xs:element>
+												<xs:element name="ОГРНИП" type="УТ6:ТипКодЕГРИП">
+												<xs:annotation>
+												<xs:documentation>Основной государственный регистрационный
+                                                                номер индивидуального предпринимателя
+                                                            </xs:documentation>
+												</xs:annotation>
+												</xs:element>
+												<xs:element name="ДатаРегистрации" type="xs:date">
+												<xs:annotation>
+												<xs:documentation>Дата государственной регистрации
+                                                            </xs:documentation>
+												</xs:annotation>
+												</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="ОсновнойВидДеятельности">
+											<xs:complexType>
+												<xs:sequence>
+												<xs:element ref="УТ6:Наименование">
+												<xs:annotation>
+												<xs:documentation>Наименование основного вида деятельности
+                                                            </xs:documentation>
+												</xs:annotation>
+												</xs:element>
+												<xs:element name="ОКВЭД">
+												<xs:annotation>
+												<xs:documentation>Код по ОКВЭД</xs:documentation>
+												</xs:annotation>
+												</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="БанковскиеРеквизиты">
+											<xs:complexType>
+												<xs:sequence>
+												<xs:element ref="УТ6:БИК">
+												<xs:annotation>
+												<xs:documentation>БИК банка</xs:documentation>
+												</xs:annotation>
+												</xs:element>
+												<xs:element name="НаименованиеБанка"
+												type="УТ6:ТипНепустаяСтрока">
+												<xs:annotation>
+												<xs:documentation>Наименование банка</xs:documentation>
+												</xs:annotation>
+												</xs:element>
+												<xs:element ref="УТ6:РСчет">
+												<xs:annotation>
+												<xs:documentation>Номер счета</xs:documentation>
+												</xs:annotation>
+												</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="КатегорияСтрахователя">
+											<xs:annotation>
+												<xs:documentation>Категория страхователя
+                                                    18 [ФЛ02] - Адвокаты
+                                                    20 [ФЛ03] - Нотариусы, занимающиеся частной практикой
+                                                    22 [ФЛ04] - Арбитражный управляющий
+                                                    24 [ФЛ05] - Патентный поверенный
+                                                    26 [ФЛ06] - Оценщик
+                                                    28 [ФЛ07] - Медиатор
+                                                    14 [ИП01] - Индивидуальные предприниматели
+                                                    15 [ИП02] - Главы крестьянских (фермерских) хозяйств,
+                                                    зарегистрированные в качестве индивидуального предпринимателя
+                                                    (ЕГРИП)
+                                                    17 [ФЛ01] - Физические лица, производящие выплаты физическим лицам
+                                                </xs:documentation>
+											</xs:annotation>
+											<xs:simpleType>
+												<xs:restriction base="xs:integer">
+												<xs:enumeration value="18"/>
+												<xs:enumeration value="20"/>
+												<xs:enumeration value="22"/>
+												<xs:enumeration value="24"/>
+												<xs:enumeration value="26"/>
+												<xs:enumeration value="28"/>
+												<xs:enumeration value="14"/>
+												<xs:enumeration value="15"/>
+												<xs:enumeration value="17"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="СведенияНалоговогоУчета">
+											<xs:complexType>
+												<xs:sequence>
+												<xs:element ref="УТ6:ИНН">
+												<xs:annotation>
+												<xs:documentation>Идентификационный номер
+                                                                налогоплательщика
+                                                            </xs:documentation>
+												</xs:annotation>
+												</xs:element>
+												<xs:element name="ОрганФНС"
+												type="УТ6:ТипНепустаяСтрока">
+												<xs:annotation>
+												<xs:documentation>Наименование налогового
+                                                                органа,поставившего физическое лицо на учет
+                                                            </xs:documentation>
+												</xs:annotation>
+												</xs:element>
+												<xs:element name="КодОрганаФНС">
+												<xs:annotation>
+												<xs:documentation>Код налогового органа,поставившего
+                                                                физическое лицо на учет
+                                                            </xs:documentation>
+												</xs:annotation>
+												<xs:simpleType>
+												<xs:restriction base="xs:string">
+												<xs:pattern value="\d{4}"/>
+												</xs:restriction>
+												</xs:simpleType>
+												</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="ПричинаРегистрации">
+								<xs:annotation>
+									<xs:documentation>Регистрация в связи:
+                                        Заключение гражданско-правового договора с физическим лицом
+                                        Изменение места жительства
+                                    </xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:choice>
+										<xs:element name="СменаМестаЖительства">
+											<xs:simpleType>
+												<xs:restriction base="xs:integer">
+												<xs:enumeration value="1"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="ЗаключениеГПД">
+											<xs:complexType>
+												<xs:sequence>
+												<xs:element name="РеквизитыДоговора"
+												type="УТ6:ТипРеквизитыДокумента">
+												<xs:annotation>
+												<xs:documentation>Номер и дата заключения
+                                                                гражданско-правового договора с физическим лицом
+                                                            </xs:documentation>
+												</xs:annotation>
+												</xs:element>
+												<xs:element name="СрокДействия" type="xs:date">
+												<xs:annotation>
+												<xs:documentation>к действия гражданско-правового договора с
+                                                                физическим лицом
+                                                            </xs:documentation>
+												</xs:annotation>
+												</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+									</xs:choice>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="Информирование" maxOccurs="4">
+								<xs:annotation>
+									<xs:documentation>Уведомления о регистрации лица, добровольно вступившего в
+                                        правоотношения по обязательному социальному страхованию
+                                        на случай временной нетрудоспособности и в связи с материнством:
+                                        6 - Лично
+                                        7 - Направить по почте
+                                        5 - Направить в форме электронного документа при направлении заявления через
+                                        Единый портал
+                                        4 - Направить по электронной почте
+                                    </xs:documentation>
+								</xs:annotation>
+								<xs:simpleType>
+									<xs:restriction base="xs:integer">
+										<xs:enumeration value="6"/>
+										<xs:enumeration value="7"/>
+										<xs:enumeration value="5"/>
+										<xs:enumeration value="4"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="ДатаПодачи" type="xs:date">
+								<xs:annotation>
+									<xs:documentation>Дата подачи заявления</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+					<xs:unique name="УникальныйВидИнофрмирования">
+						<xs:selector xpath="Информирование"/>
+						<xs:field xpath="."/>
+					</xs:unique>
+				</xs:element>
+				<xs:element name="СлужебнаяИнформация" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Служебная информация об электронном документе</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:complexContent>
+							<xs:extension base="АФ6:ТипСлужебнаяИнформация">
+								<xs:sequence>
+									<xs:element name="НомерВнешний" type="xs:normalizedString"
+										minOccurs="0">
+										<xs:annotation>
+											<xs:documentation>Номер по журналу регистрации, присвоенный в момент подачи
+                                                заявления (уведомления)
+                                            </xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="РаботникМФЦ" type="УТ6:ТипФИО" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation>ФИО работника многофункционального центра
+                                            </xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="ИсточникОбращения" minOccurs="0"/>
+								</xs:sequence>
+							</xs:extension>
+						</xs:complexContent>
+					</xs:complexType>
+				</xs:element>
+				<xs:element ref="ns1:Signature" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Электронная подпись (ЭП). Электронный документ, для которого законодательством
+                            Российской Федерации предусмотрена юридически значимая подпись, должен быть подписан
+                            усиленной квалифицированной электронной подписью в соответствии со спецификацией XMLDSig
+                        </xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element ref="sig:SignInfo" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

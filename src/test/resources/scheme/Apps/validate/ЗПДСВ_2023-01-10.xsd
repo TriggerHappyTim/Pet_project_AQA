@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2021 (x64) (http://www.altova.com) by Victor Rozhkov (BFT-Razrabotka) -->
+<xs:schema xmlns="http://пф.рф/ЗПДСВ/2023-01-10" xmlns:УТ6="http://пф.рф/УТ/2023-01-10"
+	xmlns:АФ4="http://пф.рф/АФ/2023-01-10" xmlns:ДС="http://пф.рф/ВС/ДоСВ/типы/2023-01-10"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ns1="http://пф.рф/ЗПДСВ/2023-01-10"
+	xmlns:ns2="http://www.w3.org/2000/09/xmldsig#" targetNamespace="http://пф.рф/ЗПДСВ/2023-01-10"
+	elementFormDefault="qualified" version="2.0">
+	<xs:import namespace="http://пф.рф/УТ/2023-01-10" schemaLocation="УнифТипы_2023-01-10.xsd"/>
+	<xs:import namespace="http://пф.рф/АФ/2023-01-10" schemaLocation="ТипыАФ_2023-01-10.xsd"/>
+	<xs:import namespace="http://пф.рф/ВС/ДоСВ/типы/2023-01-10"
+		schemaLocation="ТипыДоСВ_2023-01-10.xsd"/>
+	<xs:import namespace="http://www.w3.org/2000/09/xmldsig#"
+		schemaLocation="xmldsig_core_schema.xsd"/>
+	<xs:annotation>
+		<xs:documentation>Заявление о прекращении правоотношений по обязательному пенсионному страхованию</xs:documentation>
+	</xs:annotation>
+	<xs:element name="ЭДПФР">
+		<xs:annotation>
+			<xs:documentation>Корневой элемент. Содержит сведения самого документа и служебную
+				информацию об электронном документе.</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="ЗПДСВ">
+					<xs:annotation>
+						<xs:documentation>Заявление о прекращении правоотношений по обязательному пенсионному страхованию</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Категория" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Основание для постановки на учет в качестве страхователя. Возможные значения:
+										ФЛ08 – Граждане Российской Федерации, работающие за пределами Российской Федерации;
+										ФЛ09 – Физические лица, уплачивающие страховые взносы за другое физическое лицо;
+										ФЛ10 – Физические лица в целях уплаты страховых взносов за себя, постоянно или временно проживающие на территории Российской Федерации, на которых не распространяется обязательное пенсионное страхование;
+										ФЛ11 – Физические лица в целях уплаты страховых взносов в ПФР за себя, применяющие специальный налоговый режим "Налог на профессиональный доход", постоянно или временно проживающие на территории РФ;
+										ФЛ12 – Физические лица из числа адвокатов, являющихся получателями пенсий за выслугу лет или пенсии по инвалидности в соответствии с Законом РФ от 12.02.1993 № 4468-1, в целях уплаты страховых взносов в ПФР за себя;
+										ИП03 - Индивидуальный предприниматель, осуществляющий уплату страховых взносов в фиксированном размере, в части, превышающей этот размер;
+										ИП04 – Глава КФХ, осуществляющий уплату страховых взносов в фиксированном размере, в части, превышающей этот размер;
+										ФЛ15 – Нотариус, занимающийся частной практикой и осуществляющий уплату страховых взносов в фиксированном размере, в части, превышающей этот размер;
+										ФЛ16 – Адвокат, осуществляющий уплату страховых взносов в фиксированном размере, в части, превышающей этот размер;
+										ФЛ17 – Арбитражный управляющий, осуществляющий уплату страховых взносов в фиксированном размере, в части, превышающей этот размер;
+										ФЛ18 – Патентный поверенный, осуществляющий уплату страховых взносов в фиксированном размере, в части, превышающей этот размер;
+										ФЛ19 – Оценщик, осуществляющий уплату страховых взносов в фиксированном размере, в части, превышающей этот размер;
+										ФЛ20 – Медиатор, осуществляющий уплату страховых взносов в фиксированном размере, в части, превышающей этот размер
+										</xs:documentation>
+								</xs:annotation>
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:enumeration value="ФЛ08"/>
+										<xs:enumeration value="ФЛ09"/>
+										<xs:enumeration value="ФЛ10"/>
+										<xs:enumeration value="ФЛ11"/>
+										<xs:enumeration value="ФЛ12"/>
+										<xs:enumeration value="ИП03"/>
+										<xs:enumeration value="ИП04"/>
+										<xs:enumeration value="ФЛ15"/>
+										<xs:enumeration value="ФЛ16"/>
+										<xs:enumeration value="ФЛ17"/>
+										<xs:enumeration value="ФЛ18"/>
+										<xs:enumeration value="ФЛ19"/>
+										<xs:enumeration value="ФЛ20"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element ref="УТ6:РегНомер" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Регистрационный номер страхователя</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="ТОПФР" type="УТ6:ТипТОПФР">
+								<xs:annotation>
+									<xs:documentation>Блок сведений о территориальном органе ПФР</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Заявитель">
+								<xs:annotation>
+									<xs:documentation>Блок сведений о заявителе</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element ref="УТ6:ФИО">
+											<xs:annotation>
+												<xs:documentation>Фамилия, имя, отчество заявителя</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:group ref="УТ6:ГрДатаРождения">
+											<xs:annotation>
+												<xs:documentation>Дата рождения ребенка</xs:documentation>
+											</xs:annotation>
+										</xs:group>
+										<xs:element ref="УТ6:МестоРождения">
+											<xs:annotation>
+												<xs:documentation>Место рождения заявителя</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element ref="УТ6:СНИЛС">
+											<xs:annotation>
+												<xs:documentation>Страховой номер индивидуального лицевого счета представителя</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element ref="УТ6:ИНН">
+											<xs:annotation>
+												<xs:documentation>ИНН</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element ref="ДС:КодНО" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>Код налогового органа по месту жительства физического лица, добровольно вступающего в правоотношения</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element ref="УТ6:АдресРегистрации" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>Почтовый адрес места жительства в	Российской Федерации</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element ref="УТ6:Телефон" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>Номер телефона заявителя</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element ref="УТ6:УдостоверяющийДокумент" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>Документ, удостоверяющий личность заявителя</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="АдресУведомления" type="УТ6:ТипАдресОбщий"
+											minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>Почтовый адрес для направления уведомления о прекращении правоотношений по обязательному пенсионному страхованию</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="Представитель" type="УТ6:ТипПредставительФЛ-ЮЛ"
+								minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Сведения о представителе заявителя</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="КодСнятия">
+								<xs:annotation>
+									<xs:documentation>Основания для снятия с учета в качестве страхователя. Возможные значения:
+										1 – в связи с прекращением уплаты страховых взносов в Пенсионный фонд Российской Федерации гражданином Российской Федерации, работающим за пределами территории Российской Федерации;
+										2 – в связи с прекращением уплаты страховых взносов в Пенсионный фонд Российской Федерации за другое физическое   лицо, за   которое   не   осуществляется уплата  в соответствии с Федеральным законом от 15 декабря 2001 г. № 167-ФЗ «Об обязательном пенсионном страховании в Российской   Федерации» и  частью второй  Налогового кодекса Российской Федерации;
+										3 – в связи с прекращением уплаты страховых  взносов в фиксированном размере в части, превышающей этот размер;
+										4 – в связи с прекращением физическим лицом уплаты страховых взносов за себя, постоянно или временно проживающим на территории Российской Федерации, на которого не распространяется обязательное пенсионное страхование, в  соответствии с Федеральным законом от 15 декабря 2001 г. № 167-ФЗ «Об  обязательном пенсионном страховании в Российской Федерации», за исключением лиц, указанных в подпункте 6 пункта 1 статьи 29 данного закона"
+										5 – в связи с прекращением физическим лицом уплаты страховых взносов за себя, применяющим специальный налоговый режим «Налог на профессиональный доход», постоянно или временно проживающим на территории Российской Федерации;
+										6 – в связи с изменением регистрации по месту жительства;
+										7 - В связи с прекращением уплаты страховых взносов за себя физическим лицом из числа адвокатов, являющихся получателями пенсии за выслугу лет или пенсии по инвалидности в соответствии с Законом Российской Федерации от 12 февраля 1993 г. № 4468-1 «О пенсионном обеспечении лиц, проходивших военную службу, службу в органах внутренних дел, Государственной противопожарной службе, органах по контролю за оборотом наркотических средств и психотропных веществ, учреждениях и органах уголовно-исполнительной системы, войсках национальной гвардии Российской Федерации, органах принудительного исполнения Российской Федерации, и их семей
+										8 – прочее.</xs:documentation>
+								</xs:annotation>
+								<xs:simpleType>
+									<xs:restriction base="xs:integer">
+										<xs:enumeration value="1"/>
+										<xs:enumeration value="2"/>
+										<xs:enumeration value="3"/>
+										<xs:enumeration value="4"/>
+										<xs:enumeration value="5"/>
+										<xs:enumeration value="6"/>
+										<xs:enumeration value="7"/>
+										<xs:enumeration value="8"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="Информирование" maxOccurs="4">
+								<xs:annotation>
+									<xs:documentation>Уведомления о прекращении правоотношений по обязательному пенсионному страхованию:
+														6 - Лично
+														7 - Направить по почте
+														5 - Направить в форме электронного документа при направлении заявления через Единый портал	
+														4 - Направить по электронной почте						
+									</xs:documentation>
+								</xs:annotation>
+								<xs:simpleType>
+									<xs:restriction base="xs:integer">
+										<xs:enumeration value="6"/>
+										<xs:enumeration value="7"/>
+										<xs:enumeration value="5"/>
+										<xs:enumeration value="4"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="ДатаЗаполнения" type="xs:date">
+								<xs:annotation>
+									<xs:documentation>Дата заполнения заявления</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+					<xs:unique name="УникальныйВидИнофрмирования">
+						<xs:selector xpath="Информирование"/>
+						<xs:field xpath="."/>
+					</xs:unique>
+				</xs:element>
+				<xs:element name="СлужебнаяИнформация" type="АФ4:ТипСлужебнаяИнформация"
+					minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Служебная информация об электронном документе</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element ref="ns2:Signature" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Электронная подпись (ЭП). Электронный документ, для которого законодательством Российской Федерации предусмотрена юридически значимая подпись, должен быть подписан усиленной квалифицированной электронной подписью в соответствии со спецификацией XMLDSig</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

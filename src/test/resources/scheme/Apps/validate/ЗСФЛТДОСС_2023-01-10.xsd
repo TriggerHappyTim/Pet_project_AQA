@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2021 (x64) (http://www.altova.com) by Victor Rozhkov (BFT-Razrabotka) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://пф.рф/ВС/ЗСФЛТДОСС/2023-01-10"
+    xmlns:АФ6="http://пф.рф/АФ/2023-01-10" xmlns:УТ6="http://пф.рф/УТ/2023-01-10"
+    xmlns:sig="http://iis.ecp.ru/SignInfo/2023-01-10" xmlns:ns1="http://www.w3.org/2000/09/xmldsig#"
+    targetNamespace="http://пф.рф/ВС/ЗСФЛТДОСС/2023-01-10" elementFormDefault="qualified"
+    version="2.0">
+    <xs:import namespace="http://пф.рф/УТ/2023-01-10" schemaLocation="УнифТипы_2023-01-10.xsd"/>
+    <xs:import namespace="http://пф.рф/АФ/2023-01-10" schemaLocation="ТипыАФ_2023-01-10.xsd"/>
+    <xs:import namespace="http://www.w3.org/2000/09/xmldsig#"
+        schemaLocation="xmldsig_core_schema.xsd"/>
+    <xs:import namespace="http://iis.ecp.ru/SignInfo/2023-01-10"
+        schemaLocation="SignInfo_2023-01-10.xsd"/>
+    <xs:annotation>
+        <xs:documentation>Схема проверки документа содержащего Заявление о снятии с регистрационного учета в
+            территориальном органе Фонда пенсионного и социального страхования Российской Федерации физического лица
+        </xs:documentation>
+    </xs:annotation>
+    <xs:element name="ЭДПФР">
+        <xs:annotation>
+            <xs:documentation>Корневой элемент. Содержит сведения самого документа и служебную информацию об электронном
+                документе ЗСФЛТДОСС.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="ЗСФЛТДОСС">
+                    <xs:annotation>
+                        <xs:documentation>Заявление о снятии с регистрационного учета в территориальном органе Фонда
+                            пенсионного и социального страхования Российской Федерации физического лица
+                        </xs:documentation>
+                    </xs:annotation>
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="ТОПФР" type="УТ6:ТипТОПФР">
+                                <xs:annotation>
+                                    <xs:documentation>Территориальный орган ПФР, в который подается заявление
+                                    </xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+                            <xs:element name="Заявитель">
+                                <xs:annotation>
+                                    <xs:documentation>Анкетные данные заявителя</xs:documentation>
+                                </xs:annotation>
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element ref="УТ6:ФИО">
+                                            <xs:annotation>
+                                                <xs:documentation>Фамилия, имя, отчество заявителя</xs:documentation>
+                                            </xs:annotation>
+                                        </xs:element>
+                                        <xs:element ref="УТ6:СНИЛС">
+                                            <xs:annotation>
+                                                <xs:documentation>Страховой номер индивидуального лицевого счета
+                                                    гражданина в соответствии со страховым свидетельством обязательного
+                                                    пенсионного страхования
+                                                </xs:documentation>
+                                            </xs:annotation>
+                                        </xs:element>
+                                        <xs:element name="ЕдиныйРегНомер" type="УТ6:ТипРегНомер"
+                                            minOccurs="0">
+                                            <xs:annotation>
+                                                <xs:documentation>Единый регистрационный номер - 10 знаков
+                                                </xs:documentation>
+                                            </xs:annotation>
+                                        </xs:element>
+                                        <xs:element ref="УТ6:Адрес">
+                                            <xs:annotation>
+                                                <xs:documentation>Сведения об адресе места жительства заявителя
+                                                </xs:documentation>
+                                            </xs:annotation>
+                                        </xs:element>
+                                        <xs:element ref="УТ6:УдостоверяющийДокумент"/>
+                                        <xs:element name="КатегорияСтрахователя">
+                                            <xs:annotation>
+                                                <xs:documentation>Категория страхователя
+                                                    17 [ФЛ01] - Физические лица, производящие выплаты физическим лицам
+                                                    18 [ФЛ02] - Адвокаты
+                                                    20 [ФЛ03] - Нотариусы, занимающиеся частной практикой
+                                                    22 [ФЛ04] - Арбитражный управляющий
+                                                    24 [ФЛ05] - Патентный поверенный
+                                                    26 [ФЛ06] - Оценщик
+                                                    28 [ФЛ07] - Медиатор
+                                                </xs:documentation>
+                                            </xs:annotation>
+                                            <xs:simpleType>
+                                                <xs:restriction base="xs:integer">
+                                                  <xs:enumeration value="17"/>
+                                                  <xs:enumeration value="18"/>
+                                                  <xs:enumeration value="20"/>
+                                                  <xs:enumeration value="22"/>
+                                                  <xs:enumeration value="24"/>
+                                                  <xs:enumeration value="26"/>
+                                                  <xs:enumeration value="28"/>
+                                                </xs:restriction>
+                                            </xs:simpleType>
+                                        </xs:element>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="Представитель" type="УТ6:ТипПредставительФЛ-ЮЛ"
+                                minOccurs="0">
+                                <xs:annotation>
+                                    <xs:documentation>Сведения о представителе заявителя</xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+                            <xs:element name="СведенияСЗВТД">
+                                <xs:annotation>
+                                    <xs:documentation>Сведения о наличии трудовых отношений с работником по форме
+                                        «Сведения о трудовой деятельности зарегистрированного лица (СЗВ-ТД)» направлены
+                                        в Пенсионный фонд Российской Федерации
+                                    </xs:documentation>
+                                </xs:annotation>
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element ref="УТ6:РегНомер">
+                                            <xs:annotation>
+                                                <xs:documentation>Регистрационный номер страхователя в Пенсионном фонде
+                                                    Российской Федерации
+                                                </xs:documentation>
+                                            </xs:annotation>
+                                        </xs:element>
+                                        <xs:element name="Дата" type="xs:date">
+                                            <xs:annotation>
+                                                <xs:documentation>Дата направления сведений</xs:documentation>
+                                            </xs:annotation>
+                                        </xs:element>
+                                        <xs:element name="Работник">
+                                            <xs:annotation>
+                                                <xs:documentation>Сведения о работнике</xs:documentation>
+                                            </xs:annotation>
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                  <xs:element ref="УТ6:ФИО">
+                                                  <xs:annotation>
+                                                  <xs:documentation>ФИО работника</xs:documentation>
+                                                  </xs:annotation>
+                                                  </xs:element>
+                                                  <xs:element ref="УТ6:СНИЛС">
+                                                  <xs:annotation>
+                                                  <xs:documentation>СНИЛС работника</xs:documentation>
+                                                  </xs:annotation>
+                                                  </xs:element>
+                                                  <xs:element ref="УТ6:ДатаРождения">
+                                                  <xs:annotation>
+                                                  <xs:documentation>Дата рождения работника</xs:documentation>
+                                                  </xs:annotation>
+                                                  </xs:element>
+                                                </xs:sequence>
+                                            </xs:complexType>
+                                        </xs:element>
+                                        <xs:element name="НаличиеГПД">
+                                            <xs:annotation>
+                                                <xs:documentation>Наличие действующих гражданско-правовых договоров:
+                                                    0 - нет
+                                                    1 - да
+                                                </xs:documentation>
+                                            </xs:annotation>
+                                            <xs:simpleType>
+                                                <xs:restriction base="xs:integer">
+                                                  <xs:enumeration value="0"/>
+                                                  <xs:enumeration value="1"/>
+                                                </xs:restriction>
+                                            </xs:simpleType>
+                                        </xs:element>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="Информирование" maxOccurs="4">
+                                <xs:annotation>
+                                    <xs:documentation>Уведомления о регистрации лица, добровольно вступившего в
+                                        правоотношения по обязательному социальному страхованию
+                                        на случай временной нетрудоспособности и в связи с материнством:
+                                        Лично
+                                        Направить по почте
+                                        Направить в форме электронного документа при направлении заявления через Единый
+                                        портал
+                                        Направить по электронной почте
+                                    </xs:documentation>
+                                </xs:annotation>
+                                <xs:simpleType>
+                                    <xs:restriction base="xs:integer">
+                                        <xs:enumeration value="6"/>
+                                        <xs:enumeration value="7"/>
+                                        <xs:enumeration value="5"/>
+                                        <xs:enumeration value="4"/>
+                                    </xs:restriction>
+                                </xs:simpleType>
+                            </xs:element>
+                            <xs:element name="ДатаПодачи" type="xs:date">
+                                <xs:annotation>
+                                    <xs:documentation>Дата подачи заявления</xs:documentation>
+                                </xs:annotation>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                    <xs:unique name="УникальныйВидИнофрмирования">
+                        <xs:selector xpath="Информирование"/>
+                        <xs:field xpath="."/>
+                    </xs:unique>
+                </xs:element>
+                <xs:element name="СлужебнаяИнформация" minOccurs="0">
+                    <xs:annotation>
+                        <xs:documentation>Служебная информация об электронном документе</xs:documentation>
+                    </xs:annotation>
+                    <xs:complexType>
+                        <xs:complexContent>
+                            <xs:extension base="АФ6:ТипСлужебнаяИнформация">
+                                <xs:sequence>
+                                    <xs:element name="НомерВнешний" type="xs:normalizedString"
+                                        minOccurs="0">
+                                        <xs:annotation>
+                                            <xs:documentation>Номер по журналу регистрации, присвоенный в момент подачи
+                                                заявления (уведомления)
+                                            </xs:documentation>
+                                        </xs:annotation>
+                                    </xs:element>
+                                    <xs:element name="РаботникМФЦ" type="УТ6:ТипФИО" minOccurs="0">
+                                        <xs:annotation>
+                                            <xs:documentation>ФИО работника многофункционального центра
+                                            </xs:documentation>
+                                        </xs:annotation>
+                                    </xs:element>
+                                    <xs:element name="ИсточникОбращения" minOccurs="0">
+                                        <xs:annotation>
+                                            <xs:documentation>Источник обращения:
+                                                6- КО
+                                                7 -Почта России
+                                                5 - ЕПГУ
+                                            </xs:documentation>
+                                        </xs:annotation>
+                                        <xs:simpleType>
+                                            <xs:restriction base="xs:integer">
+                                                <xs:enumeration value="6"/>
+                                                <xs:enumeration value="7"/>
+                                                <xs:enumeration value="5"/>
+                                            </xs:restriction>
+                                        </xs:simpleType>
+                                    </xs:element>
+                                    <xs:element name="ДатаОбращения" type="xs:date" minOccurs="0">
+                                        <xs:annotation>
+                                            <xs:documentation>Обязательно, если источник обращения "Почта России"
+                                            </xs:documentation>
+                                        </xs:annotation>
+                                    </xs:element>
+                                </xs:sequence>
+                            </xs:extension>
+                        </xs:complexContent>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element ref="ns1:Signature" minOccurs="0">
+                    <xs:annotation>
+                        <xs:documentation>Электронная подпись (ЭП). Электронный документ, для которого законодательством
+                            Российской Федерации предусмотрена юридически значимая подпись, должен быть подписан
+                            усиленной квалифицированной электронной подписью в соответствии со спецификацией XMLDSig
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element ref="sig:SignInfo" minOccurs="0"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

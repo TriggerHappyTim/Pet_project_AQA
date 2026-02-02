@@ -1,0 +1,157 @@
+version: '3.8'
+
+services:
+  # EVS Testing Framework
+  evs-tests:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: evs-testing-framework
+    volumes:
+      - ./allure-results:/app/allure-results
+      - ./allure-report:/app/allure-report
+      - ./logs:/app/logs
+      - ./credentials.properties:/app/src/test/resources/credentials.properties:ro
+    environment:
+      # Test configuration
+      - ENVIRONMENT=${ENVIRONMENT:-test}
+      - BROWSER=${BROWSER:-chrome}
+      - THREAD_COUNT=${THREAD_COUNT:-1}
+      - SELENIDE_REMOTE=${SELENIDE_REMOTE}
+      - BROWSER_VERSION=${BROWSER_VERSION}
+
+      # Credentials (should be set in .env file or CI/CD)
+      - EPGU_USERNAME=${EPGU_USERNAME}
+      - EPGU_PASSWORD=${EPGU_PASSWORD}
+      - RPU_USERNAME=${RPU_USERNAME}
+      - RPU_PASSWORD=${RPU_PASSWORD}
+      - UOS_USERNAME=${UOS_USERNAME}
+      - UOS_PASSWORD=${UOS_PASSWORD}
+      - EVS_USERNAME=${EVS_USERNAME}
+      - EVS_PASSWORD=${EVS_PASSWORD}
+
+      # Test credentials for development
+      - TEST_USERNAME=testuser
+      - TEST_PASSWORD=testpass123
+
+      # Database credentials (if needed)
+      - DB_URL=${DB_URL}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+
+      # API credentials
+      - API_KEY=${API_KEY}
+      - API_SECRET=${API_SECRET}
+      - API_TOKEN=${API_TOKEN}
+
+      # Logging and reporting
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - ALLURE_RESULTS_DIR=/app/allure-results
+      - MAVEN_OPTS=-Xmx1024m
+      - JAVA_OPTS=-Xmx1024m
+
+    depends_on:
+      - selenium-hub
+    networks:
+      - testing-network
+
+  # Selenium Hub for distributed testing
+  selenium-hub:
+    image: selenium/hub:4.15.0
+    container_name: selenium-hub
+    ports:
+      - "4442:4442"
+      - "4443:4443"
+      - "4444:4444"
+    environment:
+      - SE_EVENT_BUS_HOST=selenium-hub
+      - SE_EVENT_BUS_PUBLISH_PORT=4442
+      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+      - SE_SESSION_REQUEST_TIMEOUT=300
+      - SE_SESSION_RETRY_INTERVAL=5
+    networks:
+      - testing-network
+
+  # Chrome Node
+  chrome-node:
+    image: selenium/node-chrome:4.15.0
+    container_name: chrome-node
+    depends_on:
+      - selenium-hub
+    environment:
+      - SE_EVENT_BUS_HOST=selenium-hub
+      - SE_EVENT_BUS_PUBLISH_PORT=4442
+      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+      - SE_NODE_MAX_SESSIONS=3
+      - SE_NODE_SESSION_TIMEOUT=300
+      - SE_NODE_OVERRIDE_MAX_SESSIONS=true
+      - SE_VNC_NO_PASSWORD=1
+    volumes:
+      - /dev/shm:/dev/shm
+      - ./src/test/resources/CryptoPro Chrome 1.2.13.0.crx:/home/seluser/CryptoPro.crx:ro
+    ports:
+      - "7900:7900"
+    networks:
+      - testing-network
+
+  # Firefox Node
+  firefox-node:
+    image: selenium/node-firefox:4.15.0
+    container_name: firefox-node
+    depends_on:
+      - selenium-hub
+    environment:
+      - SE_EVENT_BUS_HOST=selenium-hub
+      - SE_EVENT_BUS_PUBLISH_PORT=4442
+      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+      - SE_NODE_MAX_SESSIONS=3
+      - SE_NODE_SESSION_TIMEOUT=300
+      - SE_NODE_OVERRIDE_MAX_SESSIONS=true
+      - SE_VNC_NO_PASSWORD=1
+    volumes:
+      - /dev/shm:/dev/shm
+      - ./src/test/resources/cryptopro.ru.xpi:/home/seluser/cryptopro.xpi:ro
+    ports:
+      - "7901:7901"
+    networks:
+      - testing-network
+
+  # Allure Report Server
+  allure-server:
+    image: frankescobar/allure-docker-service:latest
+    container_name: allure-server
+    ports:
+      - "5050:5050"
+    volumes:
+      - ./allure-results:/app/allure-results
+    environment:
+      - CHECK_RESULTS_EVERY_SECONDS=10
+      - KEEP_HISTORY=1
+      - KEEP_HISTORY_LATEST=25
+    networks:
+      - testing-network
+
+  # PostgreSQL for test data (if needed)
+  postgres-db:
+    image: postgres:15-alpine
+    container_name: test-postgres
+    environment:
+      - POSTGRES_DB=testdb
+      - POSTGRES_USER=testuser
+      - POSTGRES_PASSWORD=testpass
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - testing-network
+    profiles:
+      - db
+
+networks:
+  testing-network:
+    driver: bridge
+
+volumes:
+  postgres_data:

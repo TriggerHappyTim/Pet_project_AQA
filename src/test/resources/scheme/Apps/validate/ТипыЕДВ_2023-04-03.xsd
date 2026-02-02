@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2021 (x64) (http://www.altova.com) by Victor Rozhkov (BFT-Razrabotka) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://пф.рф/ВЗЛ/типыЕДВ/2023-04-03"
+	xmlns:УТ7="http://пф.рф/УТ/2023-04-03" xmlns:АФ6="http://пф.рф/АФ/2023-01-10"
+	targetNamespace="http://пф.рф/ВЗЛ/типыЕДВ/2023-04-03" elementFormDefault="qualified"
+	version="2.0">
+	<xs:import namespace="http://пф.рф/УТ/2023-04-03" schemaLocation="УнифТипы_2023-04-03.xsd"/>
+	<xs:import namespace="http://пф.рф/АФ/2023-01-10" schemaLocation="ТипыАФ_2023-01-10.xsd"/>
+	<xs:annotation>
+		<xs:documentation>Общие типы данных для информационного обмена "Взаимодействие с застрахованными лицами" по группе ЕДВ</xs:documentation>
+		<xs:documentation>Рекомендуемый префикс для пространства имен http://пф.рф/ВЗЛ/ЕДВ/типы/2023-04-03 - ЕДВ7</xs:documentation>
+	</xs:annotation>
+	<xs:complexType name="ТипКатегорияЕДВ">
+		<xs:annotation>
+			<xs:documentation>Сведения о категории граждан, имеющих право на получение ЕДВ, к которой принадлежит заявитель и сведения о соответствующем нормативном документе</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Код" type="xs:integer">
+				<xs:annotation>
+					<xs:documentation>Код категории, по которой установлена ежемесячная денежная выплата.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element ref="УТ7:Наименование">
+				<xs:annotation>
+					<xs:documentation>Наименование категории, пло которой установлена ЕДВ</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Основание">
+				<xs:annotation>
+					<xs:documentation>Статья, дата, номер, название Федерального закона</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:complexContent>
+						<xs:extension base="УТ7:ТипПунктНормативногоДокумента">
+							<xs:sequence>
+								<xs:element name="Дата" type="xs:date" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>Дата "от" документа</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+							</xs:sequence>
+						</xs:extension>
+					</xs:complexContent>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ТипУмершийГерой">
+		<xs:annotation>
+			<xs:documentation>Сведения об умершем герое</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element ref="УТ7:ФИО">
+				<xs:annotation>
+					<xs:documentation>ФИО умершего героя</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:group ref="УТ7:ГрДатаРождения">
+				<xs:annotation>
+					<xs:documentation>Дата рождения умершего героя</xs:documentation>
+				</xs:annotation>
+			</xs:group>
+			<xs:element name="ДатаСмерти" type="xs:date">
+				<xs:annotation>
+					<xs:documentation>Дата смерти умершего героя</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element ref="УТ7:СНИЛС" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>СНИЛС умершего героя</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="СтепеньРодства">
+				<xs:annotation>
+					<xs:documentation>Степень родства заявителя с умершим героем. Возможные значения:
+					1 – родитель,
+					2 – ребенок до 18 лет,
+					3 – ребенок до 23 лет,
+					4 – ребенок старше 18 лет, ставший инвалидом до достижения 18 лет,
+					5 – супруга,
+					6 – супруг</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:integer">
+						<xs:minInclusive value="1"/>
+						<xs:maxInclusive value="6"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="ТипОбстоятельстваПрекращенияВыплатПоУходу">
+		<xs:annotation>
+			<xs:documentation>Обстоятельства, влекущие прекращение осуществления ежемесячной выплаты по уходу:
+				1	назначение пенсии независимо от ее вида и размера, лицу, осуществляющему уход
+				2	назначение пособия по безработице, лицу, осуществляющему уход
+				3	выполнение оплачиваемой работы трудоспособным гражданином
+				4	выполнение оплачиваемой работы нетрудоспособным гражданином
+				5	помещение нетрудоспособного гражданина, ребенка-инвалида, инвалида с детства 1 группы в государственное или муниципальное стационарное учреждение социального обслуживания/организацию социального обслуживания, предоставляющую социальные услуги в стационарной форме
+				6	смерть лица, за которым осуществлялся уход, либо лица, осуществлявшего уход, а также признание их в установленном порядке умершими или безвестно отсутствующими
+				7	прекращение осуществления ухода
+				8	истечение срока, на который нетрудоспособному гражданину была установлена I группа инвалидности (за исключением нетрудоспособных лиц, достигших возраста 80 лет)
+				9	истечение срока, на который ребенку-инвалиду в возрасте до 18 лет или инвалиду с детства I группы была установлена категория "ребенок-инвалид" либо I группа инвалидности с детства
+				10	достижение ребенком-инвалидом возраста 18 лет, если ему по достижении этого возраста не установлена I группа инвалидности с детства
+				11	признание инвалидом с детства 1 группы
+				12	отсутствие заявления о продолжении осуществления ухода по истечению 6 месяцев с момента информирования гражданина о необходимости его подать
+				13	поступление сведений от органа опеки и попечительства или одного из родителей (усыновителя, попечителя) об их несогласии на осуществление ухода лицом, не достигшим возраста 15 лет
+				14	прекращение выплаты пенсии
+				15	другое обстоятельство для прекращения выплаты												
+			</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:integer">
+			<xs:minInclusive value="1"/>
+			<xs:maxInclusive value="15"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="ТипСтепеньРодства">
+		<xs:annotation>
+			<xs:documentation>Степень родства. Возможные значения:
+			1 – супруг;
+			2 – супруга;
+			3 – родитель (отец);
+			4 – родитель (мать);
+			5 – ребёнок до 18 лет;
+			6 – учащийся до 23 лет;
+			7 - родитель;
+			8 - вдова (вдовец);
+			9 - ребенок старше 18 лет, ставший инвалидом до достижения 18 лет;
+			11 – иное </xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:integer">
+			<xs:enumeration value="1"/>
+			<xs:enumeration value="2"/>
+			<xs:enumeration value="3"/>
+			<xs:enumeration value="4"/>
+			<xs:enumeration value="5"/>
+			<xs:enumeration value="6"/>
+			<xs:enumeration value="7"/>
+			<xs:enumeration value="8"/>
+			<xs:enumeration value="9"/>
+			<xs:enumeration value="11"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="ТипОснованиеВозобновления">
+		<xs:annotation>
+			<xs:documentation>Основания для возобновления выпалты ЕДВ:
+			105 – устранение обстоятельств, повлекших приостановление выплаты;
+			163 – Прохождение лицом переосвидетельствования в федеральном учреждении МСЭ и подтверждение его инвалидности;
+			164 – Подтверждение обучения по очной форме в организации, осуществляющей образовательную деятельность;
+			165 – Подтверждение иностранным гражданином или лицом без гражданства права на постоянное проживание в РФ;
+			166 – Подтверждение факта обучения по очной форме обучения по основным образовательным программам в иностранных организациях;
+			</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:integer">
+			<xs:enumeration value="105"/>
+			<xs:enumeration value="163"/>
+			<xs:enumeration value="164"/>
+			<xs:enumeration value="165"/>
+			<xs:enumeration value="166"/>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

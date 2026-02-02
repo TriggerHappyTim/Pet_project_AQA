@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2021 (x64) (http://www.altova.com) by Victor Rozhkov (BFT-Razrabotka) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://пф.рф/ВС/ДоСВ/типы/2023-01-10" xmlns:УТ6="http://пф.рф/УТ/2023-01-10" xmlns:АФ6="http://пф.рф/АФ/2023-01-10" targetNamespace="http://пф.рф/ВС/ДоСВ/типы/2023-01-10" elementFormDefault="qualified" version="2.0">
+	<xs:import namespace="http://пф.рф/УТ/2023-01-10" schemaLocation="УнифТипы_2023-01-10.xsd"/>
+	<xs:import namespace="http://пф.рф/АФ/2023-01-10" schemaLocation="ТипыАФ_2023-01-10.xsd"/>
+	<xs:annotation>
+		<xs:documentation xml:lang="ru">Типы данных для xml-файлов группы документов ДВС-ОПС. Рекомендуемый префикс ДС</xs:documentation>
+	</xs:annotation>
+	<xs:simpleType name="ТипКодНО">
+		<xs:annotation>
+			<xs:documentation>Тип, отражающий код налогового органа</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:pattern value="\d{4}"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:element name="КодНО" type="ТипКодНО">
+		<xs:annotation>
+			<xs:documentation>Код налогового органа</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:complexType name="ТипУведомление">
+		<xs:annotation>
+			<xs:documentation>Тип для представления сведения о ФИО, должности и даты уведомления</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="УТ6:ТипДолжностноеЛицо">
+				<xs:sequence>
+					<xs:element name="Дата">
+						<xs:annotation>
+							<xs:documentation>Дата</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:group name="ГрУведомление">
+		<xs:annotation>
+			<xs:documentation>Группа элементов для выбора одного из: блок сведений о личном вручении уведомления или блок сведений о вручении уведомления по почте</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:choice minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Выбор одного из: блок сведений о личном вручении уведомления или блок сведений о вручении уведомления по почте</xs:documentation>
+				</xs:annotation>
+				<xs:element name="ЛичноеВручение" type="ТипУведомление">
+					<xs:annotation>
+						<xs:documentation>Блок сведений о личном вручении уведомления</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="ВручениеПоПочте" type="ТипУведомление">
+					<xs:annotation>
+						<xs:documentation>Блок сведений о вручении уведомления по почте</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:choice>
+		</xs:sequence>
+	</xs:group>
+</xs:schema>

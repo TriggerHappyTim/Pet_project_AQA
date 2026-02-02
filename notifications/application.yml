@@ -1,0 +1,15 @@
+telegram:
+  token: "7840400910:AAHMo5Lun2wKJjiRavjWEgy_h21KNFMl4uE"
+  name: "EVS_AQA_test_bot"
+  channelID: "-1002456904366"
+
+
+gitlab:
+  host: "https://gitlab.bft.local/"
+  projectID: "1925"
+  private-token: "XzmkLtXdgAN_6PRSVcqP"
+  ci-token: "glptt-4a1a50319d23a677ebda65c64cc6d8a13f4d610b"
+
+
+#curl https://api.telegram.org/bot7840400910:AAHMo5Lun2wKJjiRavjWEgy_h21KNFMl4uE/getUpdates
+#curl -X POST  -H 'Content-Type: application/json' -d '{"chat_id": "-1002456904366", "text": "This is a test from EVS Tester"}' https://api.telegram.org/bot7840400910:AAHMo5Lun2wKJjiRavjWEgy_h21KNFMl4uE/sendMessage

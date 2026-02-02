@@ -1,0 +1,369 @@
+include:
+  - project: 'tech/templates'
+    ref: $GLOBAL_REF_TEMPLATE
+    file: 'maven.template.yaml'
+
+workflow:
+  rules:
+    - if: $CI_COMMIT_BRANCH =~ /master/
+      variables:
+        ENVIRONMENT: "test"
+    - if: $CI_PIPELINE_SOURCE =~ /web|pipeline/
+
+variables:
+  ENVIRONMENT:
+    value:
+      "test"
+    options:
+      - "test"
+      - "uat"
+      - "int"
+    description:
+      "Выберите целевой контур из списка (должны быть описаны в секции <profiles> файла pom.xml)"
+  TEST_SCRIPT:
+    value:
+      "smoke_web"
+    options:
+      - "smoke_web"
+      - "smoke_web_application"
+      - "smoke_manual"
+      - "regress_web"
+      - "regress_web_application"
+      - "regress_manual"
+    description:
+      "Выберите сценарий тестирования из списка (должны быть описаны в секции <profiles> файла pom.xml)"
+  TEST_ARTIFACTS: "target"
+  REPORT_ARTIFACTS: "build"
+  DIR_NOTIFICATION: "notifications"
+  BROWSERS:
+    value:
+      "browser_chrome_remote"
+    options:
+      - "browser_chrome_remote"
+      - "browser_firefox_remote"
+      - "moon_chrome_browser"
+    description:
+      "Выберите целевой браузер из списка (должны быть описаны в секции <profiles> файла pom.xml)"
+  USER_ACCOUNT:
+    value:
+      "user_krivonosov"
+    options:
+      - "user_krivonosov"
+      - "user_bezdomniy"
+      - "user_default"
+    description:
+      "Выберите учетную запись для тестирования (должны быть описаны в секции <profiles> файла pom.xml)"
+  SINGLE_TEST:
+    value:
+      ""
+    options:
+      - ""
+      # CryptoPro тесты
+      - "CryptoProCertificateTest#verifyCryptoProPluginLoaded"
+      - "CryptoProCertificateTest#testCertificateSelectionAndSigning"
+      - "CryptoProCertificateTest#testPageDiagnostics"
+      - "CryptoProCertificateTest#verifyCryptoProPluginWithStrategy"
+      - "CryptoProCertificateTest#testCertificateSigningWithStrategy"
+      - "CryptoProCertificateTest#quickPluginCheck"
+      - "CryptoProCertificateTest#testPluginFailureScenario"
+      # SZV-М тесты
+      - "SZVFormTest#testSZVMFormFullScenario"
+      - "SZVFormTest#testSZVMFormEditMode"
+      - "SZVFormTest#testSZVMFormWithMultiplePersons"
+      - "SZVFormTest#testSignAndSendButton"
+      - "SZVFormTest#testAddInsuredPersonWithDataProvider"
+      # SZV-ТД тесты
+      - "Szv_td#szv_td"
+      - "Szv_td#szv_td_xml"
+      # SZV-М отдельные тесты
+      - "Szv_m#szv_m"
+      - "Szv_m#szv_m_xml"
+      # SZV-СТАЖ тесты
+      - "Szv_staj#szv_staj_xml"
+      # SZV-КОРР тесты
+      - "Szv_korr#szv_korr_xml"
+      # SZV-К тесты
+      - "Szv_k#szv_k_xml"
+      # SZV-ИСХ тесты
+      - "Szv_ish#szv_ish_xml"
+      # SZV-ДСО тесты
+      - "Szv_dso#szv_dso_xml"
+      # ОДВ-1 тесты
+      - "Odv1#odv_1_xml"
+      # ЕФС-1 тесты
+      - "Efs1#efs_1_xml"
+      - "Efs1#efs_szv_td"
+      - "Efs1#efs_szv_staj"
+      # ЕФС-1 тесты с конкретными пользователями
+      - "Efs1#efs_1_xml_krivonosov"
+      - "Efs1#efs_1_xml_bezdomniy"
+      - "Efs1#efs_szv_td_krivonosov"
+      # Примеры тестов
+      - "ExampleTest#exampleAutomaticStrategySelection"
+      - "ExampleTest#exampleExplicitStrategySelection"
+      - "ExampleTest#exampleApiStrategy"
+      - "ExampleTest#exampleFullStrategySetup"
+      - "ExampleTest#exampleConfigurationUsage"
+      - "ExampleTest#exampleCustomStrategy"
+      - "ExampleTest#exampleImprovedPageObject"
+      # Улучшенные примеры
+      - "ImprovedTestExamples#exampleSeparatedTestLogic"
+      - "ImprovedTestExamples#exampleDataDrivenTest"
+      - "ImprovedTestExamples#exampleHelperMethodsTest"
+      - "ImprovedTestExamples#exampleComprehensiveUITest"
+      - "ImprovedTestExamples#exampleValidationOnlyTest"
+      - "ImprovedTestExamples#examplePerformanceTest"
+      - "ImprovedTestExamples#exampleApiTest"
+      - "ImprovedTestExamples#exampleSimpleApiTest"
+      # Расширенные примеры отчетности
+      - "AdvancedReportingExample#comprehensiveReportingTest"
+      - "AdvancedReportingExample#parameterizedReportingTest"
+      - "AdvancedReportingExample#performanceReportingTest"
+      - "AdvancedReportingExample#networkLoggingTest"
+      - "AdvancedReportingExample#debugInformationTest"
+      - "AdvancedReportingExample#customLabelsTest"
+      # Security тесты
+      - "SecuritySystemTest#testMockCredentials"
+      - "SecuritySystemTest#testDataMasking"
+      - "SecuritySystemTest#testNoHardcodedCredentials"
+      - "SecuritySystemTest#testCredentialProviderPriority"
+      - "SecuritySystemTest#testSzvReportsStepsSecurity"
+    description:
+      "Введите имя одиночного теста, например, CryptoProCertificateTest#verifyCryptoProPluginLoaded. Для прохождения всех тестов в профиле (TEST_SCRIPT) оставьте поле пустым. Список содержит все доступные тестовые методы из проекта"
+  REPORT_DIR_NAME: "allure-results"
+  HELM_NAMESPACE:
+    value: ""
+    description: ""
+
+print variables:
+  stage: .pre
+  script:
+    - echo $CI_JOB_STARTED_AT
+    - echo $GITLAB_USER_NAME
+    - echo $CI_COMMIT_BRANCH
+    - echo $ENVIRONMENT
+    - echo $TEST_SCRIPT
+    - echo $BROWSERS
+    - echo $SINGLE_TEST
+    - echo $HELM_NAMESPACE
+    - echo $FORWARDED_HELM_NAMESPACE
+
+maven build:
+  artifacts:
+    name: maven build
+    paths:
+      - "${TEST_ARTIFACTS}"
+
+maven test:
+  image:
+    name: "harbor.bft.local/library/base-images/maven:0.1.0-kubectl-2023.04.28"
+  #  variables:
+  #    CI_DEBUG_TRACE: "true"
+  allow_failure: true
+  timeout: 16h
+  #  services:
+  #    - name: selenium/standalone-chrome:latest
+  #      alias: chrome
+  #  variables:
+  #    SE_NODE_OVERRIDE_MAX_SESSIONS: "true"
+  #    SE_NODE_MAX_SESSIONS: "4"
+  script:
+    #    - curl -X GET http://chrome:4444/status
+    - |
+      if [ -n "${FORWARDED_HELM_NAMESPACE}" ]; then
+        HELM_NAMESPACE=${FORWARDED_HELM_NAMESPACE};
+      fi
+      if [ -n "${HELM_NAMESPACE}" ]
+      then
+        case $HELM_NAMESPACE in
+          *-test|*-gtest)
+            ENVIRONMENT_OVERRIDE=test
+            ;;
+          *-uat|*-guat)
+            ENVIRONMENT_OVERRIDE=uat
+            ;;
+          *-int|*-gint)
+            ENVIRONMENT_OVERRIDE=int
+            ;;
+          *-prod)
+            ENVIRONMENT_OVERRIDE=prod
+            ;;
+          *|*-dev)
+            ENVIRONMENT_OVERRIDE=dev
+            ;;
+        esac
+        #MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT_OVERRIDE}","${TEST_SCRIPT}","${BROWSERS}","${USER_ACCOUNT}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
+        if [ -n "${SINGLE_TEST}" ]
+        then
+          MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT_OVERRIDE}","${TEST_SCRIPT}","${BROWSERS}","${USER_ACCOUNT}" -Dtest="${SINGLE_TEST}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
+        else
+          MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT_OVERRIDE}","${TEST_SCRIPT}","${BROWSERS}","${USER_ACCOUNT}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
+        fi
+        KUBE_CMD="kubectl port-forward --kubeconfig=/tmp/"${ENVIRONMENT_OVERRIDE}"-user.yaml --namespace="
+      elif [ -z "${HELM_NAMESPACE}" ] && [ -n "${SINGLE_TEST}" ]
+      then
+        MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT}","${TEST_SCRIPT}","${BROWSERS}","${USER_ACCOUNT}" -Dtest="${SINGLE_TEST}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
+        KUBE_CMD="kubectl port-forward --kubeconfig=/tmp/"${ENVIRONMENT}"-user.yaml --namespace="
+      else
+        MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT}","${TEST_SCRIPT}","${BROWSERS}","${USER_ACCOUNT}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
+        KUBE_CMD="kubectl port-forward --kubeconfig=/tmp/"${ENVIRONMENT}"-user.yaml --namespace="
+      fi
+    - cat hosts >> /etc/hosts
+    - $(echo $KUBE_CMD"ps service/graphql-mesh-java 20266:20266") > /dev/null 2>&1 &
+    - $(echo $KUBE_CMD"ps service/grpc-metadata 12099:12099") > /dev/null 2>&1 &
+    - $(echo $KUBE_CMD"ps service/sequence 9090:9090") > /dev/null 2>&1 &
+    - $(echo $KUBE_CMD"ps service/noble-registry-service 12089:12089") > /dev/null 2>&1 &
+    - $(echo $KUBE_CMD"ps service/transact-manager 13000:13000") > /dev/null 2>&1 &
+    - echo $MVN
+    # Добавление сертификатов в хранилище java
+    - cp ./src/test/resources/certs/java_cert.crt /usr/local/share/ca-certificates/
+    - cp ./src/test/resources/certs/java_cert2.crt /usr/local/share/ca-certificates/
+    - cp ./src/test/resources/certs/java_cert3.crt /usr/local/share/ca-certificates/
+    - update-ca-certificates
+    - keytool -import -v -cacerts -alias java_cert -file /usr/local/share/ca-certificates/java_cert.crt -storepass changeit -noprompt
+    - keytool -import -v -cacerts -alias java_cert2 -file /usr/local/share/ca-certificates/java_cert2.crt -storepass changeit -noprompt
+    - keytool -import -v -cacerts -alias java_cert3 -file /usr/local/share/ca-certificates/java_cert3.crt -storepass changeit -noprompt
+    - $MVN clean test -f pom.xml -Dspring.profiles.active=${ENVIRONMENT} -Dtm4j="true"
+  artifacts:
+    when: always
+    paths:
+      - "${TEST_ARTIFACTS}/site/allure-maven-plugin"
+      - "${TEST_ARTIFACTS}/${REPORT_DIR_NAME}"
+    expire_in: 24 hour
+
+deploy report:
+  stage: deploy
+  image: "$CI_REGISTRY/tech/templates/base-images/tools:0.1.5"
+  needs:
+    - job: maven test
+      artifacts: true
+  allow_failure: true
+  variables:
+    ALLURE_SERVER: "allure-server.bft.local"
+    OUTPUT_FILE:   "curl.post.result.out"
+    DEL_RESULT:    "true"
+  script:
+    - |
+      if [ ! -d "${TEST_ARTIFACTS}" ]; then
+        echo "WARNING: ${TEST_ARTIFACTS} directory does not exist. Skipping report deployment."
+        exit 0
+      fi
+    - cd "${TEST_ARTIFACTS}"
+    - zip -r ${REPORT_DIR_NAME}.zip ./${REPORT_DIR_NAME}
+    - curl -k --location -X POST "https://${ALLURE_SERVER}/api/result" --form allureResults="@${REPORT_DIR_NAME}.zip;type=application/zip" >> ${OUTPUT_FILE}
+    - cat ${OUTPUT_FILE}
+    - sed -i 's/{"fileName":"allure-results.zip","uuid":"//g' ${OUTPUT_FILE}
+    - sed -i 's/"}//g' ${OUTPUT_FILE}
+    - UUID=$(cat ${OUTPUT_FILE})
+    - echo ${UUID}
+    - >
+      RESULT=$(curl -k --location -X POST "https://${ALLURE_SERVER}/api/report" \
+        --header 'Content-Type: application/json' \
+        --data-raw '{
+          "reportSpec": {
+            "path": [ "master", "'${CI_PIPELINE_ID}'" ],
+            "executorInfo": { "buildName": "#'${CI_PIPELINE_ID}'" }
+          },
+          "results": [ "'${UUID}'" ],
+          "deleteResults": "'${DEL_RESULT}'" }')
+    - echo ${RESULT}
+    - REPORT_URL=$(echo ${RESULT} | sed -n 's/.*"latest":"\([^"]*\)".*/\1/p')
+    - cd ..
+    - echo ${REPORT_URL} > ${DIR_NOTIFICATION}/report_link.txt
+  artifacts:
+    paths:
+      - "${TEST_ARTIFACTS}/${REPORT_DIR_NAME}"
+      - "${DIR_NOTIFICATION}/report_link.txt"
+    expire_in: 24 hour
+send_notif:
+  stage: deploy
+  image: "$CI_REGISTRY/tech/templates/base-images/maven:0.1.14"
+  needs:
+    - job: deploy report
+      artifacts: true
+  allow_failure: true
+  script:
+    - |
+      if [ ! -f "${DIR_NOTIFICATION}/report_link.txt" ]; then
+        echo "WARNING: report_link.txt not found. Skipping notification."
+        exit 0
+      fi
+    - |
+      if [ ! -d "${TEST_ARTIFACTS}/${REPORT_DIR_NAME}" ]; then
+        echo "WARNING: ${TEST_ARTIFACTS}/${REPORT_DIR_NAME} directory does not exist. Skipping notification."
+        exit 0
+      fi
+    - export TG_USER_NAME="@EVS_AQA_test_bot"
+    - REPORT_URL=$(cat ${DIR_NOTIFICATION}/report_link.txt)
+    - echo ${REPORT_URL}
+    - |
+      if [[ -n "${SINGLE_TEST}" ]]; then
+        NAME_SCRIPT="SINGLE TEST ${SINGLE_TEST}";
+      else
+        NAME_SCRIPT=${TEST_SCRIPT};
+      fi
+    - apt-get update && apt-get install -y unzip
+    - curl -sLo allure.zip https://github.com/allure-framework/allure2/releases/download/2.32.0/allure-2.32.0.zip
+    - unzip allure.zip -d /opt
+    - export PATH=$PATH:/opt/allure-2.32.0/bin
+    - allure generate ${TEST_ARTIFACTS}/${REPORT_DIR_NAME} -o ${REPORT_ARTIFACTS}/allure-report
+    - |
+      cd "${DIR_NOTIFICATION}"
+      cat <<EOF > config.json
+      {
+        "base": {
+          "project": "${NAME_SCRIPT}",
+          "environment": "${ENVIRONMENT}",
+          "comment": "Test run completed",
+          "branch": "${CI_COMMIT_BRANCH}",
+          "user": "${TG_USER_NAME}",
+          "reportLink": "${REPORT_URL}",
+          "language": "ru",
+          "allureFolder": "${REPORT_ARTIFACTS}/allure-report/",
+          "enableChart": true
+        },
+        "telegram": {
+          "token": "7840400910:AAHMo5Lun2wKJjiRavjWEgy_h21KNFMl4uE",
+          "chat": "-1002456904366",
+          "replyTo": "@EVS_AQA_test_bot",
+          "templatePath": "/templates/telegram.ftl"
+        },
+        "allure": {
+        "reportPath": "/builds/ecp/evs-oi/evs-testing-framework/build/allure-report"
+        }
+      }
+      EOF
+    - cat config.json
+    - cd ..
+    - java "-DconfigFile=${DIR_NOTIFICATION}/config.json" -jar "${DIR_NOTIFICATION}/allure-notifications-4.8.0.jar"
+    - rm -f ${DIR_NOTIFICATION}/config.json
+    - rm -f ${DIR_NOTIFICATION}/report_link.txt
+    - rm -rf ${REPORT_ARTIFACTS}/allure-report
+
+lint helm:
+  rules:
+    - when: never
+
+build helm:
+  rules:
+    - when: never
+
+image build:
+  rules:
+    - when: never
+
+sonarqube test:
+  rules:
+    - when: never
+
+deploy helm:
+  rules:
+    - when: never
+
+maven publish:
+  rules:
+    - when: never
+
+cleanup helm:
+  rules:
+    - when: never

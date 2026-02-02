@@ -1,0 +1,27 @@
+/.allure/
+/.idea/
+/target/
+/build/
+/src/test/log/
+
+# Credentials and sensitive files
+credentials.properties
+*.key
+*.pem
+*.p12
+*.pfx
+secrets/
+config/production/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Docker volumes
+docker/volumes/
+
+# Docker build artifacts
+.dockerignore
+docker/build.log
+docker/cache/

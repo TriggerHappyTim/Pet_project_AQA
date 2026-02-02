@@ -1,0 +1,59 @@
+version: '3.8'
+
+# Override configuration for local development
+services:
+  evs-tests:
+    environment:
+      # Override for local development
+      - ENVIRONMENT=local
+      - BROWSER=${BROWSER:-chrome}
+      - THREAD_COUNT=${THREAD_COUNT:-1}
+      - LOG_LEVEL=DEBUG
+      - SELENIDE_REMOTE=http://selenium-hub:4444/wd/hub
+
+    volumes:
+      # Mount local Maven repository for faster builds
+      - ~/.m2:/root/.m2
+      # Mount source code for hot reloading (if using IDE)
+      - .:/app
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+
+    # For GUI testing on local machine
+    environment:
+      - DISPLAY=${DISPLAY}
+    network_mode: host
+
+  chrome-node:
+    environment:
+      - SE_VNC_NO_PASSWORD=1
+      - SE_NODE_MAX_SESSIONS=2
+    ports:
+      - "7900:7900"  # VNC port for Chrome
+      - "5900:5900"  # VNC port alternative
+
+  firefox-node:
+    environment:
+      - SE_VNC_NO_PASSWORD=1
+      - SE_NODE_MAX_SESSIONS=2
+    ports:
+      - "7901:7901"  # VNC port for Firefox
+
+  allure-server:
+    ports:
+      - "5050:5050"
+    environment:
+      - CHECK_RESULTS_EVERY_SECONDS=5
+      - KEEP_HISTORY_LATEST=50
+
+  # Local PostgreSQL for development
+  postgres-db:
+    profiles: ["db"]
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=evs_test
+      - POSTGRES_USER=evs_user
+      - POSTGRES_PASSWORD=evs_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro

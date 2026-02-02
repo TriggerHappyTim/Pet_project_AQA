@@ -1,0 +1,26 @@
+{
+  "base": {
+    "project": "EVS project",
+    "environment": "TEST",
+    "comment": "Результаты автотеста, @TimLevel",
+    "reportLink": "",
+    "language": "ru",
+    "allureFolder": "build/allure-report",
+    "enableChart": true,
+    "enableSuitesPublishing": true,
+    "durationFormat": "HH:mm:ss.SSS",
+    "customData": {
+      "variable1": "value1",
+      "variable2": "value2"
+    }
+  },
+  "telegram": {
+    "token": "7840400910:AAHMo5Lun2wKJjiRavjWEgy_h21KNFMl4uE",
+    "chat": "-1002456904366",
+    "replyTo": "@EVS_AQA_test_bot",
+    "templatePath": "/templates/telegram.ftl"
+  },
+  "allure": {
+    "reportPath": "/builds/ecp/evs-oi/evs-testing-framework/build/allure-report"
+  }
+}

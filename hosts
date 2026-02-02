@@ -1,0 +1,90 @@
+# Added for business processes
+# ecp
+127.0.0.1 date-worker-service.ecp.svc
+127.0.0.1 rpu-common-bpmn-operations.ecp.svc
+127.0.0.1 rpu-common-bpmn-person-create.ecp.svc
+127.0.0.1 rpu-common-bpmn-person-identification.ecp.svc
+127.0.0.1 rpu-common-person.ecp.svc
+127.0.0.1 rpu-persacc-application.ecp.svc
+127.0.0.1 rpu-persacc-bo-registration.ecp.svc
+127.0.0.1 rpu-persacc-ils-info.ecp.svc
+# ecp-rs
+127.0.0.1 rs-application-on-registration.ecp-rs.svc
+127.0.0.1 rs-camunda-operate.ecp-rs.svc
+127.0.0.1 rs-fl-ip.ecp-rs.svc
+127.0.0.1 rs-fns-statements.ecp-rs.svc
+127.0.0.1 rs-insurance.ecp-rs.svc
+127.0.0.1 rs-insurer.ecp-rs.svc
+127.0.0.1 rs-java-worker.ecp-rs.svc
+127.0.0.1 rs-organization.ecp-rs.svc
+127.0.0.1 rs-search-service.ecp-rs.svc
+127.0.0.1 rs-subdivision.ecp-rs.svc
+127.0.0.1 rs-ul.ecp-rs.svc
+127.0.0.1 rs-ul-op-info.ecp-rs.svc
+127.0.0.1 rs-bank-accounts.ecp-rs.svc
+# istio-system
+127.0.0.1 zipkin.istio-system.svc
+# ps
+127.0.0.1 graphql-mesh-java.ps.svc
+127.0.0.1 grpc-metadata.ps.svc
+127.0.0.1 sequence.ps.svc
+127.0.0.1 noble-registry-service.ps.svc
+127.0.0.1 transact-manager.ps.svc
+
+#moon
+172.18.32.91 moon.int.ecp
+172.18.32.236 moon.test.ecp
+
+# HBASE ГЕОП
+172.17.16.4 DC1-MISC1-SRVDB-01
+172.17.16.5 DC1-MISC1-SRVDB-02
+172.17.16.6 DC1-MISC1-SRVDB-03
+172.17.16.7 DC1-MISC1-SRVDB-04
+172.17.16.8 DC1-MISC2-SRVDB-01
+172.17.16.9 DC1-MISC2-SRVDB-02
+172.17.16.10 DC1-MISC2-SRVDB-03
+172.17.16.11 DC1-MISC2-SRVDB-04
+172.18.34.20 D1-MC1-ADHNN-01.local D1-MC1-ADHNN-01
+172.18.34.21 D1-MC1-ADHNN-02.local D1-MC1-ADHNN-02
+172.18.34.22 D1-MC1-ADHNN-03.local D1-MC1-ADHNN-03
+172.18.34.23 D1-MC1-ADHDN-01.local D1-MC1-ADHDN-01
+172.18.34.24 D1-MC1-ADHDN-02.local D1-MC1-ADHDN-02
+172.18.34.25 D1-MC1-ADHDN-03.local D1-MC1-ADHDN-03
+172.18.34.26 D1-MC1-ADHUN-01.local D1-MC1-ADHUN-01
+172.18.34.33 D1-MC1-ADCM-01
+172.17.16.40 D1-MC2-ADBM-01
+172.17.16.41 D1-MC2-ADBM-02
+172.17.16.42 D1-MC2-ADBSG-01
+172.17.16.43 D1-MC2-ADBSG-02
+172.17.16.44 D1-MC2-ADBSG-03
+172.18.34.52 D1-MC2-ADQM-01.local D1-MC2-ADQM-01
+172.18.34.53 D1-MC2-ADQM-02.local D1-MC2-ADQM-02
+172.18.34.54 D1-MC2-ADQM-03.local D1-MC2-ADQM-03
+172.18.34.55 D1-MC2-ADS-01
+172.18.34.56 D1-MC2-ADS-02
+172.18.34.57 D1-MC2-ADS-03
+172.18.34.59 D1-MC2-ADM-01
+172.18.34.60 D1-MC2-ADCC-01
+172.17.16.207 D1-MC2-MON-01
+
+# HBASE ГЕОП TEST
+172.18.36.21 DC1-ADHD-SRV-01
+172.18.36.22 DC1-ADHD-SRV-02
+172.18.36.31 DC1-ADHD-SRV-11
+172.18.36.32 DC1-ADHD-SRV-12
+172.18.36.33 DC1-ADHD-SRV-13
+172.18.36.41 DC1-ADHD-SRV-21
+172.18.36.42 DC1-ADHD-SRV-22
+172.18.36.43 DC1-ADHD-SRV-23
+172.18.36.44 DC1-ADHD-SRV-24
+172.18.36.45 DC1-ADHD-SRV-25
+172.18.36.46 DC1-ADHD-SRV-26
+172.18.36.47 DC1-ADHD-SRV-27
+172.18.36.48 DC1-ADHD-SRV-28
+172.18.36.61 DC1-ADHD-VM-01
+172.18.36.62 DC1-ADHD-VM-02
+172.18.36.63 DC1-ADHD-VM-03
+172.18.36.64 DC1-ADHD-VM-04
+172.18.36.65 DC1-ADHD-VM-05
+172.18.36.66 DC1-ADHD-VM-06
+172.18.36.67 DC1-ADHD-VM-07

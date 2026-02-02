@@ -1,0 +1,42 @@
+<configuration>
+    <include resource="com/bftcom/ice/ads-server/logback.xml" />
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%highlight(%d{ISO8601}) %highlight(%-5level) [%blue(%t)] %yellow(%C{1.})[%blue(%L)]: %msg%n%throwable</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>src/test/log/logFile.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- daily rollover -->
+            <fileNamePattern>src/test/log/archive/logFile.%d{yyyy-MM-dd}.log</fileNamePattern>
+
+            <!-- keep 30 days' worth of history capped at 3GB total size -->
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>10MB</totalSizeCap>
+
+        </rollingPolicy>
+
+        <encoder>
+            <pattern>%d{ISO8601} %-5level [%t] %C{1.}[%L]: %msg%n%throwable</pattern>
+        </encoder>
+    </appender>
+
+    <root level="info">
+        <appender-ref ref="STDOUT"/>
+    </root>
+
+    <logger name="com.bft" level="info">
+        <appender-ref ref="FILE" />
+    </logger>
+
+    <logger name="org.apache.hadoop" level="ERROR" />
+    <logger name="org.apache.phoenix" level="ERROR" />
+    <logger name="org.apache.kafka.clients.consumer.internals" level="ERROR" />
+    <logger name="com.zaxxer.hikari.HikariDataSource" level="ERROR" />
+    <logger name="ru.ps.base.events" level="ERROR" />
+    <logger name="org.apache.kafka" level="ERROR" />
+
+</configuration>

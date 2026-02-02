@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://пф.рф/ВС/типы/2023-01-10" xmlns:АФ6="http://пф.рф/АФ/2023-01-10" xmlns:УТ6="http://пф.рф/УТ/2023-01-10" targetNamespace="http://пф.рф/ВС/типы/2023-01-10" elementFormDefault="qualified" version="2.0">
+	<xs:import namespace="http://пф.рф/УТ/2023-01-10" schemaLocation="УнифТипы_2023-01-10.xsd"/>
+	<xs:import namespace="http://пф.рф/АФ/2023-01-10" schemaLocation="ТипыАФ_2023-01-10.xsd"/>
+	<xs:annotation>
+		<xs:documentation>Общие типы данных для документов группы ВС</xs:documentation>
+		<xs:documentation>Рекомендуемый префикс для пространства имен http://пф.рф/ВС/типы/2023-01-10 - ВС</xs:documentation>
+	</xs:annotation>
+	<xs:complexType name="ТипСведенияТОПФР">
+		<xs:annotation>
+			<xs:documentation>Тип, использующийся для представления сведений о территориальном органе ПФР</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="КодРегиона">
+				<xs:annotation>
+					<xs:documentation>Код региона территориального органа Пенсионного фонда Российской Федерации</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:pattern value="\d{3}"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="Наименование" type="УТ6:ТипНепустаяСтрока">
+				<xs:annotation>
+					<xs:documentation>Наименование территориального органа Пенсионного фонда Российской Федерации, который проводил проверку. Должно соответствовать одному из значений справочника «ТО ПФР»</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Адрес" type="УТ6:ТипНепустаяСтрока">
+				<xs:annotation>
+					<xs:documentation>Адрес территориального органа ПФР</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Телефоны" type="УТ6:ТипСписокТелефонов">
+				<xs:annotation>
+					<xs:documentation>Перечень контактных номеров телефона территориального органа Пенсионного фонда Российской Федерации</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ТипСтрахователь">
+		<xs:annotation>
+			<xs:documentation>Тип данных для представления сведений о юридическом лице (обособленном подразделении) (если страхователь - организация), либо о физическом лице (если страхователь – индивидуальный предприниматель, либо в случае неуказания ИНН физическое лицо, не являющееся индивидуальным предпринимателем)</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:choice>
+				<xs:annotation>
+					<xs:documentation>Может указываться либо наименование страхователя (если страхователь - организация), либо ФИО страхователя (если страхователь – индивидуальный предприниматель, либо в случае неуказания ИНН физическим лицом, не являющимся индивидуальным предпринимателем)</xs:documentation>
+				</xs:annotation>
+				<xs:element name="Наименование" type="УТ6:ТипНепустаяСтрока">
+					<xs:annotation>
+						<xs:documentation>Полное наименование проверяемого юридического лица (обособленного подразделения). Заполняется, если страхователь - организация</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element ref="УТ6:ФИО">
+					<xs:annotation>
+						<xs:documentation>ФИО проверяемого индивидуального предпринимателя или физического лица. Заполняется, если страхователь – индивидуальный предприниматель, либо в случае неуказания ИНН физическим лицом, не являющимся индивидуальным предпринимателем</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:choice>
+			<xs:element ref="УТ6:РегНомер">
+				<xs:annotation>
+					<xs:documentation>Регистрационный номер в ПФР юридического лица (обособленного подразделения) или индивидуального предпринимателя, физического лица</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element ref="УТ6:ИНН">
+				<xs:annotation>
+					<xs:documentation>ИНН юридического лица (обособленного подразделения) или индивидуального предпринимателя, физического лица</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element ref="УТ6:КПП" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>КПП юридического лица (обособленного подразделения)</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Адрес" type="УТ6:ТипАдресОбщий">
+				<xs:annotation>
+					<xs:documentation>Адрес места нахождения юридического лица (обособленного подразделения) или адрес регистрации индивидуального предпринимателя, физического лица</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+		<xs:group name="ГрВыработка">
+		<xs:annotation>
+			<xs:documentation>Группа элементов, которыми может быть представлена выработка</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:choice>
+				<xs:annotation>
+					<xs:documentation>Выбор между выработкой в часах и выработкой календарной</xs:documentation>
+				</xs:annotation>
+				<xs:element name="ВыработкаВчасах" minOccurs="0">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:group ref="ГрПериодВчасах">
+								<xs:annotation>
+									<xs:documentation>Группа элементов со сведениям о выработке в часах</xs:documentation>
+								</xs:annotation>
+							</xs:group>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="ВыработкаКалендарная" minOccurs="0">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:group ref="ГрПериодКалендарныйДо12">
+								<xs:annotation>
+									<xs:documentation>Группа элементов со сведениям о выработке в месяцах и днях</xs:documentation>
+								</xs:annotation>
+							</xs:group>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:choice>
+		</xs:sequence>
+	</xs:group>
+	<xs:group name="ГрПериодВчасах">
+		<xs:annotation>
+			<xs:documentation>Группа элементов со сведениям о выработке в часах</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Часы" type="xs:integer" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Количество часов</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Минуты" type="УТ6:ТипМинута" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Количество минут</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:group>
+	<xs:group name="ГрПериодКалендарный">
+		<xs:annotation>
+			<xs:documentation>Группа элементов со сведениям о выработке в месяцах и днях</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="ВсеМесяцы" type="УТ6:ТипКоличествоМесяцев" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Количество месяцев</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="ВсеДни" type="УТ6:ТипКоличествоДней" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Количество дней</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:group>
+	<xs:group name="ГрПериодКалендарныйДо12">
+		<xs:annotation>
+			<xs:documentation>Группа элементов со сведениям о выработке в месяцах и днях</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="ВсеМесяцы" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Количество месяцев</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:integer">
+						<xs:maxInclusive value="12"/>
+						<xs:minInclusive value="0"/>
+						<xs:pattern value="\d+"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="ВсеДни" type="УТ6:ТипКоличествоДней" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Количество дней</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:group>
+	<xs:simpleType name="ТипДоляСтавки">
+		<xs:annotation>
+			<xs:documentation>Доля ставки</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:decimal">
+			<xs:minInclusive value="0.00"/>
+			<xs:maxInclusive value="2.00"/>
+			<xs:fractionDigits value="2"/>
+			<xs:totalDigits value="3"/>
+			<xs:pattern value="\d{1}\.\d{2}"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+</xs:schema>

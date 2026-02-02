@@ -1,0 +1,1 @@
+{"uuid":"4e935636-9a35-4767-9600-3b36de9a9cbc","name":"evs-testing-framework","children":["b78eb127-da33-4e80-aaea-a7d18518094e"],"befores":[{"name":"driverConfig","status":"passed","stage":"finished","description":"","steps":[],"attachments":[],"parameters":[],"start":1764800640819,"stop":1764800640835}],"afters":[],"start":1764800640784,"stop":1764800683315}

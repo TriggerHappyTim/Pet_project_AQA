@@ -1,0 +1,15 @@
+spring:
+  datasource:
+    url: jdbc:phoenix:thin:url=http://172.18.34.22:8765;serialization=PROTOBUF
+ps:
+  events:
+    kafka:
+      url: localhost:29093
+  mdm:
+    mdm-grpc-url: '172.18.32.20'
+
+env:
+  schemaRs:
+  schemaRpu:
+  springProfiles: local
+  environment: local

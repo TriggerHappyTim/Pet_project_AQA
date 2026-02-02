@@ -1,0 +1,426 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2021 (x64) (http://www.altova.com) by Victor Rozhkov (BFT-Razrabotka) -->
+<xs:schema xmlns="http://пф.рф/ВС/ЗРОПОСС/2023-01-10" xmlns:УТ6="http://пф.рф/УТ/2023-01-10" xmlns:АФ6="http://пф.рф/АФ/2023-01-10" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:sig="http://iis.ecp.ru/SignInfo/2023-01-10" xmlns:ns1="http://www.w3.org/2000/09/xmldsig#" targetNamespace="http://пф.рф/ВС/ЗРОПОСС/2023-01-10" elementFormDefault="qualified" version="2.0">
+	<xs:import namespace="http://пф.рф/УТ/2023-01-10" schemaLocation="УнифТипы_2023-01-10.xsd"/>
+	<xs:import namespace="http://пф.рф/АФ/2023-01-10" schemaLocation="ТипыАФ_2023-01-10.xsd"/>
+	<xs:import namespace="http://www.w3.org/2000/09/xmldsig#" schemaLocation="xmldsig_core_schema.xsd"/>
+	<xs:import namespace="http://iis.ecp.ru/SignInfo/2023-01-10" schemaLocation="SignInfo_2023-01-10.xsd"/>
+	<xs:annotation>
+		<xs:documentation>Схема проверки документа содержащего Заявление о о регистрации в качестве страхователя юридического лица по месту нахождения обособленного подразделения</xs:documentation>
+	</xs:annotation>
+	<xs:element name="ЭДПФР">
+		<xs:annotation>
+			<xs:documentation>Корневой элемент. Содержит сведения самого документа и служебную информацию об электронном документе ЗРОПОСС</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="ЗРОПОСС">
+					<xs:annotation>
+						<xs:documentation>Заявление о регистрации в качестве страхователя юридического лица по месту нахождения обособленного подразделения</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="ТОПФР" type="УТ6:ТипТОПФР">
+								<xs:annotation>
+									<xs:documentation>Территориальный орган ПФР, в который подается заявление</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="ГоловнаяОрганизация" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Сведения о юридическом лице</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:complexContent>
+										<xs:extension base="УТ6:ТипОрганизация">
+											<xs:sequence>
+												<xs:group ref="УТ6:ГрОкатоОктмо">
+													<xs:annotation>
+														<xs:documentation>Код по ОКТМО (ОКАТО) адреса места нахождения юридического лица, указанного в учредительных документах</xs:documentation>
+													</xs:annotation>
+												</xs:group>
+												<xs:element name="СведОГосРегистрации" minOccurs="0">
+													<xs:annotation>
+														<xs:documentation>Сведения о государственной регистрации</xs:documentation>
+													</xs:annotation>
+													<xs:complexType>
+														<xs:sequence>
+															<xs:element name="Код" type="УТ6:ТипНепустаяСтрока">
+																<xs:annotation>
+																	<xs:documentation>Код налогового органа, осуществившего государственную регистрацию</xs:documentation>
+																</xs:annotation>
+															</xs:element>
+															<xs:element name="НаименованиеОргана" type="УТ6:ТипНепустаяСтрока">
+																<xs:annotation>
+																	<xs:documentation>Наименование органа, осуществившего государственную регистрацию</xs:documentation>
+																</xs:annotation>
+															</xs:element>
+															<xs:element name="ДатаРегистрации" type="xs:date">
+																<xs:annotation>
+																	<xs:documentation>Дата государственной регистрации</xs:documentation>
+																</xs:annotation>
+															</xs:element>
+														</xs:sequence>
+													</xs:complexType>
+												</xs:element>
+												<xs:element name="КодТОСФР" type="УТ6:ТипНепустаяСтрока" minOccurs="0">
+													<xs:annotation>
+														<xs:documentation>Код территориального органа Фонда пенсионного и социального страхования Российской Федерации,
+в котором юридическое лицо зарегистрировано в качестве страхователя по месту своего нахождения.</xs:documentation>
+													</xs:annotation>
+												</xs:element>
+												<xs:element ref="УТ6:АдресЭлПочты" minOccurs="0">
+													<xs:annotation>
+														<xs:documentation>Адрес электронной почты головной орагнизации</xs:documentation>
+													</xs:annotation>
+												</xs:element>
+												<xs:element ref="УТ6:Телефон" minOccurs="0">
+													<xs:annotation>
+														<xs:documentation>Телефон (с указанием кода) головной орагнизации</xs:documentation>
+													</xs:annotation>
+												</xs:element>
+												<xs:element name="КодКОПФ" minOccurs="0">
+													<xs:annotation>
+														<xs:documentation>Код по КОПФ</xs:documentation>
+													</xs:annotation>
+												</xs:element>
+												<xs:element name="ФормаСобственности" minOccurs="0">
+													<xs:complexType>
+														<xs:sequence>
+															<xs:element ref="УТ6:Наименование">
+																<xs:annotation>
+																	<xs:documentation>Форма собственности по Общероссийскому классификатору форм собственности</xs:documentation>
+																</xs:annotation>
+															</xs:element>
+															<xs:element name="КодОКФС">
+																<xs:annotation>
+																	<xs:documentation>Код по ОКФС</xs:documentation>
+																</xs:annotation>
+															</xs:element>
+														</xs:sequence>
+													</xs:complexType>
+												</xs:element>
+												<xs:element name="ОсновнойВидДеятельности" minOccurs="0">
+													<xs:complexType>
+														<xs:sequence>
+															<xs:element ref="УТ6:Наименование">
+																<xs:annotation>
+																	<xs:documentation>Наименование основного вида деятельности</xs:documentation>
+																</xs:annotation>
+															</xs:element>
+															<xs:element ref="УТ6:КодПоОКВЭД">
+																<xs:annotation>
+																	<xs:documentation>Код по ОКВЭД2</xs:documentation>
+																</xs:annotation>
+															</xs:element>
+														</xs:sequence>
+													</xs:complexType>
+												</xs:element>
+												<xs:element name="ДругиеВидыДеятельности" minOccurs="0">
+													<xs:complexType>
+														<xs:sequence>
+															<xs:element name="ВидДеятельности" maxOccurs="unbounded">
+																<xs:complexType>
+																	<xs:sequence>
+																		<xs:element ref="УТ6:Наименование">
+																			<xs:annotation>
+																				<xs:documentation>Наименование другого осуществляемого вида деятельности</xs:documentation>
+																			</xs:annotation>
+																		</xs:element>
+																		<xs:element ref="УТ6:КодПоОКВЭД">
+																			<xs:annotation>
+																				<xs:documentation>Код по ОКВЭД2</xs:documentation>
+																			</xs:annotation>
+																		</xs:element>
+																	</xs:sequence>
+																</xs:complexType>
+															</xs:element>
+														</xs:sequence>
+													</xs:complexType>
+												</xs:element>
+												<xs:element name="ОКПО">
+													<xs:annotation>
+														<xs:documentation>Код общероссийского классификатора предприятий и организаций</xs:documentation>
+													</xs:annotation>
+													<xs:simpleType>
+														<xs:restriction base="xs:string">
+															<xs:pattern value="\d{8}"/>
+														</xs:restriction>
+													</xs:simpleType>
+												</xs:element>
+												<xs:element name="СведенияНалоговогоУчета">
+													<xs:complexType>
+														<xs:sequence>
+															<xs:element name="ОрганФНС" type="УТ6:ТипНепустаяСтрока">
+																<xs:annotation>
+																	<xs:documentation>Наименование налогового органа,поставившего юридическое лицо на учет</xs:documentation>
+																</xs:annotation>
+															</xs:element>
+															<xs:element name="КодОрганаФНС">
+																<xs:annotation>
+																	<xs:documentation>Код налогового органа,поставившего юоридическое лицо на учет</xs:documentation>
+																</xs:annotation>
+																<xs:simpleType>
+																	<xs:restriction base="xs:string">
+																		<xs:pattern value="\d{4}"/>
+																	</xs:restriction>
+																</xs:simpleType>
+															</xs:element>
+														</xs:sequence>
+													</xs:complexType>
+												</xs:element>
+												<xs:element name="БанковскиеРеквизиты" minOccurs="0">
+													<xs:complexType>
+														<xs:sequence>
+															<xs:element ref="УТ6:БИК">
+																<xs:annotation>
+																	<xs:documentation>БИК банка</xs:documentation>
+																</xs:annotation>
+															</xs:element>
+															<xs:element name="НаименованиеБанка" type="УТ6:ТипНепустаяСтрока">
+																<xs:annotation>
+																	<xs:documentation>Наименование банка</xs:documentation>
+																</xs:annotation>
+															</xs:element>
+															<xs:element ref="УТ6:РСчет">
+																<xs:annotation>
+																	<xs:documentation>Номер счета</xs:documentation>
+																</xs:annotation>
+															</xs:element>
+														</xs:sequence>
+													</xs:complexType>
+												</xs:element>
+												<xs:element name="РегСтрахователь">
+													<xs:complexType>
+														<xs:sequence>
+															<xs:element name="ТОПФР" type="УТ6:ТипТОПФР">
+																<xs:annotation>
+																	<xs:documentation>Наименование территориального органа Фонда пенсионного и социального страхования Российской Федерации, 
+в котором юридическое лицо зарегистрировано в качестве страхователя по месту своего нахождения</xs:documentation>
+																</xs:annotation>
+															</xs:element>
+															<xs:element name="ЕдиныйРегНомер" type="УТ6:ТипРегНомер" minOccurs="0">
+																<xs:annotation>
+																	<xs:documentation>Единый регистрационный номер</xs:documentation>
+																</xs:annotation>
+															</xs:element>
+														</xs:sequence>
+													</xs:complexType>
+												</xs:element>
+												<xs:element name="Руководитель">
+													<xs:complexType>
+														<xs:sequence>
+															<xs:element ref="УТ6:ФИО">
+																<xs:annotation>
+																	<xs:documentation>Фамилия, Имя, Отчество руководителя. Обязательно для заполнения</xs:documentation>
+																</xs:annotation>
+															</xs:element>
+															<xs:element ref="УТ6:Телефон">
+																<xs:annotation>
+																	<xs:documentation>Телефон руководителя, с указанием кода</xs:documentation>
+																</xs:annotation>
+															</xs:element>
+														</xs:sequence>
+													</xs:complexType>
+												</xs:element>
+												<xs:element name="ГлБухгалтер">
+													<xs:complexType>
+														<xs:sequence>
+															<xs:element ref="УТ6:ФИО">
+																<xs:annotation>
+																	<xs:documentation>Фамилия, Имя, Отчество главного бухгалтера. Обязательно для заполнения</xs:documentation>
+																</xs:annotation>
+															</xs:element>
+															<xs:element ref="УТ6:Телефон">
+																<xs:annotation>
+																	<xs:documentation>Телефон главного бухгалтера, с указанием кода</xs:documentation>
+																</xs:annotation>
+															</xs:element>
+														</xs:sequence>
+													</xs:complexType>
+												</xs:element>
+											</xs:sequence>
+										</xs:extension>
+									</xs:complexContent>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="ОбособленноеПодразделение">
+								<xs:annotation>
+									<xs:documentation>Сведения об обособленном подразделении</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:complexContent>
+										<xs:extension base="УТ6:ТипПодразделениеОрганизации">
+											<xs:sequence>
+												<xs:group ref="УТ6:ГрОкатоОктмо">
+													<xs:annotation>
+														<xs:documentation>Код по ОКТМО (ОКАТО) адреса места нахождения юридического лица, указанного в учредительных документах</xs:documentation>
+													</xs:annotation>
+												</xs:group>
+												<xs:element ref="УТ6:Адрес"/>
+												<xs:element ref="УТ6:Телефон" minOccurs="0">
+													<xs:annotation>
+														<xs:documentation>Телефон (с указанием кода) подразделния</xs:documentation>
+													</xs:annotation>
+												</xs:element>
+												<xs:element ref="УТ6:АдресЭлПочты" minOccurs="0">
+													<xs:annotation>
+														<xs:documentation>Адрес электронной почты подразделния</xs:documentation>
+													</xs:annotation>
+												</xs:element>
+												<xs:element name="ОсновнойВидДеятельности" minOccurs="0">
+													<xs:complexType>
+														<xs:sequence>
+															<xs:element ref="УТ6:Наименование">
+																<xs:annotation>
+																	<xs:documentation>Наименование основного вида деятельности</xs:documentation>
+																</xs:annotation>
+															</xs:element>
+															<xs:element ref="УТ6:КодПоОКВЭД">
+																<xs:annotation>
+																	<xs:documentation>Код по ОКВЭД2</xs:documentation>
+																</xs:annotation>
+															</xs:element>
+														</xs:sequence>
+													</xs:complexType>
+												</xs:element>
+												<xs:element name="ОКПО" minOccurs="0">
+													<xs:annotation>
+														<xs:documentation>Код общероссийского классификатора предприятий и организаций</xs:documentation>
+													</xs:annotation>
+													<xs:simpleType>
+														<xs:restriction base="xs:string">
+															<xs:pattern value="\d{8}"/>
+														</xs:restriction>
+													</xs:simpleType>
+												</xs:element>
+												<xs:element name="СведенияНалоговогоУчета">
+													<xs:complexType>
+														<xs:sequence>
+															<xs:element name="ОрганФНС" type="УТ6:ТипНепустаяСтрока">
+																<xs:annotation>
+																	<xs:documentation>Наименование налогового органа,в котором юридическое лицо состоит на налоговом учете по месту нахождения обособленного </xs:documentation>
+																</xs:annotation>
+															</xs:element>
+															<xs:element name="КодОрганаФНС">
+																<xs:annotation>
+																	<xs:documentation>Код налогового органа,поставившего юоридическое лицо на учет</xs:documentation>
+																</xs:annotation>
+																<xs:simpleType>
+																	<xs:restriction base="xs:string">
+																		<xs:pattern value="\d{4}"/>
+																	</xs:restriction>
+																</xs:simpleType>
+															</xs:element>
+															<xs:element ref="УТ6:КПП"/>
+														</xs:sequence>
+													</xs:complexType>
+												</xs:element>
+												<xs:element name="БанковскиеРеквизиты" minOccurs="0">
+													<xs:complexType>
+														<xs:sequence>
+															<xs:element ref="УТ6:БИК">
+																<xs:annotation>
+																	<xs:documentation>БИК банка</xs:documentation>
+																</xs:annotation>
+															</xs:element>
+															<xs:element name="НаименованиеБанка" type="УТ6:ТипНепустаяСтрока">
+																<xs:annotation>
+																	<xs:documentation>Наименование банка</xs:documentation>
+																</xs:annotation>
+															</xs:element>
+															<xs:element ref="УТ6:РСчет">
+																<xs:annotation>
+																	<xs:documentation>Номер счета</xs:documentation>
+																</xs:annotation>
+															</xs:element>
+														</xs:sequence>
+													</xs:complexType>
+												</xs:element>
+												<xs:element name="Руководитель" minOccurs="0">
+													<xs:complexType>
+														<xs:sequence>
+															<xs:element ref="УТ6:ФИО">
+																<xs:annotation>
+																	<xs:documentation>Фамилия, Имя, Отчество руководителя. Обязательно для заполнения</xs:documentation>
+																</xs:annotation>
+															</xs:element>
+															<xs:element ref="УТ6:Телефон">
+																<xs:annotation>
+																	<xs:documentation>Телефон руководителя, с указанием кода</xs:documentation>
+																</xs:annotation>
+															</xs:element>
+														</xs:sequence>
+													</xs:complexType>
+												</xs:element>
+												<xs:element name="ГлБухгалтер" minOccurs="0">
+													<xs:complexType>
+														<xs:sequence>
+															<xs:element ref="УТ6:ФИО">
+																<xs:annotation>
+																	<xs:documentation>Фамилия, Имя, Отчество главного бухгалтера. Обязательно для заполнения</xs:documentation>
+																</xs:annotation>
+															</xs:element>
+															<xs:element ref="УТ6:Телефон">
+																<xs:annotation>
+																	<xs:documentation>Телефон главного бухгалтера, с указанием кода</xs:documentation>
+																</xs:annotation>
+															</xs:element>
+														</xs:sequence>
+													</xs:complexType>
+												</xs:element>
+											</xs:sequence>
+										</xs:extension>
+									</xs:complexContent>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="Представитель" type="УТ6:ТипПредставительФЛ-ЮЛ" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Сведения о представителе заявителя</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Информирование" maxOccurs="4">
+								<xs:annotation>
+									<xs:documentation>Уведомления о регистрации лица, добровольно вступившего в правоотношения по обязательному социальному страхованию 
+													на случай временной нетрудоспособности и в связи с материнством:
+														Лично
+														Направить по почте
+														Направить в форме электронного документа при направлении заявления через Единый портал	
+														Направить по электронной почте						
+									</xs:documentation>
+								</xs:annotation>
+								<xs:simpleType>
+									<xs:restriction base="xs:integer">
+										<xs:enumeration value="6"/>
+										<xs:enumeration value="7"/>
+										<xs:enumeration value="5"/>
+										<xs:enumeration value="4"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="ДатаПодачи" type="xs:date" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Дата подачи заявления</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+					<xs:unique name="УникальныйВидИнофрмирования">
+						<xs:selector xpath="Информирование"/>
+						<xs:field xpath="."/>
+					</xs:unique>
+				</xs:element>
+				<xs:element name="СлужебнаяИнформация" type="АФ6:ТипСлужебнаяИнформация" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Служебная информация об электронном документе</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element ref="ns1:Signature" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Электронная подпись (ЭП). Электронный документ, для которого законодательством Российской Федерации предусмотрена юридически значимая подпись, должен быть подписан усиленной квалифицированной электронной подписью в соответствии со спецификацией XMLDSig</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element ref="sig:SignInfo" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

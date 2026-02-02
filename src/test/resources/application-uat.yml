@@ -1,0 +1,12 @@
+
+env:
+  springProfiles: uat
+  environment: uat
+  frontRpuAddress: "https://rpu.test.ecp/rpu/pu/#/requestRegistry"
+  frontEvsAddress: "https://evs-oi-portal-front.test.ecp/#/"
+  frontRpuLogin: "201OstrovskyDS"
+  frontRpuPassword: "P@ssw0rd1231"
+  evsRpuLogin: "133-900-785 49"
+  evsRpuPassword: "Egisso13?"
+  evsUserCardEPGU: "ОРГАНИЗАЦИЯ -1546025669"
+

@@ -1,0 +1,53 @@
+title = "gitleaks config"
+
+[[rules]]
+    id = "epgu-credentials"
+    description = "EPGU credentials"
+    regex = '''epgu\.(username|password)\s*[=:]\s*['"]?([a-zA-Z0-9._@-]{3,})['"]?'''
+    tags = ["credential", "epgu"]
+
+[[rules]]
+    id = "rpu-credentials"
+    description = "RPU credentials"
+    regex = '''rpu\.(username|password)\s*[=:]\s*['"]?([a-zA-Z0-9._@-]{3,})['"]?'''
+    tags = ["credential", "rpu"]
+
+[[rules]]
+    id = "uos-credentials"
+    description = "UOS credentials"
+    regex = '''uos\.(username|password)\s*[=:]\s*['"]?([a-zA-Z0-9._@-]{3,})['"]?'''
+    tags = ["credential", "uos"]
+
+[[rules]]
+    id = "evs-credentials"
+    description = "EVS credentials"
+    regex = '''evs\.(username|password)\s*[=:]\s*['"]?([a-zA-Z0-9._@-]{3,})['"]?'''
+    tags = ["credential", "evs"]
+
+[[rules]]
+    id = "hardcoded-password"
+    description = "Hardcoded password"
+    regex = '''password\s*[=:]\s*['"]([^'"]{8,})['"]'''
+    tags = ["credential", "password"]
+
+[[rules]]
+    id = "api-key"
+    description = "API key"
+    regex = '''api[_-]?key\s*[=:]\s*['"]([a-zA-Z0-9_-]{20,})['"]'''
+    tags = ["credential", "api"]
+
+[[rules]]
+    id = "jwt-token"
+    description = "JWT token"
+    regex = '''eyJ[A-Za-z0-9-_]+\.eyJ[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+'''
+    tags = ["credential", "jwt"]
+
+[[rules]]
+    id = "generic-secret"
+    description = "Generic secret pattern"
+    regex = '''(secret|token|key)\s*[=:]\s*['"]([a-zA-Z0-9_-]{16,})['"]'''
+    tags = ["credential", "generic"]
+
+[extend]
+    # Use default gitleaks rules
+    useDefault = true
