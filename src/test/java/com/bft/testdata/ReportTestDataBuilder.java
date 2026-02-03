@@ -19,7 +19,7 @@ import java.util.UUID;
  * 
  * // Создание отчета ЕФС-1
  * ReportData efs1Report = ReportTestDataBuilder.createDefault()
- *     .withReportType(ReportType.EFS_1)
+ *     .withReportType(ReportType.EFS1)
  *     .withReportNumber("EFS-1-2024-001")
  *     .withPeriod(LocalDate.now().minusMonths(1), LocalDate.now())
  *     .build();
@@ -52,7 +52,7 @@ public class ReportTestDataBuilder extends TestDataBuilder<ReportTestDataBuilder
     public static ReportTestDataBuilder createDefault() {
         LocalDate now = LocalDate.now();
         return new ReportTestDataBuilder()
-            .withReportType(ReportType.EFS_1)
+            .withReportType(ReportType.EFS1)
             .withReportNumber("REPORT-" + now.getYear() + "-001")
             .withPeriod(now.minusMonths(1), now)
             .withStatus("Черновик")
