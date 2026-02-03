@@ -1,10 +1,13 @@
 package com.bft;
 
 import com.bft.config.TestConfiguration;
+import com.bft.test.annotations.AllureAnnotationProcessor;
+import io.qameta.allure.testng.AllureTestNg;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.BeforeTest;
+import org.testng.annotations.Listeners;
 import org.testng.asserts.SoftAssert;
 
 /**
@@ -40,6 +43,7 @@ import org.testng.asserts.SoftAssert;
  * @author QA Automation Team
  * @since 1.0
  */
+@Listeners({AllureTestNg.class, AllureAnnotationProcessor.class})
 public class BaseTest {
 
     /**

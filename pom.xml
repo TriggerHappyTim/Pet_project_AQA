@@ -175,9 +175,9 @@
                 <version>${maven.surifire.plugin.version}</version>
                 <configuration>
                     <testFailureIgnore>true</testFailureIgnore>
-                    <suiteXmlFiles>
-                        <suiteXmlFile>src/test/resources/testng.xml</suiteXmlFile>
-                    </suiteXmlFiles>
+                    <!-- suiteXmlFiles НЕ используется по умолчанию для работы фильтрации по группам -->
+                    <!-- suiteXmlFiles будет использован только если указан параметр -Dsuite в командной строке -->
+                    <!-- Listeners добавляются через аннотацию @Listeners в BaseTest -->
                     <useSystemClassLoader>false</useSystemClassLoader>
                     <argLine>
                         -javaagent:"${settings.localRepository}/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar"
