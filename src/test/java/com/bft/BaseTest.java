@@ -1,6 +1,7 @@
 package com.bft;
 
 import com.bft.config.TestConfiguration;
+import com.bft.config.TestStrategyType;
 import com.bft.test.annotations.AllureAnnotationProcessor;
 import io.qameta.allure.testng.AllureTestNg;
 import org.testng.annotations.AfterMethod;
@@ -58,14 +59,14 @@ public class BaseTest {
      * Инициализирует конфигурацию тестов один раз для всего test suite
      * 
      * Выполняется перед запуском всех тестов в suite.
-     * Автоматически выбирает стратегию тестирования (UI по умолчанию).
+     * Явно указывает UI стратегию для всех тестов, наследующих BaseTest.
      * 
-     * @see TestConfiguration#initialize() для деталей инициализации
+     * @see TestConfiguration#initialize(TestStrategyType) для деталей инициализации
      */
     @BeforeSuite
     public void initializeTestConfiguration() {
-        // Автоматический выбор стратегии (UI по умолчанию)
-        TestConfiguration.initialize();
+        // Явно указываем UI стратегию для всех тестов
+        TestConfiguration.initialize(TestStrategyType.UI);
     }
 
     /**

@@ -203,6 +203,14 @@ public class UITestStrategy extends BaseTestStrategy {
 
         // Дополнительная настройка для UI тестов
         try {
+            // Инициализируем browserFactory если он еще не инициализирован
+            if (browserFactoryManager == null) {
+                browserFactoryManager = new BrowserFactoryManager(cryptoProPath, cryptoProXpiPath, isRemote);
+            }
+            if (browserFactory == null) {
+                browserFactory = browserFactoryManager.createFactory(browser);
+            }
+            
             Capabilities capabilities = browserFactory.getCapabilities();
             Configuration.browserCapabilities = new MutableCapabilities(capabilities);
             Configuration.browser = browserFactory.getBrowserName();
