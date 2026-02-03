@@ -393,8 +393,6 @@ public class ButtonComponent extends BaseComponent {
     public static ButtonComponent createSecondaryButtonSixth(String buttonName) {
         return createSecondaryButtonByIndex(buttonName, 6);
     }
-        return createSecondaryButtonByIndex(buttonName, 6);
-    }
 
     /**
      * Создает компонент для вторичной кнопки в новом окне (вторая вкладка)
