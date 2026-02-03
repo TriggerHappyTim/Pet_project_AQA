@@ -39,8 +39,20 @@ public class CryptoProCertificateTest extends UITestBase {
 
     @BeforeMethod
     public void initializePageObject() {
-        Selenide.open(DEMO_PAGE_URL);
-        cryptoProPage = new CryptoProDemoPage(softAssert);
+        // Убеждаемся, что softAssert инициализирован
+        if (softAssert == null) {
+            softAssert = new org.testng.asserts.SoftAssert();
+        }
+        // Инициализируем страницу только если она еще не создана
+        if (cryptoProPage == null) {
+            try {
+                Selenide.open(DEMO_PAGE_URL);
+                cryptoProPage = new CryptoProDemoPage(softAssert);
+            } catch (Exception e) {
+                logger.error("Ошибка при инициализации страницы: {}", e.getMessage());
+                throw e;
+            }
+        }
     }
 
     @Test(groups = {"web", "crypto", "smoke"}, 
@@ -57,6 +69,11 @@ public class CryptoProCertificateTest extends UITestBase {
 
             // Act - выполнение действий
             () -> {
+                // Убеждаемся, что страница инициализирована
+                if (cryptoProPage == null) {
+                    initializePageObject();
+                }
+                
                 performAction("Открытие демо-страницы", () -> {
                     cryptoProPage.openPageAndVerify("Демо-страница КриптоПРО");
                 });

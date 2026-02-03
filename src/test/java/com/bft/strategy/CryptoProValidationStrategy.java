@@ -102,7 +102,13 @@ public class CryptoProValidationStrategy extends BaseTestExecutionStrategy<Void>
 
     @Override
     protected void performCleanup(TestContext context) {
-        // Сохраняем скриншот результата
-        cryptoProPage.takeScreenshot("cryptopro_validation_result");
+        // Сохраняем скриншот результата, если страница была инициализирована
+        if (cryptoProPage != null) {
+            try {
+                cryptoProPage.takeScreenshot("cryptopro_validation_result");
+            } catch (Exception e) {
+                // Игнорируем ошибки при cleanup
+            }
+        }
     }
 }

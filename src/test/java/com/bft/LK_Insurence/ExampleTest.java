@@ -134,6 +134,11 @@ public class ExampleTest extends BaseTest {
     @Description("Демонстрация работы с конфигурацией фреймворка")
     @Severity(SeverityLevel.MINOR)
     public void exampleConfigurationUsage() {
+        // Проверка инициализации конфигурации
+        if (!TestConfiguration.isInitialized()) {
+            TestConfiguration.initialize();
+        }
+        
         // Проверка типа стратегии
         if (TestConfiguration.isUITest()) {
             System.out.println("Это UI тест");

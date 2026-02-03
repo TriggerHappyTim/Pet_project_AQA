@@ -276,21 +276,29 @@ public class TestLogger {
     }
 
     private void attachTestSummary(TestContext context) {
-        String summary = String.format(
-            "Test Summary:\n" +
-            "Name: %s\n" +
-            "Success: %s\n" +
-            "Duration: %d ms\n" +
-            "Started: %s\n" +
-            "Finished: %s",
-            context.getTestName(),
-            context.isSuccess(),
-            context.getDuration(),
-            context.getStartTime().format(TIMESTAMP_FORMAT),
-            context.getEndTime().format(TIMESTAMP_FORMAT)
-        );
+        if (context == null) {
+            return;
+        }
+        
+        try {
+            String summary = String.format(
+                "Test Summary:\n" +
+                "Name: %s\n" +
+                "Success: %s\n" +
+                "Duration: %d ms\n" +
+                "Started: %s\n" +
+                "Finished: %s",
+                context.getTestName() != null ? context.getTestName() : "Unknown",
+                context.isSuccess(),
+                context.getDuration(),
+                context.getStartTime() != null ? context.getStartTime().format(TIMESTAMP_FORMAT) : "N/A",
+                context.getEndTime() != null ? context.getEndTime().format(TIMESTAMP_FORMAT) : "N/A"
+            );
 
-        attachFile("test_summary", summary, "text/plain");
+            attachFile("test_summary", summary, "text/plain");
+        } catch (Exception e) {
+            // Игнорируем ошибки при создании summary
+        }
     }
 
     private String formatMessage(String message, Object... params) {
