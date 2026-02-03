@@ -33,7 +33,7 @@ import com.bft.security.TestUsers;
  * @see TestUsers для предопределенных тестовых пользователей
  * @since 2.0
  */
-public class UserTestDataBuilder extends TestDataBuilder<UserData, UserTestDataBuilder> {
+public class UserTestDataBuilder extends TestDataBuilder<UserTestDataBuilder.UserData, UserTestDataBuilder> {
     
     private String firstName;
     private String lastName;
@@ -65,11 +65,12 @@ public class UserTestDataBuilder extends TestDataBuilder<UserData, UserTestDataB
      * @return новый экземпляр UserTestDataBuilder со случайными данными
      */
     public static UserTestDataBuilder createRandom() {
-        return new UserTestDataBuilder()
+        UserTestDataBuilder builder = new UserTestDataBuilder();
+        return builder
             .withFirstName(faker.name().firstName())
             .withLastName(faker.name().lastName())
-            .withEmail(randomEmail())
-            .withPhone(randomPhone())
+            .withEmail(builder.randomEmail())
+            .withPhone(builder.randomPhone())
             .withSnils(generateSnils())
             .withOrganization(faker.company().name());
     }
@@ -83,9 +84,9 @@ public class UserTestDataBuilder extends TestDataBuilder<UserData, UserTestDataB
     public static UserTestDataBuilder fromTestUser(TestUsers testUser) {
         var credentials = testUser.getCredentials();
         return new UserTestDataBuilder()
-            .withUsername(credentials != null ? credentials.username : null)
-            .withPassword(credentials != null ? credentials.password : null)
-            .withOrganization(credentials != null ? credentials.organization : null);
+            .withUsername(credentials.username)
+            .withPassword(credentials.password)
+            .withEmail(credentials.email);
     }
     
     /**

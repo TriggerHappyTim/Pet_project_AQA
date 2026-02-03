@@ -1,5 +1,6 @@
 package com.bft.strategy;
 
+import com.bft.config.TestStrategyType;
 import org.testng.asserts.SoftAssert;
 
 import java.util.*;
@@ -67,16 +68,21 @@ public class TestStrategyManager {
     }
 
     /**
-     * Выполняет тест с указанной стратегией
+     * Выполняет тест с указанной стратегией выполнения
+     * 
+     * @param testName имя теста
+     * @param executionType тип стратегии выполнения
+     * @param softAssert объект для мягких проверок
+     * @return контекст выполнения теста
      */
     public <T> TestExecutionStrategy.TestContext executeTestWithStrategy(
-            String testName, TestStrategyType strategyType, SoftAssert softAssert) {
-
+            String testName, ExecutionStrategyType executionType, SoftAssert softAssert) {
+        
         @SuppressWarnings("unchecked")
-        TestExecutionStrategy<T> strategy = (TestExecutionStrategy<T>) executionStrategies.get(strategyType);
+        TestExecutionStrategy<T> strategy = (TestExecutionStrategy<T>) executionStrategies.get(executionType);
 
         if (strategy == null) {
-            throw new RuntimeException("Стратегия не зарегистрирована: " + strategyType);
+            throw new RuntimeException("Стратегия не зарегистрирована: " + executionType);
         }
 
         TestExecutionStrategy.TestContext context = strategy.createContext();
@@ -91,6 +97,20 @@ public class TestStrategyManager {
         }
 
         return context;
+    }
+
+    /**
+     * Выполняет тест с указанной стратегией (устаревший метод с TestStrategyType)
+     * 
+     * @deprecated Используйте {@link #executeTestWithStrategy(String, ExecutionStrategyType, SoftAssert)}
+     * или {@link #executeTestWithFullSetup(String, ExecutionStrategyType, DataPreparationStrategy.DataPreparationType, ValidationStrategy.ValidationType, SoftAssert)}
+     */
+    @Deprecated
+    public <T> TestExecutionStrategy.TestContext executeTestWithStrategy(
+            String testName, TestStrategyType strategyType, SoftAssert softAssert) {
+        // Преобразуем TestStrategyType в ExecutionStrategyType (базовое маппирование)
+        ExecutionStrategyType executionType = mapTestStrategyToExecutionType(strategyType);
+        return executeTestWithStrategy(testName, executionType, softAssert);
     }
 
     /**
@@ -158,8 +178,25 @@ public class TestStrategyManager {
     /**
      * Возвращает список доступных стратегий выполнения
      */
-    public List<TestStrategyType> getAvailableExecutionStrategies() {
+    public List<ExecutionStrategyType> getAvailableExecutionStrategies() {
         return new ArrayList<>(executionStrategies.keySet());
+    }
+    
+    /**
+     * Преобразует TestStrategyType в ExecutionStrategyType
+     * 
+     * @param testStrategyType общий тип теста
+     * @return соответствующий тип стратегии выполнения
+     */
+    private ExecutionStrategyType mapTestStrategyToExecutionType(TestStrategyType testStrategyType) {
+        switch (testStrategyType) {
+            case UI:
+                return ExecutionStrategyType.UI_NAVIGATION;
+            case API:
+                return ExecutionStrategyType.API_REST_CALL;
+            default:
+                throw new IllegalArgumentException("Неизвестный тип стратегии: " + testStrategyType);
+        }
     }
 
     /**
