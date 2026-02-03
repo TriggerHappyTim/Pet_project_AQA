@@ -131,6 +131,9 @@ variables:
     description:
       "Введите имя одиночного теста, например, CryptoProCertificateTest#verifyCryptoProPluginLoaded. Для прохождения всех тестов в профиле (TEST_SCRIPT) оставьте поле пустым. Список содержит все доступные тестовые методы из проекта"
   REPORT_DIR_NAME: "allure-results"
+  SUITE:
+    value: ""
+    description: "Путь к TestNG suite файлу (например, src/test/resources/testng.xml). Если пусто, используется дефолтный suite из pom.xml"
   HELM_NAMESPACE:
     value: ""
     description: ""
@@ -145,6 +148,7 @@ print variables:
     - echo $TEST_SCRIPT
     - echo $BROWSERS
     - echo $SINGLE_TEST
+    - echo $SUITE
     - echo $HELM_NAMESPACE
     - echo $FORWARDED_HELM_NAMESPACE
 
@@ -195,17 +199,37 @@ maven test:
         #MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT_OVERRIDE}","${TEST_SCRIPT}","${BROWSERS}","${USER_ACCOUNT}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
         if [ -n "${SINGLE_TEST}" ]
         then
-          MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT_OVERRIDE}","${TEST_SCRIPT}","${BROWSERS}","${USER_ACCOUNT}" -Dtest="${SINGLE_TEST}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
+          if [ -n "${SUITE}" ]
+          then
+            MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT_OVERRIDE}","${TEST_SCRIPT}","${BROWSERS}","${USER_ACCOUNT}" -Dtest="${SINGLE_TEST}" -Dsuite="${SUITE}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
+          else
+            MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT_OVERRIDE}","${TEST_SCRIPT}","${BROWSERS}","${USER_ACCOUNT}" -Dtest="${SINGLE_TEST}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
+          fi
         else
-          MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT_OVERRIDE}","${TEST_SCRIPT}","${BROWSERS}","${USER_ACCOUNT}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
+          if [ -n "${SUITE}" ]
+          then
+            MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT_OVERRIDE}","${TEST_SCRIPT}","${BROWSERS}","${USER_ACCOUNT}" -Dsuite="${SUITE}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
+          else
+            MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT_OVERRIDE}","${TEST_SCRIPT}","${BROWSERS}","${USER_ACCOUNT}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
+          fi
         fi
         KUBE_CMD="kubectl port-forward --kubeconfig=/tmp/"${ENVIRONMENT_OVERRIDE}"-user.yaml --namespace="
       elif [ -z "${HELM_NAMESPACE}" ] && [ -n "${SINGLE_TEST}" ]
       then
-        MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT}","${TEST_SCRIPT}","${BROWSERS}","${USER_ACCOUNT}" -Dtest="${SINGLE_TEST}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
+        if [ -n "${SUITE}" ]
+        then
+          MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT}","${TEST_SCRIPT}","${BROWSERS}","${USER_ACCOUNT}" -Dtest="${SINGLE_TEST}" -Dsuite="${SUITE}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
+        else
+          MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT}","${TEST_SCRIPT}","${BROWSERS}","${USER_ACCOUNT}" -Dtest="${SINGLE_TEST}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
+        fi
         KUBE_CMD="kubectl port-forward --kubeconfig=/tmp/"${ENVIRONMENT}"-user.yaml --namespace="
       else
-        MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT}","${TEST_SCRIPT}","${BROWSERS}","${USER_ACCOUNT}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
+        if [ -n "${SUITE}" ]
+        then
+          MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT}","${TEST_SCRIPT}","${BROWSERS}","${USER_ACCOUNT}" -Dsuite="${SUITE}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
+        else
+          MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT}","${TEST_SCRIPT}","${BROWSERS}","${USER_ACCOUNT}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
+        fi
         KUBE_CMD="kubectl port-forward --kubeconfig=/tmp/"${ENVIRONMENT}"-user.yaml --namespace="
       fi
     - cat hosts >> /etc/hosts
@@ -223,7 +247,13 @@ maven test:
     - keytool -import -v -cacerts -alias java_cert -file /usr/local/share/ca-certificates/java_cert.crt -storepass changeit -noprompt
     - keytool -import -v -cacerts -alias java_cert2 -file /usr/local/share/ca-certificates/java_cert2.crt -storepass changeit -noprompt
     - keytool -import -v -cacerts -alias java_cert3 -file /usr/local/share/ca-certificates/java_cert3.crt -storepass changeit -noprompt
-    - $MVN clean test -f pom.xml -Dspring.profiles.active=${ENVIRONMENT} -Dtm4j="true"
+    - |
+      if [ -n "${SUITE}" ]
+      then
+        $MVN clean test -f pom.xml -Dspring.profiles.active=${ENVIRONMENT} -Dtm4j="true" -Dsuite="${SUITE}"
+      else
+        $MVN clean test -f pom.xml -Dspring.profiles.active=${ENVIRONMENT} -Dtm4j="true"
+      fi
   artifacts:
     when: always
     paths:
