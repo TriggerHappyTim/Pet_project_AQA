@@ -58,80 +58,11 @@ variables:
       ""
     options:
       - ""
-      # ========== Системные тесты ==========
-      # CryptoPro тесты
-      - "CryptoProCertificateTest#verifyCryptoProPluginLoaded"
-      - "CryptoProCertificateTest#testCertificateSelectionAndSigning"
-      - "CryptoProCertificateTest#testPageDiagnostics"
-      - "CryptoProCertificateTest#verifyCryptoProPluginWithStrategy"
-      - "CryptoProCertificateTest#testCertificateSigningWithStrategy"
-      - "CryptoProCertificateTest#quickPluginCheck"
-      - "CryptoProCertificateTest#testPluginFailureScenario"
-      # ЗАКОММЕНТИРОВАНО: Security тесты не используются
-      # - "SecuritySystemTest#testMockCredentials"
-      # - "SecuritySystemTest#testDataMasking"
-      # - "SecuritySystemTest#testNoHardcodedCredentials"
-      # - "SecuritySystemTest#testCredentialProviderPriority"
-      # - "SecuritySystemTest#testSzvReportsStepsSecurity"
-      # ЗАКОММЕНТИРОВАНО: Примеры тестов не используются
-      # - "ExampleTest#exampleAutomaticStrategySelection"
-      # - "ExampleTest#exampleExplicitStrategySelection"
-      # - "ExampleTest#exampleFullStrategySetup"
-      # - "ExampleTest#exampleConfigurationUsage"
-      # - "ExampleTest#exampleCustomStrategy"
-      # - "ExampleTest#exampleImprovedPageObject"
-      # ЗАКОММЕНТИРОВАНО: Улучшенные примеры не используются
-      # - "ImprovedTestExamples#exampleSeparatedTestLogic"
-      # - "ImprovedTestExamples#exampleDataDrivenTest"
-      # - "ImprovedTestExamples#exampleHelperMethodsTest"
-      # - "ImprovedTestExamples#exampleComprehensiveUITest"
-      # - "ImprovedTestExamples#exampleValidationOnlyTest"
-      # - "ImprovedTestExamples#examplePerformanceTest"
-      # ЗАКОММЕНТИРОВАНО: Расширенные примеры отчетности не используются
-      # - "AdvancedReportingExample#comprehensiveReportingTest"
-      # - "AdvancedReportingExample#parameterizedReportingTest"
-      # - "AdvancedReportingExample#performanceReportingTest"
-      # - "AdvancedReportingExample#networkLoggingTest"
-      # - "AdvancedReportingExample#debugInformationTest"
-      # - "AdvancedReportingExample#customLabelsTest"
-      # ========== Ручной ввод ==========
-      # ЕФС-1 ручной ввод
-      - "Efs1#efs_szv_td"
-      - "Efs1#efs_szv_staj"
-      - "Efs1#efs_szv_td_krivonosov"
-      # SZV-М ручной ввод
-      - "SZVFormTest#testSZVMFormFullScenario"
-      - "SZVFormTest#testSZVMFormEditMode"
-      - "SZVFormTest#testSZVMFormWithMultiplePersons"
-      - "SZVFormTest#testSignAndSendButton"
-      - "SZVFormTest#testAddInsuredPersonWithDataProvider"
-      # SZV-ТД ручной ввод
-      - "Szv_td#szv_td"
-      # SZV-М отдельные тесты (ручной ввод)
-      - "Szv_m#szv_m"
-      # ========== Загрузка через XML ==========
-      # ЕФС-1 XML загрузка
-      - "Efs1#efs_1_xml"
-      - "Efs1#efs_1_xml_krivonosov"
-      - "Efs1#efs_1_xml_bezdomniy"
-      # SZV-ТД XML загрузка
-      - "Szv_td#szv_td_xml"
-      # SZV-М XML загрузка
-      - "Szv_m#szv_m_xml"
-      # SZV-СТАЖ XML загрузка
-      - "Szv_staj#szv_staj_xml"
-      # SZV-КОРР XML загрузка
-      - "Szv_korr#szv_korr_xml"
-      # SZV-К XML загрузка
-      - "Szv_k#szv_k_xml"
-      # SZV-ИСХ XML загрузка
-      - "Szv_ish#szv_ish_xml"
-      # SZV-ДСО XML загрузка
-      - "Szv_dso#szv_dso_xml"
-      # ОДВ-1 XML загрузка
-      - "Odv1#odv_1_xml"
+      - "Системные"
+      - "Ручной ввод"
+      - "Загрузка через XML"
     description:
-      "Выберите тест из списка или оставьте пустым для запуска всех тестов профиля (TEST_SCRIPT)"
+      "Выберите группу тестов из списка или оставьте пустым для запуска всех тестов профиля (TEST_SCRIPT)"
   REPORT_DIR_NAME: "allure-results"
   SUITE:
     value: ""
@@ -201,11 +132,27 @@ maven test:
         #MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT_OVERRIDE}","${TEST_SCRIPT}","${BROWSERS}","${USER_ACCOUNT}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
         if [ -n "${SINGLE_TEST}" ]
         then
+          # Определяем список тестов для группы
+          case "${SINGLE_TEST}" in
+            "Системные")
+              TEST_LIST="CryptoProCertificateTest#verifyCryptoProPluginLoaded,CryptoProCertificateTest#testCertificateSelectionAndSigning,CryptoProCertificateTest#testPageDiagnostics,CryptoProCertificateTest#verifyCryptoProPluginWithStrategy,CryptoProCertificateTest#testCertificateSigningWithStrategy,CryptoProCertificateTest#quickPluginCheck,CryptoProCertificateTest#testPluginFailureScenario"
+              ;;
+            "Ручной ввод")
+              TEST_LIST="Efs1#efs_szv_td,Efs1#efs_szv_staj,Efs1#efs_szv_td_krivonosov,SZVFormTest#testSZVMFormFullScenario,SZVFormTest#testSZVMFormEditMode,SZVFormTest#testSZVMFormWithMultiplePersons,SZVFormTest#testSignAndSendButton,SZVFormTest#testAddInsuredPersonWithDataProvider,Szv_td#szv_td,Szv_m#szv_m"
+              ;;
+            "Загрузка через XML")
+              TEST_LIST="Efs1#efs_1_xml,Efs1#efs_1_xml_krivonosov,Efs1#efs_1_xml_bezdomniy,Szv_td#szv_td_xml,Szv_m#szv_m_xml,Szv_staj#szv_staj_xml,Szv_korr#szv_korr_xml,Szv_k#szv_k_xml,Szv_ish#szv_ish_xml,Szv_dso#szv_dso_xml,Odv1#odv_1_xml"
+              ;;
+            *)
+              # Если это не группа, используем как есть (для обратной совместимости)
+              TEST_LIST="${SINGLE_TEST}"
+              ;;
+          esac
           if [ -n "${SUITE}" ]
           then
-            MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT_OVERRIDE}","${TEST_SCRIPT}","${BROWSERS}","${USER_ACCOUNT}" -Dtest="${SINGLE_TEST}" -Dsuite="${SUITE}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
+            MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT_OVERRIDE}","${TEST_SCRIPT}","${BROWSERS}","${USER_ACCOUNT}" -Dtest="${TEST_LIST}" -Dsuite="${SUITE}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
           else
-            MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT_OVERRIDE}","${TEST_SCRIPT}","${BROWSERS}","${USER_ACCOUNT}" -Dtest="${SINGLE_TEST}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
+            MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT_OVERRIDE}","${TEST_SCRIPT}","${BROWSERS}","${USER_ACCOUNT}" -Dtest="${TEST_LIST}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
           fi
         else
           if [ -n "${SUITE}" ]
@@ -218,11 +165,27 @@ maven test:
         KUBE_CMD="kubectl port-forward --kubeconfig=/tmp/"${ENVIRONMENT_OVERRIDE}"-user.yaml --namespace="
       elif [ -z "${HELM_NAMESPACE}" ] && [ -n "${SINGLE_TEST}" ]
       then
+        # Определяем список тестов для группы
+        case "${SINGLE_TEST}" in
+          "Системные")
+            TEST_LIST="CryptoProCertificateTest#verifyCryptoProPluginLoaded,CryptoProCertificateTest#testCertificateSelectionAndSigning,CryptoProCertificateTest#testPageDiagnostics,CryptoProCertificateTest#verifyCryptoProPluginWithStrategy,CryptoProCertificateTest#testCertificateSigningWithStrategy,CryptoProCertificateTest#quickPluginCheck,CryptoProCertificateTest#testPluginFailureScenario"
+            ;;
+          "Ручной ввод")
+            TEST_LIST="Efs1#efs_szv_td,Efs1#efs_szv_staj,Efs1#efs_szv_td_krivonosov,SZVFormTest#testSZVMFormFullScenario,SZVFormTest#testSZVMFormEditMode,SZVFormTest#testSZVMFormWithMultiplePersons,SZVFormTest#testSignAndSendButton,SZVFormTest#testAddInsuredPersonWithDataProvider,Szv_td#szv_td,Szv_m#szv_m"
+            ;;
+          "Загрузка через XML")
+            TEST_LIST="Efs1#efs_1_xml,Efs1#efs_1_xml_krivonosov,Efs1#efs_1_xml_bezdomniy,Szv_td#szv_td_xml,Szv_m#szv_m_xml,Szv_staj#szv_staj_xml,Szv_korr#szv_korr_xml,Szv_k#szv_k_xml,Szv_ish#szv_ish_xml,Szv_dso#szv_dso_xml,Odv1#odv_1_xml"
+            ;;
+          *)
+            # Если это не группа, используем как есть (для обратной совместимости)
+            TEST_LIST="${SINGLE_TEST}"
+            ;;
+        esac
         if [ -n "${SUITE}" ]
         then
-          MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT}","${TEST_SCRIPT}","${BROWSERS}","${USER_ACCOUNT}" -Dtest="${SINGLE_TEST}" -Dsuite="${SUITE}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
+          MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT}","${TEST_SCRIPT}","${BROWSERS}","${USER_ACCOUNT}" -Dtest="${TEST_LIST}" -Dsuite="${SUITE}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
         else
-          MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT}","${TEST_SCRIPT}","${BROWSERS}","${USER_ACCOUNT}" -Dtest="${SINGLE_TEST}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
+          MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT}","${TEST_SCRIPT}","${BROWSERS}","${USER_ACCOUNT}" -Dtest="${TEST_LIST}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
         fi
         KUBE_CMD="kubectl port-forward --kubeconfig=/tmp/"${ENVIRONMENT}"-user.yaml --namespace="
       else
