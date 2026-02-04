@@ -125,11 +125,14 @@ public class TestSetupHelper {
     /**
      * Проверяет, что тест выполняется в API окружении
      * 
-     * @return true если текущее окружение - API тесты
-     * @throws IllegalStateException если конфигурация не инициализирована
+     * ЗАКОММЕНТИРОВАНО: API тесты не используются в проекте
+     * 
+     * @return всегда false, так как API тесты не используются
      */
     public static boolean isAPIEnvironment() {
-        requireConfigurationInitialized();
-        return TestConfiguration.isApiTest();
+        // ЗАКОММЕНТИРОВАНО: API тесты не используются
+        // requireConfigurationInitialized();
+        // return TestConfiguration.isApiTest();
+        return false;
     }
 }

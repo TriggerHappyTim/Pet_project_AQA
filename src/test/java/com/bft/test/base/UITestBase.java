@@ -283,11 +283,13 @@ public abstract class UITestBase extends BaseTest {
     /**
      * Проверяет, что тест выполняется в API окружении
      * 
-     * Используется для условного выполнения кода только в API тестах.
+     * ЗАКОММЕНТИРОВАНО: API тесты не используются в проекте
      * 
-     * @return true если текущее окружение - API тесты, false в противном случае
+     * @return всегда false, так как API тесты не используются
      */
     protected boolean isAPIEnvironment() {
-        return TestConfiguration.isApiTest();
+        // ЗАКОММЕНТИРОВАНО: API тесты не используются
+        // return TestConfiguration.isApiTest();
+        return false;
     }
 }
