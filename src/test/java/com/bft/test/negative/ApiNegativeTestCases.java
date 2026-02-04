@@ -227,36 +227,36 @@
     // @Severity(SeverityLevel.NORMAL)
     // @AllureId("API-NEG-005")
     // public void testServerError() {
-        // Этот тест может быть специфичным для конкретного API
-        // Пример: запрос, который вызывает ошибку сервера
-        givenWhenThen(
-            // Given
-            request -> request.baseUri(getBaseUrl()),
-            // When - запрос, который может вызвать ошибку сервера
-            // Например, запрос с данными, которые вызывают исключение на сервере
-            request -> request
-                .contentType("application/json")
-                .body("{\"action\": \"cause_server_error\"}")
-                .when()
-                .post("/api/test/error"),
-            // Then
-            response -> {
-                // Проверяем, что сервер вернул ошибку (500 или 503)
-                int statusCode = response.getStatusCode();
-                if (statusCode < 500 || statusCode >= 600) {
-                    throw new AssertionError(
-                        AssertionHelper.formatApiError(
-                            "/api/test/error",
-                            500,
-                            statusCode,
-                            "Сервер должен вернуть ошибку 5xx"
-                        )
-                    );
-                }
-            },
-            "Server Error Test"
-        );
-    }
+    //     // Этот тест может быть специфичным для конкретного API
+    //     // Пример: запрос, который вызывает ошибку сервера
+    //     givenWhenThen(
+    //         // Given
+    //         request -> request.baseUri(getBaseUrl()),
+    //         // When - запрос, который может вызвать ошибку сервера
+    //         // Например, запрос с данными, которые вызывают исключение на сервере
+    //         request -> request
+    //             .contentType("application/json")
+    //             .body("{\"action\": \"cause_server_error\"}")
+    //             .when()
+    //             .post("/api/test/error"),
+    //         // Then
+    //         response -> {
+    //             // Проверяем, что сервер вернул ошибку (500 или 503)
+    //             int statusCode = response.getStatusCode();
+    //             if (statusCode < 500 || statusCode >= 600) {
+    //                 throw new AssertionError(
+    //                     AssertionHelper.formatApiError(
+    //                         "/api/test/error",
+    //                         500,
+    //                         statusCode,
+    //                         "Сервер должен вернуть ошибку 5xx"
+    //                     )
+    //                 );
+    //             }
+    //         },
+    //         "Server Error Test"
+    //     );
+    // }
 
     /**
      * Тест: Превышение таймаута запроса
