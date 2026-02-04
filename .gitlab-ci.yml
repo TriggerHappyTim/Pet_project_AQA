@@ -22,16 +22,14 @@ variables:
       "Выберите целевой контур из списка (должны быть описаны в секции <profiles> файла pom.xml)"
   TEST_SCRIPT:
     value:
-      "smoke_web"
+      ""
     options:
-      - "smoke_web"
-      - "smoke_web_application"
-      - "smoke_manual"
-      - "regress_web"
-      - "regress_web_application"
-      - "regress_manual"
+      - ""
+      - "Системные"
+      - "Ручной ввод"
+      - "Загрузка через XML"
     description:
-      "Выберите сценарий тестирования из списка (должны быть описаны в секции <profiles> файла pom.xml)"
+      "Выберите группу тестов из списка или оставьте пустым для запуска всех тестов профиля"
   TEST_ARTIFACTS: "target"
   REPORT_ARTIFACTS: "build"
   DIR_NOTIFICATION: "notifications"
@@ -130,9 +128,34 @@ maven test:
             ;;
         esac
         #MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT_OVERRIDE}","${TEST_SCRIPT}","${BROWSERS}","${USER_ACCOUNT}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
+        # Определяем список тестов для группы TEST_SCRIPT
+        if [ -n "${TEST_SCRIPT}" ]
+        then
+          case "${TEST_SCRIPT}" in
+            "Системные")
+              TEST_LIST="CryptoProCertificateTest#verifyCryptoProPluginLoaded,CryptoProCertificateTest#testCertificateSelectionAndSigning,CryptoProCertificateTest#testPageDiagnostics,CryptoProCertificateTest#verifyCryptoProPluginWithStrategy,CryptoProCertificateTest#testCertificateSigningWithStrategy,CryptoProCertificateTest#quickPluginCheck,CryptoProCertificateTest#testPluginFailureScenario"
+              ;;
+            "Ручной ввод")
+              TEST_LIST="Efs1#efs_szv_td,Efs1#efs_szv_staj,Efs1#efs_szv_td_krivonosov,SZVFormTest#testSZVMFormFullScenario,SZVFormTest#testSZVMFormEditMode,SZVFormTest#testSZVMFormWithMultiplePersons,SZVFormTest#testSignAndSendButton,SZVFormTest#testAddInsuredPersonWithDataProvider,Szv_td#szv_td,Szv_m#szv_m"
+              ;;
+            "Загрузка через XML")
+              TEST_LIST="Efs1#efs_1_xml,Efs1#efs_1_xml_krivonosov,Efs1#efs_1_xml_bezdomniy,Szv_td#szv_td_xml,Szv_m#szv_m_xml,Szv_staj#szv_staj_xml,Szv_korr#szv_korr_xml,Szv_k#szv_k_xml,Szv_ish#szv_ish_xml,Szv_dso#szv_dso_xml,Odv1#odv_1_xml"
+              ;;
+            *)
+              # Если это не группа, используем как Maven профиль (для обратной совместимости)
+              TEST_LIST=""
+              MAVEN_PROFILE="${TEST_SCRIPT}"
+              ;;
+          esac
+        else
+          TEST_LIST=""
+          MAVEN_PROFILE=""
+        fi
+        
+        # Если есть SINGLE_TEST, он имеет приоритет над TEST_SCRIPT
         if [ -n "${SINGLE_TEST}" ]
         then
-          # Определяем список тестов для группы
+          # Определяем список тестов для группы SINGLE_TEST
           case "${SINGLE_TEST}" in
             "Системные")
               TEST_LIST="CryptoProCertificateTest#verifyCryptoProPluginLoaded,CryptoProCertificateTest#testCertificateSelectionAndSigning,CryptoProCertificateTest#testPageDiagnostics,CryptoProCertificateTest#verifyCryptoProPluginWithStrategy,CryptoProCertificateTest#testCertificateSigningWithStrategy,CryptoProCertificateTest#quickPluginCheck,CryptoProCertificateTest#testPluginFailureScenario"
@@ -148,52 +171,111 @@ maven test:
               TEST_LIST="${SINGLE_TEST}"
               ;;
           esac
+        fi
+        
+        # Формируем команду Maven
+        if [ -n "${TEST_LIST}" ]
+        then
+          # Запускаем конкретные тесты через -Dtest
           if [ -n "${SUITE}" ]
           then
-            MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT_OVERRIDE}","${TEST_SCRIPT}","${BROWSERS}","${USER_ACCOUNT}" -Dtest="${TEST_LIST}" -Dsuite="${SUITE}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
+            MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT_OVERRIDE}","${BROWSERS}","${USER_ACCOUNT}" -Dtest="${TEST_LIST}" -Dsuite="${SUITE}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
           else
-            MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT_OVERRIDE}","${TEST_SCRIPT}","${BROWSERS}","${USER_ACCOUNT}" -Dtest="${TEST_LIST}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
+            MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT_OVERRIDE}","${BROWSERS}","${USER_ACCOUNT}" -Dtest="${TEST_LIST}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
+          fi
+        elif [ -n "${MAVEN_PROFILE}" ]
+        then
+          # Используем Maven профиль (обратная совместимость)
+          if [ -n "${SUITE}" ]
+          then
+            MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT_OVERRIDE}","${MAVEN_PROFILE}","${BROWSERS}","${USER_ACCOUNT}" -Dsuite="${SUITE}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
+          else
+            MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT_OVERRIDE}","${MAVEN_PROFILE}","${BROWSERS}","${USER_ACCOUNT}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
           fi
         else
+          # Запускаем все тесты без фильтрации
           if [ -n "${SUITE}" ]
           then
-            MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT_OVERRIDE}","${TEST_SCRIPT}","${BROWSERS}","${USER_ACCOUNT}" -Dsuite="${SUITE}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
+            MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT_OVERRIDE}","${BROWSERS}","${USER_ACCOUNT}" -Dsuite="${SUITE}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
           else
-            MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT_OVERRIDE}","${TEST_SCRIPT}","${BROWSERS}","${USER_ACCOUNT}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
+            MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT_OVERRIDE}","${BROWSERS}","${USER_ACCOUNT}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
           fi
         fi
         KUBE_CMD="kubectl port-forward --kubeconfig=/tmp/"${ENVIRONMENT_OVERRIDE}"-user.yaml --namespace="
-      elif [ -z "${HELM_NAMESPACE}" ] && [ -n "${SINGLE_TEST}" ]
+      elif [ -z "${HELM_NAMESPACE}" ]
       then
-        # Определяем список тестов для группы
-        case "${SINGLE_TEST}" in
-          "Системные")
-            TEST_LIST="CryptoProCertificateTest#verifyCryptoProPluginLoaded,CryptoProCertificateTest#testCertificateSelectionAndSigning,CryptoProCertificateTest#testPageDiagnostics,CryptoProCertificateTest#verifyCryptoProPluginWithStrategy,CryptoProCertificateTest#testCertificateSigningWithStrategy,CryptoProCertificateTest#quickPluginCheck,CryptoProCertificateTest#testPluginFailureScenario"
-            ;;
-          "Ручной ввод")
-            TEST_LIST="Efs1#efs_szv_td,Efs1#efs_szv_staj,Efs1#efs_szv_td_krivonosov,SZVFormTest#testSZVMFormFullScenario,SZVFormTest#testSZVMFormEditMode,SZVFormTest#testSZVMFormWithMultiplePersons,SZVFormTest#testSignAndSendButton,SZVFormTest#testAddInsuredPersonWithDataProvider,Szv_td#szv_td,Szv_m#szv_m"
-            ;;
-          "Загрузка через XML")
-            TEST_LIST="Efs1#efs_1_xml,Efs1#efs_1_xml_krivonosov,Efs1#efs_1_xml_bezdomniy,Szv_td#szv_td_xml,Szv_m#szv_m_xml,Szv_staj#szv_staj_xml,Szv_korr#szv_korr_xml,Szv_k#szv_k_xml,Szv_ish#szv_ish_xml,Szv_dso#szv_dso_xml,Odv1#odv_1_xml"
-            ;;
-          *)
-            # Если это не группа, используем как есть (для обратной совместимости)
-            TEST_LIST="${SINGLE_TEST}"
-            ;;
-        esac
-        if [ -n "${SUITE}" ]
+        # Определяем список тестов для группы TEST_SCRIPT
+        if [ -n "${TEST_SCRIPT}" ]
         then
-          MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT}","${TEST_SCRIPT}","${BROWSERS}","${USER_ACCOUNT}" -Dtest="${TEST_LIST}" -Dsuite="${SUITE}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
+          case "${TEST_SCRIPT}" in
+            "Системные")
+              TEST_LIST="CryptoProCertificateTest#verifyCryptoProPluginLoaded,CryptoProCertificateTest#testCertificateSelectionAndSigning,CryptoProCertificateTest#testPageDiagnostics,CryptoProCertificateTest#verifyCryptoProPluginWithStrategy,CryptoProCertificateTest#testCertificateSigningWithStrategy,CryptoProCertificateTest#quickPluginCheck,CryptoProCertificateTest#testPluginFailureScenario"
+              ;;
+            "Ручной ввод")
+              TEST_LIST="Efs1#efs_szv_td,Efs1#efs_szv_staj,Efs1#efs_szv_td_krivonosov,SZVFormTest#testSZVMFormFullScenario,SZVFormTest#testSZVMFormEditMode,SZVFormTest#testSZVMFormWithMultiplePersons,SZVFormTest#testSignAndSendButton,SZVFormTest#testAddInsuredPersonWithDataProvider,Szv_td#szv_td,Szv_m#szv_m"
+              ;;
+            "Загрузка через XML")
+              TEST_LIST="Efs1#efs_1_xml,Efs1#efs_1_xml_krivonosov,Efs1#efs_1_xml_bezdomniy,Szv_td#szv_td_xml,Szv_m#szv_m_xml,Szv_staj#szv_staj_xml,Szv_korr#szv_korr_xml,Szv_k#szv_k_xml,Szv_ish#szv_ish_xml,Szv_dso#szv_dso_xml,Odv1#odv_1_xml"
+              ;;
+            *)
+              # Если это не группа, используем как Maven профиль (для обратной совместимости)
+              TEST_LIST=""
+              MAVEN_PROFILE="${TEST_SCRIPT}"
+              ;;
+          esac
         else
-          MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT}","${TEST_SCRIPT}","${BROWSERS}","${USER_ACCOUNT}" -Dtest="${TEST_LIST}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
+          TEST_LIST=""
+          MAVEN_PROFILE=""
         fi
-        KUBE_CMD="kubectl port-forward --kubeconfig=/tmp/"${ENVIRONMENT}"-user.yaml --namespace="
-      else
-        if [ -n "${SUITE}" ]
+        
+        # Если есть SINGLE_TEST, он имеет приоритет над TEST_SCRIPT
+        if [ -n "${SINGLE_TEST}" ]
         then
-          MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT}","${TEST_SCRIPT}","${BROWSERS}","${USER_ACCOUNT}" -Dsuite="${SUITE}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
+          # Определяем список тестов для группы SINGLE_TEST
+          case "${SINGLE_TEST}" in
+            "Системные")
+              TEST_LIST="CryptoProCertificateTest#verifyCryptoProPluginLoaded,CryptoProCertificateTest#testCertificateSelectionAndSigning,CryptoProCertificateTest#testPageDiagnostics,CryptoProCertificateTest#verifyCryptoProPluginWithStrategy,CryptoProCertificateTest#testCertificateSigningWithStrategy,CryptoProCertificateTest#quickPluginCheck,CryptoProCertificateTest#testPluginFailureScenario"
+              ;;
+            "Ручной ввод")
+              TEST_LIST="Efs1#efs_szv_td,Efs1#efs_szv_staj,Efs1#efs_szv_td_krivonosov,SZVFormTest#testSZVMFormFullScenario,SZVFormTest#testSZVMFormEditMode,SZVFormTest#testSZVMFormWithMultiplePersons,SZVFormTest#testSignAndSendButton,SZVFormTest#testAddInsuredPersonWithDataProvider,Szv_td#szv_td,Szv_m#szv_m"
+              ;;
+            "Загрузка через XML")
+              TEST_LIST="Efs1#efs_1_xml,Efs1#efs_1_xml_krivonosov,Efs1#efs_1_xml_bezdomniy,Szv_td#szv_td_xml,Szv_m#szv_m_xml,Szv_staj#szv_staj_xml,Szv_korr#szv_korr_xml,Szv_k#szv_k_xml,Szv_ish#szv_ish_xml,Szv_dso#szv_dso_xml,Odv1#odv_1_xml"
+              ;;
+            *)
+              # Если это не группа, используем как есть (для обратной совместимости)
+              TEST_LIST="${SINGLE_TEST}"
+              ;;
+          esac
+        fi
+        
+        # Формируем команду Maven
+        if [ -n "${TEST_LIST}" ]
+        then
+          # Запускаем конкретные тесты через -Dtest
+          if [ -n "${SUITE}" ]
+          then
+            MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT}","${BROWSERS}","${USER_ACCOUNT}" -Dtest="${TEST_LIST}" -Dsuite="${SUITE}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
+          else
+            MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT}","${BROWSERS}","${USER_ACCOUNT}" -Dtest="${TEST_LIST}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
+          fi
+        elif [ -n "${MAVEN_PROFILE}" ]
+        then
+          # Используем Maven профиль (обратная совместимость)
+          if [ -n "${SUITE}" ]
+          then
+            MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT}","${MAVEN_PROFILE}","${BROWSERS}","${USER_ACCOUNT}" -Dsuite="${SUITE}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
+          else
+            MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT}","${MAVEN_PROFILE}","${BROWSERS}","${USER_ACCOUNT}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
+          fi
         else
-          MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT}","${TEST_SCRIPT}","${BROWSERS}","${USER_ACCOUNT}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
+          # Запускаем все тесты без фильтрации
+          if [ -n "${SUITE}" ]
+          then
+            MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT}","${BROWSERS}","${USER_ACCOUNT}" -Dsuite="${SUITE}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
+          else
+            MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT}","${BROWSERS}","${USER_ACCOUNT}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
+          fi
         fi
         KUBE_CMD="kubectl port-forward --kubeconfig=/tmp/"${ENVIRONMENT}"-user.yaml --namespace="
       fi
