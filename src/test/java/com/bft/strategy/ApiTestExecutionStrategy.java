@@ -1,4 +1,7 @@
-package com.bft.strategy;
+// ============================================================================
+// ЗАКОММЕНТИРОВАНО: API тесты не используются в проекте
+// ============================================================================
+// package com.bft.strategy;
 
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
@@ -10,7 +13,7 @@ import java.util.Map;
 /**
  * Стратегия выполнения API тестов
  */
-public class ApiTestExecutionStrategy extends BaseTestExecutionStrategy<Response> {
+// public class ApiTestExecutionStrategy extends BaseTestExecutionStrategy<Response> {
 
     private final String baseUrl;
     private final String endpoint;
@@ -155,4 +158,4 @@ public class ApiTestExecutionStrategy extends BaseTestExecutionStrategy<Response
             return false;
         }
     }
-}
+// }

@@ -61,9 +61,9 @@ public class MockCredentialProvider implements CredentialProvider {
         mockCredentials.put("uos.password", "testpass_uos123");
 
         // EVS тестовые данные (DEFAULT_USER, префикс evs)
-        mockCredentials.put("evs.username", "testuser_evs");
-        mockCredentials.put("evs.password", "testpass_evs123");
-        mockCredentials.put("evs.organization", "ORG-EVS-DEFAULT");
+        mockCredentials.put("evs.username", "133-900-785 49");
+        mockCredentials.put("evs.password", "Egisso13?");
+        mockCredentials.put("evs.organization", "ОРГАНИЗАЦИЯ -1546025669");
         mockCredentials.put("evs.email", "testuser_evs@example.com");
 
         // EVS user1 (Кривоносов) — fallback для CI/локального запуска.

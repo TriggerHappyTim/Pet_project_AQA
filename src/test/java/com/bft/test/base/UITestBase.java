@@ -63,7 +63,7 @@ import java.util.function.Consumer;
  * @author QA Automation Team
  * @version 2.0
  * @see BaseTest для базовой функциональности
- * @see ApiTestBase для API тестов
+ * // @see ApiTestBase для API тестов - ЗАКОММЕНТИРОВАНО: API тесты не используются
  * @see TestLogger для логирования тестов
  * @since 1.0
  */

@@ -154,12 +154,23 @@ public class RadioButtonComponent extends BaseComponent {
 
     /**
      * Создает компонент для радиокнопки по тексту span
+     * 
+     * Поддерживает несколько вариантов разметки:
+     * - label с классом n2o-radio-input (текущая разметка ЕВС)
+     * - div с классом n2o-radio-input-wrapper
+     * - div с классом n2o-radio-input
      */
     public static RadioButtonComponent createBySpanText(String spanText, String radioName) {
-        return new RadioButtonComponent(
-            By.xpath("//div[contains(@class, 'n2o-radio-input')]//span[text() = '" + spanText + "']"),
-            "Радиокнопка '" + radioName + "'"
-        );
+        String escaped = spanText.replace("'", "''");
+        // Приоритет 1: label с классом n2o-radio-input (разметка ЕВС "Добавление отчета")
+        String xpathLabel = "//label[contains(@class, 'n2o-radio-input')]//span[text() = '" + escaped + "']";
+        // Приоритет 2: обертка n2o-radio-input-wrapper
+        String xpathWrapper = "//div[contains(@class, 'n2o-radio-input-wrapper')]//span[text() = '" + escaped + "']";
+        // Приоритет 3: div с n2o-radio-input (обратная совместимость)
+        String xpathDiv = "//div[contains(@class, 'n2o-radio-input')]//span[text() = '" + escaped + "']";
+        // Объединяем через union: первый найденный
+        String xpath = xpathLabel + " | " + xpathWrapper + " | " + xpathDiv;
+        return new RadioButtonComponent(By.xpath(xpath), "Радиокнопка '" + radioName + "'");
     }
 
     /**

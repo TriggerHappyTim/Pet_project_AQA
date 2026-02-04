@@ -2,11 +2,19 @@ package com.bft.LK_Insurence.EFS_1;
 
 import com.bft.BaseTest;
 import com.bft.enums.ReportType;
-import com.bft.enums.UIType;
+import com.bft.enums.UITypeSelector;
 import com.bft.security.TestUsers;
 import com.bft.steps.SzvReportsSteps;
-import io.qameta.allure.*;
+import io.qameta.allure.AllureId;
+import io.qameta.allure.Description;
+import io.qameta.allure.Epic;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Severity;
+import io.qameta.allure.SeverityLevel;
+import io.qameta.allure.Story;
 import org.testng.annotations.Test;
+
+import static com.codeborne.selenide.Selenide.$x;
 
 /**
  * Тесты для отчёта ЕФС-1 (Единая форма сведений)
@@ -31,11 +39,11 @@ public class Efs1 extends BaseTest {
 
         SzvReportsSteps steps = new SzvReportsSteps();
 
-        steps.authorizeEVS(UIType.EVS_UAT_LKS); //Авторизация в ЕВС
-        steps.addReports(); //Добавление отчета
-        steps.selectReportType(ReportType.EFS1); //Выбор отчета
-        steps.addNewReport(); // выбор нового отчета
-        steps.sendXml(ReportType.EFS_FULL_ECP); //отправка xml
+        steps.authorizeEVS(UITypeSelector.getSelectedUIType()); // контур из evs.ui.type (локально/GitLab)
+        steps.addReports();
+        steps.selectReportType(ReportType.EFS1);
+        steps.addNewReport();
+        steps.sendXml(ReportType.EFS_FULL_ECP);
         /*steps.chooseCriptoProvider(); //Выбор провайдера
         steps.selectCertificate(); //Выбор сертификата*/
     }
@@ -48,7 +56,7 @@ public class Efs1 extends BaseTest {
     public void efs_szv_td() {
         SzvReportsSteps steps = new SzvReportsSteps();
 
-        steps.authorizeEVS(UIType.EVS_TEST_LKS); //Авторизация в ЕВС -154
+        steps.authorizeEVS(UITypeSelector.getSelectedUIType());
         steps.addReports();
         steps.selectReportType(ReportType.EFS1);
         steps.addNewReport(); // Создание нового черновика
@@ -62,27 +70,39 @@ public class Efs1 extends BaseTest {
         steps.saveZL();
     }
 
-    @Test(groups = {"web", "efs", "regression", "manual-creation"}, 
-          description = "Ручное создание отчёта ЕФС-1 СТАЖ")
+    /**
+     * Ручное создание отчёта ЕФС-1 раздел 1.2 СТАЖ (страховой стаж).
+     * <p>Сценарий: авторизация → Отчеты → ЕФС-1 → Создать новый → общие сведения →
+     * Раздел 1 → 1.2 СТАЖ → добавление ЗЛ → заполнение ЗЛ → добавление сведений о стаже
+     * (тип сведений, отчётный период, начало/конец периода) → сохранение ЗЛ.
+     * <p>Проверка: после сохранения ЗЛ не отображается сообщение «Поле обязательно для заполнения».
+     */
+    @Test(groups = {"web", "efs", "regression", "manual-creation"},
+          description = "Ручное создание отчёта ЕФС-1 раздел 1.2 СТАЖ")
     @Story("Manual Creation - СТАЖ")
-    @Description("Тест проверяет ручное создание отчёта ЕФС-1 раздел 1.2 СТАЖ (страховой стаж)")
+    @Description("Тест проверяет ручное создание отчёта ЕФС-1 раздел 1.2 СТАЖ (страховой стаж): ЗЛ, период стажа (Начало/Конец периода), сохранение.")
     @Severity(SeverityLevel.NORMAL)
+    @AllureId("EFS-STAJ-001")
     public void efs_szv_staj() {
         SzvReportsSteps steps = new SzvReportsSteps();
 
-        steps.authorizeEVS(UIType.EVS_UAT_LKS); //Авторизация в ЕВС -154
+        steps.authorizeEVS(UITypeSelector.getSelectedUIType());
         steps.addReports();
         steps.selectReportType(ReportType.EFS1);
-        steps.addNewReport(); // Создание нового черновика
-        steps.addGeneralInfoEFS(); // Заполнение общих сведений
-        steps.createContinue(); //Продолжить
-        steps.sidebar(); // Выбор раздела 1.1 ТД, 1.2 СТАЖ, 1.3 БЮДЖ
-        steps.addZL(); //Добавление ЗЛ
-        steps.fillZLEFS(); //Заполнение ЗЛ
+        steps.addNewReport();
+        steps.addGeneralInfoEFS();
+        steps.createContinue();
+        steps.sidebar();
+        steps.addZL();
+        steps.fillZLEFS();
         steps.addSTAJ();
-        /*steps.addEventEFS();
-        steps.saveEvent();*/ //переделать для стаж
         steps.saveZL();
+
+        // Проверка: после сохранения ЗЛ нет ошибки валидации по обязательным полям
+        boolean hasRequiredFieldError = $x("//*[contains(text(),'Поле обязательно для заполнения')]").exists();
+        softAssert.assertFalse(hasRequiredFieldError,
+                "После сохранения ЗЛ не должно отображаться сообщение «Поле обязательно для заполнения»");
+        softAssert.assertAll();
     }
     
     // ========== Тесты с конкретными пользователями ==========
@@ -95,7 +115,7 @@ public class Efs1 extends BaseTest {
     public void efs_1_xml_krivonosov() {
         SzvReportsSteps steps = new SzvReportsSteps();
 
-        steps.authorizeEVS(UIType.EVS_UAT_LKS, TestUsers.KRIVONOSOV_ALEXANDER);
+        steps.authorizeEVS(UITypeSelector.getSelectedUIType(), TestUsers.KRIVONOSOV_ALEXANDER);
         steps.addReports();
         steps.selectReportType(ReportType.EFS1);
         steps.addNewReport();
@@ -110,7 +130,7 @@ public class Efs1 extends BaseTest {
     public void efs_1_xml_bezdomniy() {
         SzvReportsSteps steps = new SzvReportsSteps();
 
-        steps.authorizeEVS(UIType.EVS_UAT_LKS, TestUsers.BEZDOMNIY_IVAN);
+        steps.authorizeEVS(UITypeSelector.getSelectedUIType(), TestUsers.BEZDOMNIY_IVAN);
         steps.addReports();
         steps.selectReportType(ReportType.EFS1);
         steps.addNewReport();
@@ -125,7 +145,7 @@ public class Efs1 extends BaseTest {
     public void efs_szv_td_krivonosov() {
         SzvReportsSteps steps = new SzvReportsSteps();
 
-        steps.authorizeEVS(UIType.EVS_TEST_LKS, TestUsers.KRIVONOSOV_ALEXANDER);
+        steps.authorizeEVS(UITypeSelector.getSelectedUIType(), TestUsers.KRIVONOSOV_ALEXANDER);
         steps.addReports();
         steps.selectReportType(ReportType.EFS1);
         steps.addNewReport();

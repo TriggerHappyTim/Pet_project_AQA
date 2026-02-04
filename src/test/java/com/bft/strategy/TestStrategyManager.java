@@ -192,8 +192,8 @@ public class TestStrategyManager {
         switch (testStrategyType) {
             case UI:
                 return ExecutionStrategyType.UI_NAVIGATION;
-            case API:
-                return ExecutionStrategyType.API_REST_CALL;
+            // case API:  // ЗАКОММЕНТИРОВАНО: API тесты не используются
+            //     return ExecutionStrategyType.API_REST_CALL;
             default:
                 throw new IllegalArgumentException("Неизвестный тип стратегии: " + testStrategyType);
         }
@@ -239,7 +239,8 @@ public class TestStrategyManager {
 
         // Регистрируем стандартные стратегии
         manager.registerExecutionStrategy(new CryptoProValidationStrategy());
-        manager.registerExecutionStrategy(new ApiTestExecutionStrategy("/health", "GET", 200));
+        // ЗАКОММЕНТИРОВАНО: API тесты не используются
+        // manager.registerExecutionStrategy(new ApiTestExecutionStrategy("/health", "GET", 200));
 
         return manager;
     }

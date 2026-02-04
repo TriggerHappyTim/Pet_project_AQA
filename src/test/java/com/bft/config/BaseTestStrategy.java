@@ -37,7 +37,7 @@ import com.codeborne.selenide.Configuration;
  * @version 2.0
  * @see TestStrategy для интерфейса стратегий
  * @see UITestStrategy для реализации UI стратегии
- * @see ApiTestStrategy для реализации API стратегии
+ * // @see ApiTestStrategy для реализации API стратегии - ЗАКОММЕНТИРОВАНО: API тесты не используются
  * @since 1.0
  */
 public abstract class BaseTestStrategy implements TestStrategy {

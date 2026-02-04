@@ -1,4 +1,7 @@
-package com.bft.integration.zephyr;
+// ============================================================================
+// ЗАКОММЕНТИРОВАНО: Zephyr/Jira интеграция не используется в проекте
+// ============================================================================
+// package com.bft.integration.zephyr;
 
 import com.bft.integration.config.IntegrationConfig;
 import com.bft.integration.config.ZephyrType;
@@ -8,7 +11,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Фабрика для создания ZephyrClient в зависимости от типа Zephyr
  */
-public class ZephyrClientFactory {
+// public class ZephyrClientFactory {
     
     private static final Logger logger = LoggerFactory.getLogger(ZephyrClientFactory.class);
     
@@ -57,4 +60,4 @@ public class ZephyrClientFactory {
                 );
         }
     }
-}
+// }

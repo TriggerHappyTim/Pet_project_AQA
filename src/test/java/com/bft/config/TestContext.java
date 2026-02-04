@@ -219,14 +219,15 @@ public class TestContext {
         return strategy.getType() == TestStrategyType.UI;
     }
 
-    /**
-     * Проверяет, является ли текущая стратегия API стратегией
-     * 
-     * @return true если используется {@link ApiTestStrategy}, false в противном случае
-     */
-    public boolean isApiTest() {
-        return strategy.getType() == TestStrategyType.API;
-    }
+    // ЗАКОММЕНТИРОВАНО: API тесты не используются
+    // /**
+    //  * Проверяет, является ли текущая стратегия API стратегией
+    //  * 
+    //  * @return true если используется {@link ApiTestStrategy}, false в противном случае
+    //  */
+    // public boolean isApiTest() {
+    //     return strategy.getType() == TestStrategyType.API;
+    // }
 
     /**
      * Автоматически выбирает подходящую стратегию на основе конфигурации
@@ -235,8 +236,8 @@ public class TestContext {
      * - Применима для текущего окружения (isApplicable() == true)
      * - Имеет наивысший приоритет (getPriority())
      * 
-     * <p>Если ни одна стратегия не доступна, использует ApiTestStrategy
-     * как запасной вариант (fallback).
+     * <p>Если ни одна стратегия не доступна, выбрасывает исключение.
+     * // Использование ApiTestStrategy как fallback - ЗАКОММЕНТИРОВАНО: API тесты не используются
      * 
      * @param config конфигурация для проверки доступности стратегий
      * @return выбранная стратегия тестирования
@@ -246,9 +247,11 @@ public class TestContext {
         List<TestStrategy> availableStrategies = getAvailableStrategies(config);
 
         if (availableStrategies.isEmpty()) {
+            // ЗАКОММЕНТИРОВАНО: API тесты не используются
             // Fallback: если нет доступных стратегий, создаем API стратегию как запасной вариант
-            System.out.println("Warning: No suitable test strategy found for current configuration. Using API strategy as fallback.");
-            return new ApiTestStrategy(config);
+            // System.out.println("Warning: No suitable test strategy found for current configuration. Using API strategy as fallback.");
+            // return new ApiTestStrategy(config);
+            throw new RuntimeException("No suitable test strategy found for current configuration");
         }
 
         // Выбираем стратегию с наивысшим приоритетом
@@ -269,8 +272,8 @@ public class TestContext {
         switch (type) {
             case UI:
                 return new UITestStrategy(config);
-            case API:
-                return new ApiTestStrategy(config);
+            // case API:  // ЗАКОММЕНТИРОВАНО: API тесты не используются
+            //     return new ApiTestStrategy(config);
             default:
                 throw new IllegalArgumentException("Unsupported strategy type: " + type);
         }
@@ -294,11 +297,12 @@ public class TestContext {
             strategies.add(uiStrategy);
         }
 
+        // ЗАКОММЕНТИРОВАНО: API тесты не используются
         // API стратегия
-        ApiTestStrategy apiStrategy = new ApiTestStrategy(config);
-        if (apiStrategy.isApplicable()) {
-            strategies.add(apiStrategy);
-        }
+        // ApiTestStrategy apiStrategy = new ApiTestStrategy(config);
+        // if (apiStrategy.isApplicable()) {
+        //     strategies.add(apiStrategy);
+        // }
 
         return strategies;
     }

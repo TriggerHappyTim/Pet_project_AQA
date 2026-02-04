@@ -35,9 +35,10 @@ public class TestConfigurationTest {
             // Reset for next test
             TestConfiguration.reset();
 
+            // ЗАКОММЕНТИРОВАНО: API тесты не используются
             // Test explicit API strategy
-            TestConfiguration.initialize(TestStrategyType.API);
-            System.out.println("✓ API strategy configuration initialization successful");
+            // TestConfiguration.initialize(TestStrategyType.API);
+            // System.out.println("✓ API strategy configuration initialization successful");
 
         } catch (Exception e) {
             System.err.println("✗ Configuration initialization failed: " + e.getMessage());

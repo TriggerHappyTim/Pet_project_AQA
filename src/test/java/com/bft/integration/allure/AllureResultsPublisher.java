@@ -3,7 +3,7 @@ package com.bft.integration.allure;
 import com.bft.integration.mapper.TestResult;
 import com.bft.integration.mapper.TestResultMapper;
 import com.bft.integration.mapper.TestStatus;
-import com.bft.integration.zephyr.ZephyrClient;
+// import com.bft.integration.zephyr.ZephyrClient;  // ЗАКОММЕНТИРОВАНО: Zephyr/Jira интеграция не используется
 import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +38,8 @@ public class AllureResultsPublisher {
     
     private static final Logger logger = LoggerFactory.getLogger(AllureResultsPublisher.class);
     
-    private final ZephyrClient zephyrClient;
+    // ЗАКОММЕНТИРОВАНО: Zephyr/Jira интеграция не используется
+    // private final ZephyrClient zephyrClient;
     private final Gson gson;
     
     /**
@@ -46,8 +47,13 @@ public class AllureResultsPublisher {
      * 
      * @param zephyrClient клиент для Zephyr
      */
-    public AllureResultsPublisher(ZephyrClient zephyrClient) {
-        this.zephyrClient = zephyrClient;
+    // ЗАКОММЕНТИРОВАНО: Zephyr/Jira интеграция не используется
+    // public AllureResultsPublisher(ZephyrClient zephyrClient) {
+    //     this.zephyrClient = zephyrClient;
+    //     this.gson = new Gson();
+    // }
+    public AllureResultsPublisher(Object zephyrClient) { // ЗАКОММЕНТИРОВАНО: Zephyr интеграция отключена
+        // this.zephyrClient = zephyrClient;
         this.gson = new Gson();
     }
     
@@ -82,9 +88,10 @@ public class AllureResultsPublisher {
                 return;
             }
             
+            // ЗАКОММЕНТИРОВАНО: Zephyr/Jira интеграция не используется
             // Отправить в Zephyr
-            zephyrClient.publishTestResults(testResults);
-            logger.info("Successfully published {} test results to Zephyr", testResults.size());
+            // zephyrClient.publishTestResults(testResults);
+            // logger.info("Successfully published {} test results to Zephyr", testResults.size());
             
         } catch (Exception e) {
             logger.error("Failed to publish Allure results: {}", e.getMessage(), e);

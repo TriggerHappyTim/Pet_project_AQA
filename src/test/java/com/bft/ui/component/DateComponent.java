@@ -166,11 +166,22 @@ public class DateComponent extends BaseComponent {
     // ===== СТАТИЧЕСКИЕ МЕТОДЫ ДЛЯ РАЗЛИЧНЫХ ТИПОВ ПОЛЕЙ ДАТЫ =====
 
     /**
-     * Создает компонент для поля даты с лейблом
+     * Создает компонент для поля даты с лейблом (точное совпадение text())
      */
     public static DateComponent createLabeledDate(String label, String dateName) {
         return new DateComponent(
             By.xpath("//div[label[text() = '" + label + "']]//input"),
+            "Поле даты '" + dateName + "'"
+        );
+    }
+
+    /**
+     * Создает компонент для поля даты по подстроке метки (MUI/React: метка может быть в span, с пробелами).
+     * XPath: div, содержащий любой потомок с текстом, содержащим labelSubstring, затем input внутри.
+     */
+    public static DateComponent createLabeledDateContains(String labelSubstring, String dateName) {
+        return new DateComponent(
+            By.xpath("//div[.//*[contains(., '" + labelSubstring.replace("'", "''") + "')]]//input"),
             "Поле даты '" + dateName + "'"
         );
     }

@@ -1,4 +1,7 @@
-package com.bft.integration.jira;
+// ============================================================================
+// ЗАКОММЕНТИРОВАНО: Jira интеграция не используется в проекте
+// ============================================================================
+// package com.bft.integration.jira;
 
 import com.atlassian.jira.rest.client.api.JiraRestClient;
 import com.atlassian.jira.rest.client.api.JiraRestClientFactory;
@@ -36,7 +39,7 @@ import java.util.List;
  * }
  * </pre>
  */
-public class JiraClient implements AutoCloseable {
+// public class JiraClient implements AutoCloseable {
     
     private static final Logger logger = LoggerFactory.getLogger(JiraClient.class);
     
@@ -229,4 +232,4 @@ public class JiraClient implements AutoCloseable {
             }
         }
     }
-}
+// }

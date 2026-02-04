@@ -1,4 +1,7 @@
-package com.bft.integration.listeners;
+// ============================================================================
+// ЗАКОММЕНТИРОВАНО: Zephyr/Jira интеграция не используется в проекте
+// ============================================================================
+// package com.bft.integration.listeners;
 
 import com.bft.integration.config.IntegrationConfig;
 import com.bft.integration.mapper.TestResult;
@@ -189,4 +192,4 @@ public class ZephyrTestListener implements ITestListener {
             }
         }
     }
-}
+// }

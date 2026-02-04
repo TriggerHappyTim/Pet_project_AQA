@@ -181,10 +181,128 @@ public class UserTestDataBuilder extends TestDataBuilder<UserTestDataBuilder.Use
      * Строит объект UserData на основе настроек builder
      * 
      * @return объект UserData с установленными значениями
+     * @throws IllegalArgumentException если данные не прошли валидацию
      */
     @Override
     public UserData build() {
+        // Валидация данных перед созданием объекта
+        validateUserData();
+        
         return new UserData(firstName, lastName, email, phone, snils, organization, username, password);
+    }
+    
+    /**
+     * Валидирует данные пользователя перед созданием объекта
+     * 
+     * @throws IllegalArgumentException если данные не прошли валидацию
+     */
+    private void validateUserData() {
+        // Валидация email
+        if (email != null && !email.isEmpty()) {
+            if (!isValidEmail(email)) {
+                throw new IllegalArgumentException("Некорректный формат email: " + email);
+            }
+        }
+        
+        // Валидация телефона
+        if (phone != null && !phone.isEmpty()) {
+            if (!isValidPhone(phone)) {
+                throw new IllegalArgumentException("Некорректный формат телефона: " + phone);
+            }
+        }
+        
+        // Валидация СНИЛС
+        if (snils != null && !snils.isEmpty()) {
+            if (!isValidSnils(snils)) {
+                throw new IllegalArgumentException("Некорректный формат СНИЛС: " + snils);
+            }
+        }
+        
+        // Валидация обязательных полей
+        if (email == null || email.isEmpty()) {
+            throw new IllegalArgumentException("Email является обязательным полем");
+        }
+    }
+    
+    /**
+     * Проверяет валидность email адреса
+     * 
+     * @param email email адрес для проверки
+     * @return true если email валиден, false в противном случае
+     */
+    private boolean isValidEmail(String email) {
+        if (email == null || email.isEmpty()) {
+            return false;
+        }
+        // Простая проверка формата email
+        String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$";
+        return email.matches(emailRegex);
+    }
+    
+    /**
+     * Проверяет валидность телефонного номера
+     * 
+     * @param phone телефонный номер для проверки
+     * @return true если телефон валиден, false в противном случае
+     */
+    private boolean isValidPhone(String phone) {
+        if (phone == null || phone.isEmpty()) {
+            return false;
+        }
+        // Проверка формата российского телефона (+7, 8, или без префикса)
+        // Поддерживает форматы: +7-XXX-XXX-XX-XX, 8-XXX-XXX-XX-XX, XXX-XXX-XX-XX
+        String phoneRegex = "^(\\+?7|8)?[-\\s]?\\d{3}[-\\s]?\\d{3}[-\\s]?\\d{2}[-\\s]?\\d{2}$";
+        // Убираем все нецифровые символы для проверки длины
+        String digitsOnly = phone.replaceAll("[^0-9]", "");
+        return digitsOnly.length() >= 10 && digitsOnly.length() <= 11;
+    }
+    
+    /**
+     * Проверяет валидность СНИЛС
+     * 
+     * @param snils СНИЛС для проверки в формате XXX-XXX-XXX-XX
+     * @return true если СНИЛС валиден, false в противном случае
+     */
+    private boolean isValidSnils(String snils) {
+        if (snils == null || snils.isEmpty()) {
+            return false;
+        }
+        // Проверка формата СНИЛС: XXX-XXX-XXX-XX
+        String snilsRegex = "^\\d{3}-\\d{3}-\\d{3}-\\d{2}$";
+        if (!snils.matches(snilsRegex)) {
+            return false;
+        }
+        // Убираем дефисы для проверки контрольной суммы
+        String digitsOnly = snils.replaceAll("-", "");
+        if (digitsOnly.length() != 11) {
+            return false;
+        }
+        // Проверка контрольной суммы СНИЛС
+        return validateSnilsChecksum(digitsOnly);
+    }
+    
+    /**
+     * Проверяет контрольную сумму СНИЛС
+     * 
+     * @param snilsDigits СНИЛС без дефисов (11 цифр)
+     * @return true если контрольная сумма верна, false в противном случае
+     */
+    private boolean validateSnilsChecksum(String snilsDigits) {
+        try {
+            int sum = 0;
+            for (int i = 0; i < 9; i++) {
+                int digit = Character.getNumericValue(snilsDigits.charAt(i));
+                sum += digit * (9 - i);
+            }
+            int checksum = sum % 101;
+            if (checksum == 100) {
+                checksum = 0;
+            }
+            int actualChecksum = Integer.parseInt(snilsDigits.substring(9));
+            return checksum == actualChecksum;
+        } catch (Exception e) {
+            return false;
+        }
     }
     
     /**

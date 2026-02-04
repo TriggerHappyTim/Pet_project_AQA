@@ -21,8 +21,8 @@ import org.testng.asserts.SoftAssert;
  * - Автоматический выбор стратегии тестирования (UI/API)
  * 
  * <p>Все тестовые классы должны наследоваться от этого класса
- * либо от его специализированных версий ({@link com.bft.test.base.UITestBase}, 
- * {@link com.bft.test.base.ApiTestBase}).
+ * либо от его специализированных версий ({@link com.bft.test.base.UITestBase}). 
+ * // {@link com.bft.test.base.ApiTestBase} - ЗАКОММЕНТИРОВАНО: API тесты не используются
  * 
  * <p>Пример использования:
  * <pre>{@code
@@ -39,7 +39,7 @@ import org.testng.asserts.SoftAssert;
  * }</pre>
  * 
  * @see com.bft.test.base.UITestBase для UI тестов с Selenide
- * @see com.bft.test.base.ApiTestBase для API тестов с RestAssured
+ * // @see com.bft.test.base.ApiTestBase для API тестов с RestAssured - ЗАКОММЕНТИРОВАНО: API тесты не используются
  * @see TestConfiguration для управления конфигурацией
  * @author QA Automation Team
  * @since 1.0
@@ -48,10 +48,21 @@ import org.testng.asserts.SoftAssert;
 public class BaseTest {
 
     /**
+     * ThreadLocal для потокобезопасного хранения SoftAssert
+     * 
+     * Обеспечивает изоляцию SoftAssert между потоками при параллельном выполнении тестов.
+     * Каждый поток получает свой собственный экземпляр SoftAssert.
+     */
+    private static final ThreadLocal<SoftAssert> softAssertThreadLocal = new ThreadLocal<>();
+
+    /**
      * SoftAssert для выполнения мягких проверок
      * 
      * Позволяет продолжать выполнение теста даже после провала проверки.
      * Все провалы аккумулируются и выбрасываются в конце через assertAll().
+     * 
+     * При параллельном выполнении каждый поток получает свой собственный экземпляр
+     * через ThreadLocal для обеспечения потокобезопасности.
      */
     protected SoftAssert softAssert;
 
@@ -101,15 +112,22 @@ public class BaseTest {
     /**
      * Гарантирует инициализацию SoftAssert перед каждым тестовым методом.
      * Нужно при parallel="methods": @BeforeTest может выполниться не для всех потоков.
+     * 
+     * Использует ThreadLocal для обеспечения потокобезопасности при параллельном выполнении.
      */
     @BeforeMethod
     public void ensureSoftAssert() {
+        // Получаем или создаем SoftAssert для текущего потока
+        softAssert = softAssertThreadLocal.get();
+        
         if (softAssert == null) {
             try {
                 softAssert = TestConfiguration.getSoftAssert();
             } catch (IllegalStateException e) {
                 softAssert = new SoftAssert();
             }
+            // Сохраняем в ThreadLocal для текущего потока
+            softAssertThreadLocal.set(softAssert);
         }
     }
 
@@ -119,12 +137,74 @@ public class BaseTest {
      * 
      * Выполняется после каждого тестового метода (@Test).
      * Выполняет cleanup стратегии тестирования (закрытие браузера, сброс состояния и т.д.).
+     * Очищает ThreadLocal для освобождения памяти.
      * 
+     * <p>Автоматически создает скриншот при провале теста для UI тестов.
+     * 
+     * @param result результат выполнения теста (для проверки статуса)
      * @see TestConfiguration#afterTest() для деталей cleanup
      */
     @AfterMethod
-    public void tearDownTest() {
+    public void tearDownTest(org.testng.ITestResult result) {
+        // Создаем скриншот при провале теста (только для UI тестов)
+        if (result.getStatus() == org.testng.ITestResult.FAILURE) {
+            takeScreenshotOnFailure(result);
+        }
+        
         // Выполняем действия стратегии после теста
         TestConfiguration.afterTest();
+        
+        // Очищаем ThreadLocal для текущего потока после завершения теста
+        // Это важно для предотвращения утечек памяти при параллельном выполнении
+        softAssertThreadLocal.remove();
+        softAssert = null;
+    }
+    
+    /**
+     * Создает скриншот при провале теста
+     * 
+     * Автоматически вызывается в @AfterMethod при провале теста.
+     * Имя файла формируется на основе имени теста и временной метки.
+     * 
+     * @param result результат выполнения теста для получения контекста
+     */
+    private void takeScreenshotOnFailure(org.testng.ITestResult result) {
+        // Проверяем, что это UI тест (только для UI тестов создаем скриншоты)
+        if (!TestConfiguration.isUITest()) {
+            return;
+        }
+        
+        try {
+            String testName = result.getMethod().getMethodName();
+            String className = result.getTestClass().getName();
+            String screenshotName = String.format("failure_%s_%s_%d",
+                className.substring(className.lastIndexOf('.') + 1),
+                testName,
+                System.currentTimeMillis());
+            
+            // Используем Selenide для создания скриншота
+            com.codeborne.selenide.Selenide.screenshot(screenshotName);
+            
+            // Логируем создание скриншота
+            org.slf4j.LoggerFactory.getLogger(getClass())
+                .info("Скриншот ошибки сохранен: {}", screenshotName);
+            
+            // Прикрепляем к Allure отчету
+            io.qameta.allure.Allure.addAttachment(
+                "Screenshot on failure",
+                "image/png",
+                new java.io.ByteArrayInputStream(
+                    ((org.openqa.selenium.TakesScreenshot) 
+                        com.codeborne.selenide.WebDriverRunner.getWebDriver())
+                        .getScreenshotAs(org.openqa.selenium.OutputType.BYTES)
+                ),
+                ".png"
+            );
+            
+        } catch (Exception e) {
+            // Логируем ошибку, но не прерываем выполнение
+            org.slf4j.LoggerFactory.getLogger(getClass())
+                .warn("Не удалось сделать скриншот ошибки: {}", e.getMessage());
+        }
     }
 }

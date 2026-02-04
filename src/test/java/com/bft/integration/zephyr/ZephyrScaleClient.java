@@ -1,4 +1,7 @@
-package com.bft.integration.zephyr;
+// ============================================================================
+// ЗАКОММЕНТИРОВАНО: Zephyr/Jira интеграция не используется в проекте
+// ============================================================================
+// package com.bft.integration.zephyr;
 
 import com.bft.integration.mapper.TestResult;
 import com.bft.integration.mapper.TestStatus;
@@ -23,7 +26,7 @@ import java.util.List;
  * 
  * <p>Документация API: https://support.smartbear.com/zephyr-scale-cloud/api-docs/
  */
-public class ZephyrScaleClient implements ZephyrClient {
+// public class ZephyrScaleClient implements ZephyrClient {
     
     private static final Logger logger = LoggerFactory.getLogger(ZephyrScaleClient.class);
     
@@ -191,4 +194,4 @@ public class ZephyrScaleClient implements ZephyrClient {
             logger.debug("Zephyr Scale client closed");
         }
     }
-}
+// }

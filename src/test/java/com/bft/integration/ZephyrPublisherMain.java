@@ -1,4 +1,7 @@
-package com.bft.integration;
+// ============================================================================
+// ЗАКОММЕНТИРОВАНО: Zephyr/Jira интеграция не используется в проекте
+// ============================================================================
+// package com.bft.integration;
 
 import com.bft.integration.allure.AllureResultsPublisher;
 import com.bft.integration.config.IntegrationConfig;
@@ -27,7 +30,7 @@ import java.nio.file.Paths;
  * }
  * </pre>
  */
-public class ZephyrPublisherMain {
+// public class ZephyrPublisherMain {
     
     private static final Logger logger = LoggerFactory.getLogger(ZephyrPublisherMain.class);
     
@@ -157,4 +160,4 @@ public class ZephyrPublisherMain {
         String mode;
         String resultsDir;
     }
-}
+// }

@@ -1,4 +1,7 @@
-package com.bft.integration.zephyr;
+// ============================================================================
+// ЗАКОММЕНТИРОВАНО: Zephyr/Jira интеграция не используется в проекте
+// ============================================================================
+// package com.bft.integration.zephyr;
 
 import com.bft.integration.mapper.TestResult;
 import com.bft.integration.mapper.TestStatus;
@@ -47,4 +50,4 @@ public interface ZephyrClient extends AutoCloseable {
      * @return true если API доступен
      */
     boolean isAvailable();
-}
+// }

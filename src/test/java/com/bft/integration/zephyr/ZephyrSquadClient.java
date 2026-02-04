@@ -1,4 +1,7 @@
-package com.bft.integration.zephyr;
+// ============================================================================
+// ЗАКОММЕНТИРОВАНО: Zephyr/Jira интеграция не используется в проекте
+// ============================================================================
+// package com.bft.integration.zephyr;
 
 import com.bft.integration.mapper.TestResult;
 import com.bft.integration.mapper.TestStatus;
@@ -106,4 +109,4 @@ public class ZephyrSquadClient implements ZephyrClient {
     public void close() throws IOException {
         logger.debug("Zephyr Squad client closed");
     }
-}
+// }

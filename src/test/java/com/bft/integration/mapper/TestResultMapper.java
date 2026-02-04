@@ -1,6 +1,6 @@
 package com.bft.integration.mapper;
 
-import com.bft.test.annotations.ZephyrTest;
+// import com.bft.test.annotations.ZephyrTest;  // ЗАКОММЕНТИРОВАНО: Zephyr/Jira интеграция не используется
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.ITestResult;
@@ -35,50 +35,53 @@ public class TestResultMapper {
         Method method = testNGResult.getMethod().getConstructorOrMethod().getMethod();
         
         // Извлечь Zephyr test key из аннотации
-        Optional<String> testKey = extractZephyrTestKey(method);
-        Optional<String> testCycle = extractZephyrTestCycle(method);
+        // ЗАКОММЕНТИРОВАНО: Zephyr/Jira интеграция не используется
+        // Optional<String> testKey = extractZephyrTestKey(method);
+        // Optional<String> testCycle = extractZephyrTestCycle(method);
+        // 
+        // if (!testKey.isPresent()) {
+        //     logger.debug("Test method {} does not have @ZephyrTest annotation", method.getName());
+        //     return null;
+        // }
+        return null; // Zephyr интеграция отключена
         
-        if (!testKey.isPresent()) {
-            logger.debug("Test method {} does not have @ZephyrTest annotation", method.getName());
-            return null;
-        }
-        
+        // ЗАКОММЕНТИРОВАНО: Zephyr/Jira интеграция не используется
         // Конвертировать статус
-        TestStatus status = TestStatus.fromTestNGStatus(testNGResult.getStatus());
-        
+        // TestStatus status = TestStatus.fromTestNGStatus(testNGResult.getStatus());
+        // 
         // Вычислить длительность
-        long durationMs = testNGResult.getEndMillis() - testNGResult.getStartMillis();
-        Duration duration = Duration.ofMillis(durationMs);
-        
+        // long durationMs = testNGResult.getEndMillis() - testNGResult.getStartMillis();
+        // Duration duration = Duration.ofMillis(durationMs);
+        // 
         // Время выполнения
-        LocalDateTime executedAt = LocalDateTime.ofInstant(
-            Instant.ofEpochMilli(testNGResult.getStartMillis()),
-            ZoneId.systemDefault()
-        );
-        
+        // LocalDateTime executedAt = LocalDateTime.ofInstant(
+        //     Instant.ofEpochMilli(testNGResult.getStartMillis()),
+        //     ZoneId.systemDefault()
+        // );
+        // 
         // Построить комментарий
-        String comment = buildComment(testNGResult);
-        
+        // String comment = buildComment(testNGResult);
+        // 
         // Создать TestResult
-        TestResult.Builder builder = TestResult.builder()
-            .testKey(testKey.get())
-            .testName(method.getName())
-            .status(status)
-            .duration(duration)
-            .executedAt(executedAt)
-            .comment(comment);
-        
+        // TestResult.Builder builder = TestResult.builder()
+        //     .testKey(testKey.get())
+        //     .testName(method.getName())
+        //     .status(status)
+        //     .duration(duration)
+        //     .executedAt(executedAt)
+        //     .comment(comment);
+        // 
         // Добавить test cycle если указан
-        testCycle.ifPresent(builder::testCycle);
-        
+        // testCycle.ifPresent(builder::testCycle);
+        // 
         // Добавить информацию об ошибке если тест провален
-        if (testNGResult.getThrowable() != null) {
-            Throwable throwable = testNGResult.getThrowable();
-            builder.errorMessage(throwable.getMessage());
-            builder.stackTrace(getStackTraceAsString(throwable));
-        }
-        
-        return builder.build();
+        // if (testNGResult.getThrowable() != null) {
+        //     Throwable throwable = testNGResult.getThrowable();
+        //     builder.errorMessage(throwable.getMessage());
+        //     builder.stackTrace(getStackTraceAsString(throwable));
+        // }
+        // 
+        // return builder.build();
     }
     
     /**
@@ -87,21 +90,22 @@ public class TestResultMapper {
      * @param testMethod тестовый метод
      * @return test key если найден
      */
-    public Optional<String> extractZephyrTestKey(Method testMethod) {
-        // Проверить аннотацию на методе
-        ZephyrTest methodAnnotation = testMethod.getAnnotation(ZephyrTest.class);
-        if (methodAnnotation != null && !methodAnnotation.testKey().isEmpty()) {
-            return Optional.of(methodAnnotation.testKey());
-        }
-        
-        // Проверить аннотацию на классе
-        ZephyrTest classAnnotation = testMethod.getDeclaringClass().getAnnotation(ZephyrTest.class);
-        if (classAnnotation != null && !classAnnotation.testKey().isEmpty()) {
-            return Optional.of(classAnnotation.testKey());
-        }
-        
-        return Optional.empty();
-    }
+    // ЗАКОММЕНТИРОВАНО: Zephyr/Jira интеграция не используется
+    // public Optional<String> extractZephyrTestKey(Method testMethod) {
+    //     // Проверить аннотацию на методе
+    //     ZephyrTest methodAnnotation = testMethod.getAnnotation(ZephyrTest.class);
+    //     if (methodAnnotation != null && !methodAnnotation.testKey().isEmpty()) {
+    //         return Optional.of(methodAnnotation.testKey());
+    //     }
+    //     
+    //     // Проверить аннотацию на классе
+    //     ZephyrTest classAnnotation = testMethod.getDeclaringClass().getAnnotation(ZephyrTest.class);
+    //     if (classAnnotation != null && !classAnnotation.testKey().isEmpty()) {
+    //         return Optional.of(classAnnotation.testKey());
+    //     }
+    //     
+    //     return Optional.empty();
+    // }
     
     /**
      * Извлечь Zephyr test cycle из аннотации
@@ -109,21 +113,22 @@ public class TestResultMapper {
      * @param testMethod тестовый метод
      * @return test cycle если указан
      */
-    public Optional<String> extractZephyrTestCycle(Method testMethod) {
-        // Проверить аннотацию на методе
-        ZephyrTest methodAnnotation = testMethod.getAnnotation(ZephyrTest.class);
-        if (methodAnnotation != null && !methodAnnotation.testCycle().isEmpty()) {
-            return Optional.of(methodAnnotation.testCycle());
-        }
-        
-        // Проверить аннотацию на классе
-        ZephyrTest classAnnotation = testMethod.getDeclaringClass().getAnnotation(ZephyrTest.class);
-        if (classAnnotation != null && !classAnnotation.testCycle().isEmpty()) {
-            return Optional.of(classAnnotation.testCycle());
-        }
-        
-        return Optional.empty();
-    }
+    // ЗАКОММЕНТИРОВАНО: Zephyr/Jira интеграция не используется
+    // public Optional<String> extractZephyrTestCycle(Method testMethod) {
+    //     // Проверить аннотацию на методе
+    //     ZephyrTest methodAnnotation = testMethod.getAnnotation(ZephyrTest.class);
+    //     if (methodAnnotation != null && !methodAnnotation.testCycle().isEmpty()) {
+    //         return Optional.of(methodAnnotation.testCycle());
+    //     }
+    //     
+    //     // Проверить аннотацию на классе
+    //     ZephyrTest classAnnotation = testMethod.getDeclaringClass().getAnnotation(ZephyrTest.class);
+    //     if (classAnnotation != null && !classAnnotation.testCycle().isEmpty()) {
+    //         return Optional.of(classAnnotation.testCycle());
+    //     }
+    //     
+    //     return Optional.empty();
+    // }
     
     /**
      * Построить комментарий для test execution

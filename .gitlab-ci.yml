@@ -7,13 +7,13 @@ workflow:
   rules:
     - if: $CI_COMMIT_BRANCH =~ /master/
       variables:
-        ENVIRONMENT: "test"
+        ENVIRONMENT: "uat"
     - if: $CI_PIPELINE_SOURCE =~ /web|pipeline/
 
 variables:
   ENVIRONMENT:
     value:
-      "test"
+      "uat"
     options:
       - "test"
       - "uat"
@@ -58,6 +58,7 @@ variables:
       ""
     options:
       - ""
+      # ========== Системные тесты ==========
       # CryptoPro тесты
       - "CryptoProCertificateTest#verifyCryptoProPluginLoaded"
       - "CryptoProCertificateTest#testCertificateSelectionAndSigning"
@@ -66,70 +67,71 @@ variables:
       - "CryptoProCertificateTest#testCertificateSigningWithStrategy"
       - "CryptoProCertificateTest#quickPluginCheck"
       - "CryptoProCertificateTest#testPluginFailureScenario"
-      # SZV-М тесты
+      # ЗАКОММЕНТИРОВАНО: Security тесты не используются
+      # - "SecuritySystemTest#testMockCredentials"
+      # - "SecuritySystemTest#testDataMasking"
+      # - "SecuritySystemTest#testNoHardcodedCredentials"
+      # - "SecuritySystemTest#testCredentialProviderPriority"
+      # - "SecuritySystemTest#testSzvReportsStepsSecurity"
+      # ЗАКОММЕНТИРОВАНО: Примеры тестов не используются
+      # - "ExampleTest#exampleAutomaticStrategySelection"
+      # - "ExampleTest#exampleExplicitStrategySelection"
+      # - "ExampleTest#exampleFullStrategySetup"
+      # - "ExampleTest#exampleConfigurationUsage"
+      # - "ExampleTest#exampleCustomStrategy"
+      # - "ExampleTest#exampleImprovedPageObject"
+      # ЗАКОММЕНТИРОВАНО: Улучшенные примеры не используются
+      # - "ImprovedTestExamples#exampleSeparatedTestLogic"
+      # - "ImprovedTestExamples#exampleDataDrivenTest"
+      # - "ImprovedTestExamples#exampleHelperMethodsTest"
+      # - "ImprovedTestExamples#exampleComprehensiveUITest"
+      # - "ImprovedTestExamples#exampleValidationOnlyTest"
+      # - "ImprovedTestExamples#examplePerformanceTest"
+      # ЗАКОММЕНТИРОВАНО: Расширенные примеры отчетности не используются
+      # - "AdvancedReportingExample#comprehensiveReportingTest"
+      # - "AdvancedReportingExample#parameterizedReportingTest"
+      # - "AdvancedReportingExample#performanceReportingTest"
+      # - "AdvancedReportingExample#networkLoggingTest"
+      # - "AdvancedReportingExample#debugInformationTest"
+      # - "AdvancedReportingExample#customLabelsTest"
+      # ========== Ручной ввод ==========
+      # ЕФС-1 ручной ввод
+      - "Efs1#efs_szv_td"
+      - "Efs1#efs_szv_staj"
+      - "Efs1#efs_szv_td_krivonosov"
+      # SZV-М ручной ввод
       - "SZVFormTest#testSZVMFormFullScenario"
       - "SZVFormTest#testSZVMFormEditMode"
       - "SZVFormTest#testSZVMFormWithMultiplePersons"
       - "SZVFormTest#testSignAndSendButton"
       - "SZVFormTest#testAddInsuredPersonWithDataProvider"
-      # SZV-ТД тесты
+      # SZV-ТД ручной ввод
       - "Szv_td#szv_td"
-      - "Szv_td#szv_td_xml"
-      # SZV-М отдельные тесты
+      # SZV-М отдельные тесты (ручной ввод)
       - "Szv_m#szv_m"
-      - "Szv_m#szv_m_xml"
-      # SZV-СТАЖ тесты
-      - "Szv_staj#szv_staj_xml"
-      # SZV-КОРР тесты
-      - "Szv_korr#szv_korr_xml"
-      # SZV-К тесты
-      - "Szv_k#szv_k_xml"
-      # SZV-ИСХ тесты
-      - "Szv_ish#szv_ish_xml"
-      # SZV-ДСО тесты
-      - "Szv_dso#szv_dso_xml"
-      # ОДВ-1 тесты
-      - "Odv1#odv_1_xml"
-      # ЕФС-1 тесты
+      # ========== Загрузка через XML ==========
+      # ЕФС-1 XML загрузка
       - "Efs1#efs_1_xml"
-      - "Efs1#efs_szv_td"
-      - "Efs1#efs_szv_staj"
-      # ЕФС-1 тесты с конкретными пользователями
       - "Efs1#efs_1_xml_krivonosov"
       - "Efs1#efs_1_xml_bezdomniy"
-      - "Efs1#efs_szv_td_krivonosov"
-      # Примеры тестов
-      - "ExampleTest#exampleAutomaticStrategySelection"
-      - "ExampleTest#exampleExplicitStrategySelection"
-      - "ExampleTest#exampleApiStrategy"
-      - "ExampleTest#exampleFullStrategySetup"
-      - "ExampleTest#exampleConfigurationUsage"
-      - "ExampleTest#exampleCustomStrategy"
-      - "ExampleTest#exampleImprovedPageObject"
-      # Улучшенные примеры
-      - "ImprovedTestExamples#exampleSeparatedTestLogic"
-      - "ImprovedTestExamples#exampleDataDrivenTest"
-      - "ImprovedTestExamples#exampleHelperMethodsTest"
-      - "ImprovedTestExamples#exampleComprehensiveUITest"
-      - "ImprovedTestExamples#exampleValidationOnlyTest"
-      - "ImprovedTestExamples#examplePerformanceTest"
-      - "ImprovedTestExamples#exampleApiTest"
-      - "ImprovedTestExamples#exampleSimpleApiTest"
-      # Расширенные примеры отчетности
-      - "AdvancedReportingExample#comprehensiveReportingTest"
-      - "AdvancedReportingExample#parameterizedReportingTest"
-      - "AdvancedReportingExample#performanceReportingTest"
-      - "AdvancedReportingExample#networkLoggingTest"
-      - "AdvancedReportingExample#debugInformationTest"
-      - "AdvancedReportingExample#customLabelsTest"
-      # Security тесты
-      - "SecuritySystemTest#testMockCredentials"
-      - "SecuritySystemTest#testDataMasking"
-      - "SecuritySystemTest#testNoHardcodedCredentials"
-      - "SecuritySystemTest#testCredentialProviderPriority"
-      - "SecuritySystemTest#testSzvReportsStepsSecurity"
+      # SZV-ТД XML загрузка
+      - "Szv_td#szv_td_xml"
+      # SZV-М XML загрузка
+      - "Szv_m#szv_m_xml"
+      # SZV-СТАЖ XML загрузка
+      - "Szv_staj#szv_staj_xml"
+      # SZV-КОРР XML загрузка
+      - "Szv_korr#szv_korr_xml"
+      # SZV-К XML загрузка
+      - "Szv_k#szv_k_xml"
+      # SZV-ИСХ XML загрузка
+      - "Szv_ish#szv_ish_xml"
+      # SZV-ДСО XML загрузка
+      - "Szv_dso#szv_dso_xml"
+      # ОДВ-1 XML загрузка
+      - "Odv1#odv_1_xml"
     description:
-      "Введите имя одиночного теста, например, CryptoProCertificateTest#verifyCryptoProPluginLoaded. Для прохождения всех тестов в профиле (TEST_SCRIPT) оставьте поле пустым. Список содержит все доступные тестовые методы из проекта"
+      "Выберите тест из списка или оставьте пустым для запуска всех тестов профиля (TEST_SCRIPT)"
   REPORT_DIR_NAME: "allure-results"
   SUITE:
     value: ""

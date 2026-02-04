@@ -3,6 +3,7 @@ package com.bft.ui.core.element;
 import com.bft.ui.core.wait.WaitStrategy;
 import com.codeborne.selenide.SelenideElement;
 import io.qameta.allure.Step;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.interactions.Actions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,14 +92,21 @@ public class SmartElement {
     }
 
     /**
-     * Ввод текста
+     * Ввод текста.
+     * Если clear() падает (MUI/React controlled input), ввод через Ctrl+A и sendKeys.
      */
     @Step("Вводим текст '{value}' в элемент: {name}")
     public SmartElement type(String value) {
         logger.debug("Вводим текст '{}' в элемент: {}", value, name);
         waitStrategy.waitFor(element, name);
-        element.clear();
-        element.setValue(value);
+        try {
+            element.clear();
+            element.setValue(value);
+        } catch (Throwable e) {
+            logger.debug("clear/setValue пропущен для элемента {}, ввод через Ctrl+A+sendKeys: {}", name, e.getMessage());
+            element.sendKeys(Keys.chord(Keys.CONTROL, "a"));
+            element.sendKeys(value);
+        }
         logger.info("Текст '{}' введен в элемент: {}", value, name);
         return this;
     }

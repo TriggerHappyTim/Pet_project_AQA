@@ -161,11 +161,124 @@ public class ReportTestDataBuilder extends TestDataBuilder<ReportTestDataBuilder
      * Строит объект ReportData на основе настроек builder
      * 
      * @return объект ReportData с установленными значениями
+     * @throws IllegalArgumentException если данные не прошли валидацию
      */
     @Override
     public ReportData build() {
+        // Валидация данных перед созданием объекта
+        validateReportData();
+        
         return new ReportData(reportType, reportNumber, periodStart, periodEnd,
             status, organization, processId, xmlContent);
+    }
+    
+    /**
+     * Валидирует данные отчета перед созданием объекта
+     * 
+     * @throws IllegalArgumentException если данные не прошли валидацию
+     */
+    private void validateReportData() {
+        // Валидация типа отчета
+        if (reportType == null) {
+            throw new IllegalArgumentException("Тип отчета является обязательным полем");
+        }
+        
+        // Валидация номера отчета
+        if (reportNumber == null || reportNumber.trim().isEmpty()) {
+            throw new IllegalArgumentException("Номер отчета является обязательным полем");
+        }
+        
+        // Валидация периода отчета
+        if (periodStart != null && periodEnd != null) {
+            if (periodStart.isAfter(periodEnd)) {
+                throw new IllegalArgumentException(
+                    String.format("Начальная дата периода (%s) не может быть позже конечной даты (%s)",
+                        periodStart, periodEnd));
+            }
+            
+            // Проверка разумности периода (не более 5 лет назад и не в будущем)
+            LocalDate minDate = LocalDate.now().minusYears(5);
+            LocalDate maxDate = LocalDate.now().plusDays(1);
+            
+            if (periodStart.isBefore(minDate)) {
+                throw new IllegalArgumentException(
+                    String.format("Начальная дата периода (%s) не может быть раньше %s",
+                        periodStart, minDate));
+            }
+            
+            if (periodEnd.isAfter(maxDate)) {
+                throw new IllegalArgumentException(
+                    String.format("Конечная дата периода (%s) не может быть в будущем",
+                        periodEnd));
+            }
+        }
+        
+        // Валидация статуса
+        if (status != null && !status.isEmpty()) {
+            String[] validStatuses = {"Черновик", "Отправлен", "Обработан", "Ошибка", "Отклонен"};
+            boolean isValidStatus = false;
+            for (String validStatus : validStatuses) {
+                if (status.equals(validStatus)) {
+                    isValidStatus = true;
+                    break;
+                }
+            }
+            if (!isValidStatus) {
+                throw new IllegalArgumentException(
+                    String.format("Некорректный статус отчета: %s. Допустимые значения: %s",
+                        status, String.join(", ", validStatuses)));
+            }
+        }
+        
+        // Валидация организации
+        if (organization != null && organization.trim().isEmpty()) {
+            throw new IllegalArgumentException("Название организации не может быть пустым");
+        }
+        
+        // Валидация processId (UUID формата)
+        if (processId != null && !processId.isEmpty()) {
+            if (!isValidUUID(processId)) {
+                throw new IllegalArgumentException("Некорректный формат UUID для processId: " + processId);
+            }
+        }
+        
+        // Валидация XML содержимого (если указано)
+        if (xmlContent != null && !xmlContent.isEmpty()) {
+            if (!isValidXml(xmlContent)) {
+                throw new IllegalArgumentException("Некорректный формат XML содержимого");
+            }
+        }
+    }
+    
+    /**
+     * Проверяет валидность UUID
+     * 
+     * @param uuid строка для проверки
+     * @return true если строка является валидным UUID, false в противном случае
+     */
+    private boolean isValidUUID(String uuid) {
+        try {
+            UUID.fromString(uuid);
+            return true;
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
+    }
+    
+    /**
+     * Проверяет базовую валидность XML
+     * 
+     * @param xml XML строка для проверки
+     * @return true если XML имеет базовую валидность, false в противном случае
+     */
+    private boolean isValidXml(String xml) {
+        if (xml == null || xml.trim().isEmpty()) {
+            return false;
+        }
+        // Базовая проверка: XML должен начинаться с < и содержать закрывающие теги
+        String trimmed = xml.trim();
+        return trimmed.startsWith("<") && 
+               (trimmed.contains("</") || trimmed.endsWith("/>") || trimmed.endsWith("?>"));
     }
     
     /**

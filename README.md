@@ -51,7 +51,7 @@ src/test/java/com/bft/
 │   ├── TestContext.java          # Контекст выполнения тестов
 │   ├── TestStrategy.java         # Базовый интерфейс стратегий
 │   ├── TestStrategyType.java     # Типы стратегий
-│   ├── ApiTestStrategy.java      # Стратегия API тестов
+│   ├── ApiTestStrategy.java      # Стратегия API тестов (ЗАКОММЕНТИРОВАНО: не используется)
 │   └── UITestStrategy.java       # Стратегия UI тестов
 ├── ui/                      # Пользовательский интерфейс
 │   ├── pages/               # Page Object'ы
@@ -80,7 +80,7 @@ src/test/java/com/bft/
 ├── test/                    # Тестовая инфраструктура
 │   ├── base/                # Базовые классы тестов
 │   │   ├── UITestBase.java
-│   │   ├── ApiTestBase.java
+│   │   ├── ApiTestBase.java      # ЗАКОММЕНТИРОВАНО: API тесты не используются
 │   │   └── DataDrivenTestBase.java
 │   ├── annotations/         # Кастомные аннотации
 │   ├── logging/             # Логирование

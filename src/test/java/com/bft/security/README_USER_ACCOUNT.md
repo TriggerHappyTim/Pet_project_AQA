@@ -242,8 +242,8 @@ evs.user2.password=SecurePass123
 evs.user2.organization=ОРГАНИЗАЦИЯ -2036470831
 
 # Default user
-evs.username=testuser@example.com
-evs.password=DefaultPass123
+evs.username=133-900-785 49
+evs.password=Egisso13?
 evs.organization=ОРГАНИЗАЦИЯ -1563384004
 ```
 

@@ -27,13 +27,13 @@ print_usage() {
     echo "  -e, --environment ENV    Test environment (test, dev, staging, prod) [default: test]"
     echo "  -b, --browser BROWSER    Browser to use (chrome, firefox) [default: chrome]"
     echo "  -t, --threads COUNT      Number of parallel threads [default: 1]"
-    echo "  -g, --groups GROUPS      Test groups to run (smoke, regression, api, security)"
+    echo "  -g, --groups GROUPS      Test groups to run (smoke, regression, security)"  # api - ЗАКОММЕНТИРОВАНО: API тесты не используются
     echo "  -d, --docker             Run tests in Docker containers"
     echo "  --local                  Run tests locally (without Docker)"
     echo "  --smoke                  Run only smoke tests"
     echo "  --regression             Run regression tests"
     echo "  --security               Run security tests"
-    echo "  --api                    Run API tests"
+    # echo "  --api                    Run API tests"  # ЗАКОММЕНТИРОВАНО: API тесты не используются
     echo "  --performance            Run performance tests"
     echo "  --allure                 Generate and serve Allure report"
     echo "  -h, --help               Show this help message"
@@ -41,7 +41,7 @@ print_usage() {
     echo "Examples:"
     echo "  $0 --smoke --docker          # Run smoke tests in Docker"
     echo "  $0 --regression -b firefox   # Run regression tests with Firefox"
-    echo "  $0 --api --local             # Run API tests locally"
+    # echo "  $0 --api --local             # Run API tests locally"  # ЗАКОММЕНТИРОВАНО: API тесты не используются
     echo "  $0 --allure                  # Generate Allure report"
 }
 
@@ -104,11 +104,12 @@ while [[ $# -gt 0 ]]; do
             TEST_GROUPS="security"
             shift
             ;;
-        --api)
-            TEST_TYPE="api"
-            TEST_GROUPS="api"
-            shift
-            ;;
+        # ЗАКОММЕНТИРОВАНО: API тесты не используются
+        # --api)
+        #     TEST_TYPE="api"
+        #     TEST_GROUPS="api"
+        #     shift
+        #     ;;
         --performance)
             TEST_TYPE="performance"
             TEST_GROUPS="performance"
@@ -147,9 +148,9 @@ run_tests_local() {
         security)
             test_class="*SecurityTest*"
             ;;
-        api)
-            test_class="*ApiTest*"
-            ;;
+        # api)  # ЗАКОММЕНТИРОВАНО: API тесты не используются
+        #     test_class="*ApiTest*"
+        #     ;;
         performance)
             test_class="*PerformanceTest*"
             ;;
@@ -217,9 +218,9 @@ run_tests_docker() {
         security)
             test_cmd="$test_cmd -Dtest=*SecurityTest*"
             ;;
-        api)
-            test_cmd="$test_cmd -Dtest=*ApiTest*"
-            ;;
+        # api)  # ЗАКОММЕНТИРОВАНО: API тесты не используются
+        #     test_cmd="$test_cmd -Dtest=*ApiTest*"
+        #     ;;
         performance)
             test_cmd="$test_cmd -Dtest=*PerformanceTest*"
             ;;
@@ -291,6 +292,11 @@ main() {
         fi
     fi
 }
+
+# ========================================
+# Скрипт для локального запуска в стиле GitLab CI/CD
+# Создайте файл run-local-gitlab-style.sh в этой же директории
+# ========================================
 
 # Run main function
 main "$@"

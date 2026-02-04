@@ -1,9 +1,12 @@
-package com.bft.integration.config;
+// ============================================================================
+// ЗАКОММЕНТИРОВАНО: Zephyr/Jira интеграция не используется в проекте
+// ============================================================================
+// package com.bft.integration.config;
 
 /**
  * Тип Zephyr для интеграции
  */
-public enum ZephyrType {
+// public enum ZephyrType {
     /**
      * Zephyr Scale (бывший Zephyr for Jira)
      * Использует REST API v2
@@ -57,4 +60,4 @@ public enum ZephyrType {
         
         throw new IllegalArgumentException("Unknown Zephyr type: " + code);
     }
-}
+// }

@@ -1,4 +1,7 @@
-package com.bft.helpers.api;
+// ============================================================================
+// ЗАКОММЕНТИРОВАНО: API тесты не используются в проекте
+// ============================================================================
+// package com.bft.helpers.api;
 
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.builder.ResponseSpecBuilder;
@@ -271,4 +274,4 @@ public class Specifications {
     private Specifications() {
         throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
     }
-}
+// }

@@ -12,7 +12,7 @@ import com.codeborne.selenide.Configuration;
  * <p>Реализации стратегий:
  * <ul>
  *   <li>{@link UITestStrategy} - для UI тестирования с использованием браузеров</li>
- *   <li>{@link ApiTestStrategy} - для API тестирования через HTTP запросы</li>
+ *   // <li>{@link ApiTestStrategy} - для API тестирования через HTTP запросы</li> - ЗАКОММЕНТИРОВАНО: API тесты не используются
  * </ul>
  * 
  * <p>Пример использования:

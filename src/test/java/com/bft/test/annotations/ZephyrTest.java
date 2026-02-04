@@ -1,4 +1,7 @@
-package com.bft.test.annotations;
+// ============================================================================
+// ЗАКОММЕНТИРОВАНО: Zephyr/Jira интеграция не используется в проекте
+// ============================================================================
+// package com.bft.test.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -69,4 +72,4 @@ public @interface ZephyrTest {
      * @return приоритет теста
      */
     String priority() default "";
-}
+// }

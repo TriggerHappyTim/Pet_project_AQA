@@ -277,10 +277,20 @@ public class TestLogger {
 
     private void attachTestSummary(TestContext context) {
         if (context == null) {
+            logger.warn("TestContext is null, skipping summary attachment");
             return;
         }
         
         try {
+            // Безопасное получение значений с проверкой на null
+            String testName = context.getTestName() != null ? context.getTestName() : "Unknown";
+            boolean success = context.isSuccess();
+            long duration = context.getDuration();
+            String startTime = context.getStartTime() != null ? 
+                context.getStartTime().format(TIMESTAMP_FORMAT) : "N/A";
+            String endTime = context.getEndTime() != null ? 
+                context.getEndTime().format(TIMESTAMP_FORMAT) : "N/A";
+            
             String summary = String.format(
                 "Test Summary:\n" +
                 "Name: %s\n" +
@@ -288,16 +298,22 @@ public class TestLogger {
                 "Duration: %d ms\n" +
                 "Started: %s\n" +
                 "Finished: %s",
-                context.getTestName() != null ? context.getTestName() : "Unknown",
-                context.isSuccess(),
-                context.getDuration(),
-                context.getStartTime() != null ? context.getStartTime().format(TIMESTAMP_FORMAT) : "N/A",
-                context.getEndTime() != null ? context.getEndTime().format(TIMESTAMP_FORMAT) : "N/A"
+                testName, success, duration, startTime, endTime
             );
 
             attachFile("test_summary", summary, "text/plain");
         } catch (Exception e) {
-            // Игнорируем ошибки при создании summary
+            // Логируем ошибки при создании summary для отладки
+            logger.error("Ошибка при создании test summary: {}", e.getMessage(), e);
+            try {
+                // Пытаемся прикрепить хотя бы базовую информацию об ошибке
+                attachFile("test_summary_error", 
+                    "Ошибка при создании summary: " + e.getMessage(), 
+                    "text/plain");
+            } catch (Exception e2) {
+                // Если и это не удалось, просто логируем
+                logger.error("Не удалось прикрепить информацию об ошибке summary", e2);
+            }
         }
     }
 

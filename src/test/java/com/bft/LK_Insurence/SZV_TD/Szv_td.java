@@ -2,6 +2,7 @@ package com.bft.LK_Insurence.SZV_TD;
 
 import com.bft.BaseTest;
 import com.bft.enums.ReportType;
+import com.bft.enums.UITypeSelector;
 import com.bft.enums.UIType;
 import com.bft.steps.SzvReportsSteps;
 import io.qameta.allure.*;
@@ -26,7 +27,7 @@ public class Szv_td extends BaseTest {
     public void szv_td() {
         SzvReportsSteps steps = new SzvReportsSteps();
 
-        steps.authorizeEVS(UIType.EVS_TEST_LKS); //Авторизация в ЕВС
+        steps.authorizeEVS(UITypeSelector.getSelectedUIType(UIType.EVS_TEST_LKS));
         steps.addReports();
         steps.selectReportType(ReportType.SZVTD);
         steps.addNewReport();
@@ -50,7 +51,7 @@ public class Szv_td extends BaseTest {
 
         SzvReportsSteps steps = new SzvReportsSteps();
 
-        steps.authorizeEVS(UIType.EVS_UAT_LKS); //Авторизация в ЕВС
+        steps.authorizeEVS(UITypeSelector.getSelectedUIType());
         steps.addReports(); //Добавление отчета
         steps.selectReportType(ReportType.SZVTD); //Выбор отчета
         steps.addNewReport(); // выбор нового отчета

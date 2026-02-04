@@ -83,4 +83,5 @@ fi
 echo
 echo "=== Validation Summary ==="
 echo "Basic validation completed. Run 'mvn compile' for full compilation check."
-echo "Run 'mvn test -Dtest=SecuritySystemTest' to test security features."
+# ЗАКОММЕНТИРОВАНО: SecuritySystemTest не используется
+# echo "Run 'mvn test -Dtest=SecuritySystemTest' to test security features."

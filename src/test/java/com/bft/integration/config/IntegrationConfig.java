@@ -1,4 +1,7 @@
-package com.bft.integration.config;
+// ============================================================================
+// ЗАКОММЕНТИРОВАНО: Zephyr/Jira интеграция не используется в проекте
+// ============================================================================
+// package com.bft.integration.config;
 
 import com.bft.security.CredentialManager;
 import org.slf4j.Logger;
@@ -205,4 +208,4 @@ public class IntegrationConfig {
             ", testCycleKey='" + zephyrTestCycleKey + '\'' +
             '}';
     }
-}
+// }

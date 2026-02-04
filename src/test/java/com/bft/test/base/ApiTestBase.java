@@ -1,4 +1,7 @@
-package com.bft.test.base;
+// ============================================================================
+// ЗАКОММЕНТИРОВАНО: API тесты не используются в проекте
+// ============================================================================
+// package com.bft.test.base;
 
 import com.bft.BaseTest;
 import io.restassured.response.Response;
@@ -62,7 +65,7 @@ import static io.restassured.RestAssured.given;
  * @see UITestBase для UI тестов
  * @since 1.0
  */
-public abstract class ApiTestBase extends BaseTest {
+// public abstract class ApiTestBase extends BaseTest {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -421,4 +424,4 @@ public abstract class ApiTestBase extends BaseTest {
     protected void finalizeAssertions() {
         softAssert.assertAll();
     }
-}
+// }

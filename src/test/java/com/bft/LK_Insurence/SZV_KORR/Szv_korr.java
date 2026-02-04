@@ -2,7 +2,7 @@ package com.bft.LK_Insurence.SZV_KORR;
 
 import com.bft.BaseTest;
 import com.bft.enums.ReportType;
-import com.bft.enums.UIType;
+import com.bft.enums.UITypeSelector;
 import com.bft.steps.SzvReportsSteps;
 import io.qameta.allure.*;
 import org.testng.annotations.Test;
@@ -25,7 +25,7 @@ public class Szv_korr extends BaseTest {
 
         SzvReportsSteps steps = new SzvReportsSteps();
 
-        steps.authorizeEVS(UIType.EVS_UAT_LKS); //Авторизация в ЕВС
+        steps.authorizeEVS(UITypeSelector.getSelectedUIType());
         steps.addReports(); //Добавление отчета
         steps.selectReportType(ReportType.SZVKORR); //Выбор отчета
         steps.addNewReport(); // выбор нового отчета

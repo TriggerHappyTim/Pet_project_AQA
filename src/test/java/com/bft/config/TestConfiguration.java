@@ -168,7 +168,7 @@ public class TestConfiguration {
      * 
      * Стратегия определяет поведение тестов (UI или API).
      * 
-     * @return объект {@link TestStrategy} (UITestStrategy или ApiTestStrategy)
+     * @return объект {@link TestStrategy} (UITestStrategy) // или ApiTestStrategy - ЗАКОММЕНТИРОВАНО: API тесты не используются
      * @throws IllegalStateException если конфигурация не инициализирована
      * @see TestStrategy для методов стратегии
      */
@@ -213,15 +213,16 @@ public class TestConfiguration {
         return getCurrentContext().isUITest();
     }
 
-    /**
-     * Проверяет, является ли текущий тест API тестом
-     * 
-     * @return true если используется ApiTestStrategy, false в противном случае
-     * @throws IllegalStateException если конфигурация не инициализирована
-     */
-    public static boolean isApiTest() {
-        return getCurrentContext().isApiTest();
-    }
+    // ЗАКОММЕНТИРОВАНО: API тесты не используются
+    // /**
+    //  * Проверяет, является ли текущий тест API тестом
+    //  * 
+    //  * @return true если используется ApiTestStrategy, false в противном случае
+    //  * @throws IllegalStateException если конфигурация не инициализирована
+    //  */
+    // public static boolean isApiTest() {
+    //     return getCurrentContext().isApiTest();
+    // }
 
     /**
      * Возвращает менеджер фабрик браузеров (только для UI тестов)

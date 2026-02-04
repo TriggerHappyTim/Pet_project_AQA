@@ -2,7 +2,7 @@ package com.bft.LK_Insurence.SZV_ISH;
 
 import com.bft.BaseTest;
 import com.bft.enums.ReportType;
-import com.bft.enums.UIType;
+import com.bft.enums.UITypeSelector;
 import com.bft.security.TestUsers;
 import com.bft.steps.SzvReportsSteps;
 import io.qameta.allure.*;
@@ -30,7 +30,7 @@ public class Szv_ish extends BaseTest {
     public void szv_ish_manual() {
         SzvReportsSteps steps = new SzvReportsSteps();
         
-        steps.authorizeEVS(UIType.EVS_UAT_LKS, TestUsers.KRIVONOSOV_ALEXANDER);
+        steps.authorizeEVS(UITypeSelector.getSelectedUIType(), TestUsers.KRIVONOSOV_ALEXANDER);
         steps.addReports();
         steps.selectReportType(ReportType.SZVISH);
         steps.addNewReport();
@@ -52,7 +52,7 @@ public class Szv_ish extends BaseTest {
 
         SzvReportsSteps steps = new SzvReportsSteps();
 
-        steps.authorizeEVS(UIType.EVS_UAT_LKS, TestUsers.KRIVONOSOV_ALEXANDER); //Вход через Госуслуги, орг. «ОРГАНИЗАЦИЯ -154*»
+        steps.authorizeEVS(UITypeSelector.getSelectedUIType(), TestUsers.KRIVONOSOV_ALEXANDER); //Вход через Госуслуги, орг. «ОРГАНИЗАЦИЯ -154*»
         steps.addReports(); //Добавление отчета
         steps.selectReportType(ReportType.SZVISH); //Выбор отчета
         steps.addNewReport(); // выбор нового отчета

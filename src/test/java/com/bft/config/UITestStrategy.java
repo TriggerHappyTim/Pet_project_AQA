@@ -203,25 +203,57 @@ public class UITestStrategy extends BaseTestStrategy {
 
         // Дополнительная настройка для UI тестов
         try {
-            // Инициализируем browserFactory если он еще не инициализирован
+            // Инициализируем browserFactoryManager если он еще не инициализирован
             if (browserFactoryManager == null) {
+                System.out.println("Инициализация BrowserFactoryManager для браузера: " + browser);
                 browserFactoryManager = new BrowserFactoryManager(cryptoProPath, cryptoProXpiPath, isRemote);
-            }
-            if (browserFactory == null) {
-                browserFactory = browserFactoryManager.createFactory(browser);
+                
+                if (browserFactoryManager == null) {
+                    throw new IllegalStateException("Не удалось создать BrowserFactoryManager");
+                }
             }
             
+            // Инициализируем browserFactory если он еще не инициализирован
+            if (browserFactory == null) {
+                System.out.println("Создание BrowserConfigFactory для браузера: " + browser);
+                browserFactory = browserFactoryManager.createFactory(browser);
+                
+                if (browserFactory == null) {
+                    throw new IllegalStateException("Не удалось создать BrowserConfigFactory для браузера: " + browser);
+                }
+            }
+            
+            // Получаем capabilities с проверкой на null
             Capabilities capabilities = browserFactory.getCapabilities();
+            if (capabilities == null) {
+                throw new IllegalStateException("BrowserConfigFactory вернул null capabilities для браузера: " + browser);
+            }
+            
             Configuration.browserCapabilities = new MutableCapabilities(capabilities);
-            Configuration.browser = browserFactory.getBrowserName();
+            
+            // Получаем имя браузера с проверкой на null
+            String browserName = browserFactory.getBrowserName();
+            if (browserName == null || browserName.isEmpty()) {
+                System.err.println("Предупреждение: BrowserConfigFactory вернул пустое имя браузера, используем значение из конфигурации: " + browser);
+                browserName = browser;
+            }
+            Configuration.browser = browserName;
+            
+            System.out.println("Браузер настроен: " + browserName + " (запрошен: " + browser + ")");
 
             // Настройки для удаленного запуска (VNC/Video уже установлены в BaseBrowserFactory)
             if (isRemote) {
                 Configuration.browserCapabilities.setCapability("videoName",
                         browser + "_" + System.currentTimeMillis() + ".mp4");
+                System.out.println("Настроена запись видео для удаленного запуска");
             }
 
+        } catch (IllegalStateException e) {
+            System.err.println("Ошибка состояния при настройке браузера: " + e.getMessage());
+            throw new RuntimeException("Failed to configure browser: " + browser + ". " + e.getMessage(), e);
         } catch (Exception e) {
+            System.err.println("Неожиданная ошибка при настройке браузера: " + e.getMessage());
+            e.printStackTrace();
             throw new RuntimeException("Failed to configure browser: " + browser, e);
         }
     }

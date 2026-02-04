@@ -1,4 +1,7 @@
-package com.bft.helpers.api;
+// ============================================================================
+// ЗАКОММЕНТИРОВАНО: API тесты не используются в проекте
+// ============================================================================
+// package com.bft.helpers.api;
 
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
@@ -59,7 +62,7 @@ import static io.restassured.RestAssured.given;
  * @see Specifications для создания RequestSpec и ResponseSpec
  * @since 2.0
  */
-public class ApiCoreRequests {
+// public class ApiCoreRequests {
     
     private static final Logger logger = LoggerFactory.getLogger(ApiCoreRequests.class);
     
@@ -359,4 +362,4 @@ public class ApiCoreRequests {
     private ApiCoreRequests() {
         throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
     }
-}
+// }

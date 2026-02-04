@@ -1,4 +1,7 @@
-package com.bft.config;
+// ============================================================================
+// ЗАКОММЕНТИРОВАНО: API тесты не используются в проекте
+// ============================================================================
+// package com.bft.config;
 
 import com.codeborne.selenide.Configuration;
 
@@ -34,7 +37,7 @@ import com.codeborne.selenide.Configuration;
  * @see TestStrategy для интерфейса стратегий
  * @since 1.0
  */
-public class ApiTestStrategy extends BaseTestStrategy {
+// public class ApiTestStrategy extends BaseTestStrategy {
 
     /**
      * Базовый URL API для тестов
@@ -79,10 +82,11 @@ public class ApiTestStrategy extends BaseTestStrategy {
      * @return {@link TestStrategyType#API}
      * @see TestStrategy#getType()
      */
-    @Override
-    public TestStrategyType getType() {
-        return TestStrategyType.API;
-    }
+    // ЗАКОММЕНТИРОВАНО: API тесты не используются
+    // @Override
+    // public TestStrategyType getType() {
+    //     return TestStrategyType.API;
+    // }
 
     /**
      * Проверяет, применима ли API стратегия для текущего окружения
@@ -302,4 +306,4 @@ public class ApiTestStrategy extends BaseTestStrategy {
             return false;
         }
     }
-}
+// }

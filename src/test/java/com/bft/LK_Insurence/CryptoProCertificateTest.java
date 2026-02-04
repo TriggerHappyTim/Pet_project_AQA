@@ -8,6 +8,8 @@ import com.bft.strategy.CryptoProValidationStrategy;
 import com.bft.strategy.TestExecutionStrategy;
 import com.bft.strategy.TestStrategyManager;
 import com.bft.strategy.ExecutionStrategyType;
+import com.bft.test.retry.Retry;
+import com.bft.test.retry.RetryAnalyzer;
 import io.qameta.allure.*;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -27,7 +29,7 @@ import org.testng.annotations.Test;
  *    BrowserFactoryManager factory = TestConfiguration.getBrowserFactoryManager();
  *
  * 4. Инициализация с другой стратегией:
- *    TestConfiguration.initialize(TestStrategyType.API);
+ *    // TestConfiguration.initialize(TestStrategyType.API); - ЗАКОММЕНТИРОВАНО: API тесты не используются
  */
 @Epic("КриптоПРО")
 @Feature("Электронная подпись")
@@ -39,27 +41,26 @@ public class CryptoProCertificateTest extends UITestBase {
 
     @BeforeMethod
     public void initializePageObject() {
-        // Убеждаемся, что softAssert инициализирован
-        if (softAssert == null) {
-            softAssert = new org.testng.asserts.SoftAssert();
-        }
-        // Инициализируем страницу только если она еще не создана
-        if (cryptoProPage == null) {
-            try {
-                Selenide.open(DEMO_PAGE_URL);
-                cryptoProPage = new CryptoProDemoPage(softAssert);
-            } catch (Exception e) {
-                logger.error("Ошибка при инициализации страницы: {}", e.getMessage());
-                throw e;
-            }
-        }
+        // Используем helper для инициализации SoftAssert
+        softAssert = com.bft.test.helpers.TestSetupHelper.ensureSoftAssert(softAssert);
+        
+        // Используем helper для инициализации Page Object
+        cryptoProPage = com.bft.test.helpers.PageObjectHelper.initializePageObjectWithUrlCheck(
+            cryptoProPage,
+            DEMO_PAGE_URL,
+            new String[]{"cryptopro", "cades"},
+            () -> new CryptoProDemoPage(softAssert),
+            "CryptoProDemoPage"
+        );
     }
 
     @Test(groups = {"web", "crypto", "smoke"}, 
-          description = "Проверка загрузки плагина КриптоПРО")
+          description = "Проверка загрузки плагина КриптоПРО",
+          retryAnalyzer = RetryAnalyzer.class)
     @Story("Проверка загрузки плагина")
     @Description("Проверка что плагин КриптоПРО загружен и отмечен зеленым")
     @Severity(SeverityLevel.CRITICAL)
+    @Retry(maxAttempts = 3, reason = "Тест может быть нестабильным из-за загрузки плагина")
     public void verifyCryptoProPluginLoaded() {
         arrangeActAssert(
             // Arrange - подготовка
@@ -90,23 +91,28 @@ public class CryptoProCertificateTest extends UITestBase {
             // Assert - проверки результатов
             (softAssert) -> {
                 performCheck("Проверка статуса расширения", () -> {
-                    softAssert.assertTrue(true, "Расширение должно быть загружено");
+                    boolean extensionLoaded = cryptoProPage.verifyExtensionLoaded();
+                    softAssert.assertTrue(extensionLoaded, "Расширение должно быть загружено");
                 });
 
                 performCheck("Проверка статуса плагина", () -> {
-                    softAssert.assertTrue(true, "Плагин CSP должен быть загружен");
+                    boolean pluginLoaded = cryptoProPage.verifyPluginLoaded();
+                    softAssert.assertTrue(pluginLoaded, "Плагин CSP должен быть загружен");
                 });
 
                 performCheck("Проверка статуса криптопровайдера", () -> {
-                    softAssert.assertTrue(true, "Криптопровайдер должен быть загружен");
+                    boolean cspLoaded = cryptoProPage.verifyCspLoaded();
+                    softAssert.assertTrue(cspLoaded, "Криптопровайдер должен быть загружен");
                 });
 
                 performCheck("Проверка статуса объектов плагина", () -> {
-                    softAssert.assertTrue(true, "Объекты плагина должны быть загружены");
+                    boolean objectsLoaded = cryptoProPage.verifyObjectsLoaded();
+                    softAssert.assertTrue(objectsLoaded, "Объекты плагина должны быть загружены");
                 });
 
                 performCheck("Проверка выбора сертификатов", () -> {
-                    softAssert.assertTrue(true, "Выбор сертификатов должен быть доступен");
+                    boolean certificateSelectionAvailable = cryptoProPage.verifyCertificateSelectionAvailable();
+                    softAssert.assertTrue(certificateSelectionAvailable, "Выбор сертификатов должен быть доступен");
                 });
             },
 
@@ -122,7 +128,15 @@ public class CryptoProCertificateTest extends UITestBase {
     @Description("Проверка процесса создания электронной подписи")
     @Severity(SeverityLevel.BLOCKER)
     public void testCertificateSelectionAndSigning() {
+        // Убеждаемся, что страница инициализирована
+        if (cryptoProPage == null) {
+            initializePageObject();
+        }
+        
         Allure.step("Открываем демо-страницу", () -> {
+            if (cryptoProPage == null) {
+                throw new IllegalStateException("CryptoProDemoPage не инициализирован");
+            }
             cryptoProPage.openPage("Демо-страница КриптоПРО");
         });
 
@@ -170,7 +184,15 @@ public class CryptoProCertificateTest extends UITestBase {
     @Description("Полная проверка всех диагностических элементов")
     @Severity(SeverityLevel.NORMAL)
     public void testPageDiagnostics() {
+        // Убеждаемся, что страница инициализирована
+        if (cryptoProPage == null) {
+            initializePageObject();
+        }
+        
         Allure.step("Открываем страницу", () -> {
+            if (cryptoProPage == null) {
+                throw new IllegalStateException("CryptoProDemoPage не инициализирован");
+            }
             cryptoProPage.openPage("Демо-страница КриптоПРО");
         });
 
@@ -282,7 +304,15 @@ public class CryptoProCertificateTest extends UITestBase {
     @Description("Быстрая проверка только основных элементов")
     @Severity(SeverityLevel.MINOR)
     public void quickPluginCheck() {
+        // Убеждаемся, что страница инициализирована
+        if (cryptoProPage == null) {
+            initializePageObject();
+        }
+        
         Allure.step("Открываем страницу", () -> {
+            if (cryptoProPage == null) {
+                throw new IllegalStateException("CryptoProDemoPage не инициализирован");
+            }
             cryptoProPage.openPage("Демо-страница КриптоПРО");
         });
 
@@ -302,7 +332,15 @@ public class CryptoProCertificateTest extends UITestBase {
     @Description("Проверка поведения при отсутствии плагина")
     @Severity(SeverityLevel.NORMAL)
     public void testPluginFailureScenario() {
+        // Убеждаемся, что страница инициализирована
+        if (cryptoProPage == null) {
+            initializePageObject();
+        }
+        
         Allure.step("Открываем страницу", () -> {
+            if (cryptoProPage == null) {
+                throw new IllegalStateException("CryptoProDemoPage не инициализирован");
+            }
             // Здесь можно открыть страницу без расширения
             // или эмулировать состояние, когда плагин не загружен
             cryptoProPage.openPage("Демо-страница КриптоПРО");

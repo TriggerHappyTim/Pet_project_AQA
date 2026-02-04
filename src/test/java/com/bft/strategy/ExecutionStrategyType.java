@@ -4,7 +4,7 @@ package com.bft.strategy;
  * Типы стратегий выполнения тестов
  * 
  * Используется для определения конкретных стратегий выполнения тестов.
- * Отличается от {@link com.bft.config.TestStrategyType}, который определяет общие типы тестов (UI, API, MOBILE).
+ * Отличается от {@link com.bft.config.TestStrategyType}, который определяет общие типы тестов (UI, MOBILE). // API - ЗАКОММЕНТИРОВАНО
  * 
  * @see com.bft.config.TestStrategyType для общих типов тестов
  */
@@ -14,10 +14,11 @@ public enum ExecutionStrategyType {
     UI_FORM_SUBMISSION("UI Form Submission"),
     UI_NAVIGATION("UI Navigation"),
 
+    // ЗАКОММЕНТИРОВАНО: API тесты не используются
     // API стратегии
-    API_REST_CALL("API REST Call"),
-    API_SOAP_CALL("API SOAP Call"),
-    API_GRAPHQL("API GraphQL"),
+    // API_REST_CALL("API REST Call"),
+    // API_SOAP_CALL("API SOAP Call"),
+    // API_GRAPHQL("API GraphQL"),
 
     // Data стратегии
     DATA_SQL_VALIDATION("Data SQL Validation"),

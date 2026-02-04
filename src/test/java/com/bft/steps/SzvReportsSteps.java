@@ -766,7 +766,7 @@ public class SzvReportsSteps {
         
         logger.info("Выполняем авторизацию в EVS для пользователя: {}", credentials.username);
         
-        String organization = credentialManager.getCredential("evs.organization", "ОРГАНИЗАЦИЯ -1563384004");
+        String organization = credentialManager.getCredential("evs.organization", "ОРГАНИЗАЦИЯ -1546025669");
         
         new LoginPage()
                 .open(uiType)
@@ -794,14 +794,42 @@ public class SzvReportsSteps {
      * Выбирает тип отчета из списка доступных типов
      * 
      * Выбирает тип отчета через радиокнопку и подтверждает выбор кнопкой "Добавить".
+     * Добавлена проверка, что правильный тип отчета выбран перед подтверждением.
      * 
-     * @param reportType тип отчета из enum ReportType (например, SZV_M, SZV_ISH, SZV_TD_TYPE1)
+     * @param reportType тип отчета из enum ReportType (например, EFS1, SZVM, SZVTD)
      */
-    @Step(value = "Выбор типа отчета")
+    @Step(value = "Выбор типа отчета: {reportType.value}")
     public void selectReportType(ReportType reportType) {
-        new MainPage()
-                .clickRadioInput(reportType.value)
-                .clickBtnPrimary("Добавить");
+        String reportTypeText = reportType.value;
+        String escaped = reportTypeText.replace("'", "''");
+        logger.info("Выбираем тип отчета: {}", reportTypeText);
+        
+        // 1. Ждем появления модального окна "Добавление отчета" и списка типов отчетов
+        com.codeborne.selenide.Selenide.$x("//span[text() = '" + escaped + "']")
+            .shouldBe(com.codeborne.selenide.Condition.visible, java.time.Duration.ofSeconds(15));
+        logger.debug("Модальное окно с типом отчета '{}' отображается", reportTypeText);
+        
+        // 2. Кликаем по LABEL, содержащему span с текстом типа отчета (клик по label надежно выбирает radio)
+        com.codeborne.selenide.SelenideElement labelToClick = com.codeborne.selenide.Selenide.$x(
+            "//label[contains(@class, 'n2o-radio-input')][.//span[text() = '" + escaped + "']]"
+        );
+        labelToClick.shouldBe(com.codeborne.selenide.Condition.visible, java.time.Duration.ofSeconds(10));
+        labelToClick.click();
+        logger.info("Клик по label типа отчета '{}' выполнен", reportTypeText);
+        
+        // 3. Ждем, пока у выбранного label появится класс checked (если приложение его выставляет)
+        try {
+            com.codeborne.selenide.Selenide.$x(
+                "//label[contains(@class, 'n2o-radio-input')][contains(@class, 'checked')][.//span[text() = '" + escaped + "']]"
+            ).shouldBe(com.codeborne.selenide.Condition.visible, java.time.Duration.ofSeconds(3));
+            logger.debug("Тип отчета '{}' отмечен как выбранный", reportTypeText);
+        } catch (Exception e) {
+            logger.debug("Класс checked не обнаружен, продолжаем (возможно, другой способ отображения выбора)");
+        }
+        
+        // 4. Подтверждаем выбор
+        new MainPage().clickBtnPrimary("Добавить");
+        logger.info("Выбор типа отчета '{}' подтвержден", reportTypeText);
     }
 
     /**
@@ -875,18 +903,16 @@ public class SzvReportsSteps {
     }
 
     /**
-     * Заполняет общие сведения для отчета ЕФС (Единая форма сведений)
-     * 
-     * Заполняет должность и фамилию руководителя для отчета ЕФС.
-     * Имя и отчество закомментированы (не используются в текущей реализации).
+     * Заполняет общие сведения для отчета ЕФС (Единая форма сведений).
+     * <p>Заполняет должность руководителя, фамилию, имя и отчество (соответствует сценарию Playwright).
      */
     @Step(value = "Общие сведения EFS")
     public void addGeneralInfoEFS(){
         new MainPage()
                 .clickSpanId("headPosition", TestConfig.InsuredPerson.JOB)
                 .inputFieldPerson("headSurname", TestConfig.InsuredPerson.LAST_NAME_1)
-                /*.inputFieldPerson("firstName", TestConfig.InsuredPerson.FIRST_NAME_1)
-                .inputFieldPerson("middleName", TestConfig.InsuredPerson.MIDDLE_NAME_1)*/;
+                .inputFieldPerson("headName", TestConfig.InsuredPerson.FIRST_NAME_1)
+                .inputFieldPerson("headMiddlename", TestConfig.InsuredPerson.MIDDLE_NAME_1);
     }
 
     /**
@@ -982,7 +1008,7 @@ public class SzvReportsSteps {
         new MainPage()
                 .clickBtnSecondary2("Добавить")
                 .muiSpan("Вид мероприятия") //Прием
-                .inputDateLabel("eventDate","01.01.2025")
+                .inputDateEventDateViaJs("01.01.2025")
                 .clickMInputLabel("position","Директор")
                 .muiSpanValue("Код выполняемой функции по ОКЗ","option-0") //1111.7
                 .clickMInputLabel("documentList[0].name","Договор")
@@ -1074,23 +1100,33 @@ public class SzvReportsSteps {
     }
 
     /**
-     * Добавляет сведения о стаже застрахованного лица
-     * 
-     * Заполняет форму добавления стажа:
-     * - Тип сведений: Исходная (первый вариант)
-     * - Отчетный период: 2023 (первый вариант)
-     * - Период стажа: с 01.01.2025 по 01.12.2025
+     * Добавляет сведения о стаже застрахованного лица.
+     * <p>Заполняет форму: Тип сведений (Исходная), Отчетный период (2023), период стажа 01.01.2025–01.12.2025
+     * и обязательные поля формы периода (код территориальных условий, коэффициент, класс условий труда и др.).
+     * <p>Соответствует сценарию Playwright: 3-я «Добавить» → Тип/Период → 5-я «Добавить» (форма периода) →
+     * Начало/Конец периода → остальные поля → Escape → 6-я «Добавить» (подтвердить период).
      */
     @Step(value = "Добавление СТАЖ")
     public void addSTAJ(){
         new MainPage()
                 .clickBtnSecondary3("Добавить")
-                .muiSpanValue("Тип сведений","option-0") //Исходная
-                .muiSpanValue("Отчетный период","option-0") //2023
-                .clickBtnSecondary5("Добавить")
-                .clickMInputLabel("experienceTimePeriodDateAt","01.01.2025")
-                .clickMInputLabel("experienceTimePeriodDateTo","01.12.2025")
-                .clickBtnSecondary5("Добавить");
+                .muiSpanValue("Тип сведений","option-0")   // Исходная
+                .muiSpanValue("Отчетный период","option-0") // 2023
+                .clickBtnSecondary5("Добавить")            // Открыть форму периода стажа
+                .inputDatePeriodStaj("01.01.2025", "01.12.2025")
+                .clickAddInGracePeriodTable()              // «Добавить» в таблице Льготный стаж (появляется форма строки)
+                .selectInGracePeriodFormByName("tuBasis", "МКС")           // Код территориальных условий
+                .inputInGracePeriodCoefficientAndBidShare("0.78", "0.65")   // Коэффициент и Доля ставки (по метке или по порядку полей)
+                .selectInGracePeriodFormByNameOrLabel("isGroundCode", new String[]{"Основание", "Код основания"}, "ПОЛЕ")
+                .selectInGracePeriodDialogByLabelFirstMatch(new String[]{"Код дополнительных сведений", "Дополнительные сведения", "дополнительных", "сведений", "Код дополнительных"}, "ДЕКРЕТ")
+                .selectInGracePeriodDialogByLabelFirstMatch(new String[]{"Код особых условий труда", "Особые условия труда"}, "-2")
+                .selectInGracePeriodDialogByLabelFirstMatch(new String[]{"Код позиции списка", "Позиция списка"}, "11105000")
+                .selectInGracePeriodFormByNameOrLabel("vlForDnpCode", new String[]{"Код для ВЛ ДНП", "ВЛ для ДНП"}, "-СП")
+                .inputInGracePeriodFormByNameOrLabel("vlForDnpBidShare", new String[]{"Доля для ВЛ ДНП", "Доля ставки"}, "0.52")
+                .inputInGracePeriodDialogByLabelFirstMatch(new String[]{"Номер рабочего места", "Рабочее место"}, "54")
+                .selectInGracePeriodDialogByLabelFirstMatch(new String[]{"Класс условий труда", "Класс условий"}, "3.1")
+                .clickSaveInGracePeriodFormDialog()       // Сохранить строку в форме «Льготный стаж» (не Escape!)
+                .clickBtnSecondary6("Добавить");         // Подтвердить добавление периода
     }
 
     /**

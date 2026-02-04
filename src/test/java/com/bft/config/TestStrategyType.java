@@ -5,7 +5,7 @@ package com.bft.config;
  */
 public enum TestStrategyType {
     UI("UI Testing"),
-    API("API Testing"),
+    // API("API Testing"),  // ЗАКОММЕНТИРОВАНО: API тесты не используются
     MOBILE("Mobile Testing"),
     PERFORMANCE("Performance Testing"),
     SECURITY("Security Testing");
