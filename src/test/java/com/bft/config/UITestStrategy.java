@@ -241,11 +241,13 @@ public class UITestStrategy extends BaseTestStrategy {
             
             System.out.println("Браузер настроен: " + browserName + " (запрошен: " + browser + ")");
 
-            // Настройки для удаленного запуска (VNC/Video уже установлены в BaseBrowserFactory)
-            if (isRemote) {
+            // Настройки для удаленного запуска с Selenoid (videoName работает только с Selenoid)
+            // Для стандартного Selenium Grid videoName не поддерживается и вызывает ошибку
+            String remoteUrl = System.getProperty("selenide.remote", "");
+            if (isRemote && remoteUrl.contains("selenoid")) {
                 Configuration.browserCapabilities.setCapability("videoName",
                         browser + "_" + System.currentTimeMillis() + ".mp4");
-                System.out.println("Настроена запись видео для удаленного запуска");
+                System.out.println("Настроена запись видео для удаленного запуска (Selenoid)");
             }
 
         } catch (IllegalStateException e) {
