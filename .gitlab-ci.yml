@@ -153,7 +153,7 @@ maven test:
           TEST_LIST=""
           MAVEN_PROFILE=""
         fi
-        
+      
         # Если есть SINGLE_TEST, он имеет приоритет над TEST_SCRIPT
         if [ -n "${SINGLE_TEST}" ]
         then
@@ -174,7 +174,7 @@ maven test:
               ;;
           esac
         fi
-        
+      
         # Формируем команду Maven
         if [ -n "${TEST_LIST}" ]
         then
@@ -229,7 +229,7 @@ maven test:
           TEST_LIST=""
           MAVEN_PROFILE=""
         fi
-        
+      
         # Если есть SINGLE_TEST, он имеет приоритет над TEST_SCRIPT
         if [ -n "${SINGLE_TEST}" ]
         then
@@ -250,7 +250,7 @@ maven test:
               ;;
           esac
         fi
-        
+      
         # Формируем команду Maven
         if [ -n "${TEST_LIST}" ]
         then
