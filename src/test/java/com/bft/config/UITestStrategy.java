@@ -207,10 +207,6 @@ public class UITestStrategy extends BaseTestStrategy {
             if (browserFactoryManager == null) {
                 System.out.println("Инициализация BrowserFactoryManager для браузера: " + browser);
                 browserFactoryManager = new BrowserFactoryManager(cryptoProPath, cryptoProXpiPath, isRemote);
-                
-                if (browserFactoryManager == null) {
-                    throw new IllegalStateException("Не удалось создать BrowserFactoryManager");
-                }
             }
             
             // Инициализируем browserFactory если он еще не инициализирован
@@ -229,7 +225,14 @@ public class UITestStrategy extends BaseTestStrategy {
                 throw new IllegalStateException("BrowserConfigFactory вернул null capabilities для браузера: " + browser);
             }
             
-            Configuration.browserCapabilities = new MutableCapabilities(capabilities);
+            // Для FirefoxOptions используем напрямую, без обертки в MutableCapabilities
+            // Это избегает проблем с NullPointerException при слиянии в Selenide
+            if (capabilities instanceof org.openqa.selenium.firefox.FirefoxOptions) {
+                Configuration.browserCapabilities = (org.openqa.selenium.firefox.FirefoxOptions) capabilities;
+            } else {
+                // Для других браузеров (Chrome) используем MutableCapabilities
+                Configuration.browserCapabilities = new MutableCapabilities(capabilities);
+            }
             
             // Получаем имя браузера с проверкой на null
             String browserName = browserFactory.getBrowserName();
