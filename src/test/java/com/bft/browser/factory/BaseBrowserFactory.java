@@ -1,6 +1,5 @@
 package com.bft.browser.factory;
 
-import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
 import java.io.File;
@@ -39,11 +38,15 @@ public abstract class BaseBrowserFactory implements BrowserConfigFactory {
     protected DesiredCapabilities createBaseCapabilities() {
         DesiredCapabilities capabilities = new DesiredCapabilities();
 
-        // VNC and Video capabilities are only for remote/Selenoid execution
-        if (isRemote) {
+        // VNC and Video capabilities работают только с Selenoid
+        // Для стандартного Selenium Grid эти capabilities не нужны
+        String remoteUrl = System.getProperty("selenide.remote", "");
+        if (isRemote && remoteUrl.contains("selenoid")) {
+            // Используем Selenoid capabilities только если URL содержит "selenoid"
             capabilities.setCapability("enableVNC", true);
             capabilities.setCapability("enableVideo", false);
         }
+        // Для стандартного Selenium Grid (chrome, firefox) capabilities не добавляем
 
         return capabilities;
     }

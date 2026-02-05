@@ -325,7 +325,7 @@
             <id>browser_chrome_remote</id>
             <properties>
                 <selenide.browser>chrome</selenide.browser>
-                <selenide.remote>http://selenoid:4444/wd/hub</selenide.remote>
+                <selenide.remote>http://chrome:4444/wd/hub</selenide.remote>
             </properties>
         </profile>
         
@@ -333,7 +333,7 @@
             <id>browser_firefox_remote</id>
             <properties>
                 <selenide.browser>firefox</selenide.browser>
-                <selenide.remote>http://selenoid:4444/wd/hub</selenide.remote>
+                <selenide.remote>http://firefox:4444/wd/hub</selenide.remote>
             </properties>
         </profile>
         
@@ -342,6 +342,23 @@
             <properties>
                 <selenide.browser>chrome</selenide.browser>
                 <selenide.remote>http://moon:4444/wd/hub</selenide.remote>
+            </properties>
+        </profile>
+        
+        <!-- Browser profiles для локального запуска -->
+        <profile>
+            <id>browser_chrome_local</id>
+            <properties>
+                <selenide.browser>chrome</selenide.browser>
+                <!-- selenide.remote не указывается - используется локальный браузер -->
+            </properties>
+        </profile>
+        
+        <profile>
+            <id>browser_firefox_local</id>
+            <properties>
+                <selenide.browser>firefox</selenide.browser>
+                <!-- selenide.remote не указывается - используется локальный браузер -->
             </properties>
         </profile>
         

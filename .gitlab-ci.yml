@@ -41,7 +41,7 @@ variables:
       - "browser_firefox_remote"
       - "moon_chrome_browser"
     description:
-      "Выберите целевой браузер из списка (должны быть описаны в секции <profiles> файла pom.xml)"
+      "Выберите целевой браузер из списка. Для GitLab CI используются только удаленные профили (browser_chrome_remote, browser_firefox_remote, moon_chrome_browser). Локальные профили (browser_chrome_local, browser_firefox_local) доступны только для локального запуска."
   USER_ACCOUNT:
     value:
       "user_krivonosov"
@@ -96,14 +96,16 @@ maven test:
   #    CI_DEBUG_TRACE: "true"
   allow_failure: true
   timeout: 16h
-  #  services:
-  #    - name: selenium/standalone-chrome:latest
-  #      alias: chrome
-  #  variables:
-  #    SE_NODE_OVERRIDE_MAX_SESSIONS: "true"
-  #    SE_NODE_MAX_SESSIONS: "4"
+  services:
+    - name: selenium/standalone-chrome:latest
+      alias: chrome
+    - name: selenium/standalone-firefox:latest
+      alias: firefox
+  variables:
+    SE_NODE_OVERRIDE_MAX_SESSIONS: "true"
+    SE_NODE_MAX_SESSIONS: "4"
   script:
-    #    - curl -X GET http://chrome:4444/status
+    - curl -X GET http://chrome:4444/status || echo "Selenium Grid не доступен, но продолжаем выполнение"
     - |
       if [ -n "${FORWARDED_HELM_NAMESPACE}" ]; then
         HELM_NAMESPACE=${FORWARDED_HELM_NAMESPACE};

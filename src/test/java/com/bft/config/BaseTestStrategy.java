@@ -127,7 +127,7 @@ public abstract class BaseTestStrategy implements TestStrategy {
         Configuration.browserVersion = browserVersion;
         Configuration.browserSize = "1920x1080";
         Configuration.headless = headless;
-        Configuration.timeout = 10000;
+        Configuration.timeout = isRemote ? 20000 : 10000; // 20 сек для удаленного, 10 сек для локального
         Configuration.pollingInterval = 500;
     }
 
