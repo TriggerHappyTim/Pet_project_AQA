@@ -3,7 +3,6 @@ package com.bft.browser.factory;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.firefox.FirefoxProfile;
-import org.openqa.selenium.remote.DesiredCapabilities;
 
 import java.io.File;
 
@@ -26,10 +25,18 @@ public class FirefoxBrowserFactory extends BaseBrowserFactory {
 
         configureFirefoxOptions(options);
 
-        DesiredCapabilities capabilities = createBaseCapabilities();
-        capabilities.setCapability(FirefoxOptions.FIREFOX_OPTIONS, options);
+        // Для Selenium 4.x возвращаем FirefoxOptions напрямую, а не через DesiredCapabilities
+        // Это избегает проблем с NullPointerException при слиянии capabilities
+        // Базовые capabilities (VNC/Video для Selenoid) добавляем напрямую в FirefoxOptions
+        String remoteUrl = System.getProperty("selenide.remote", "");
+        if (isRemote && remoteUrl.contains("selenoid")) {
+            // Используем Selenoid capabilities только если URL содержит "selenoid"
+            options.setCapability("enableVNC", true);
+            options.setCapability("enableVideo", false);
+        }
+        // Для стандартного Selenium Grid (chrome, firefox) capabilities не добавляем
 
-        return capabilities;
+        return options;
     }
 
     @Override
