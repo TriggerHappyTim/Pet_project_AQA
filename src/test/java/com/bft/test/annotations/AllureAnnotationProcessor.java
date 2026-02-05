@@ -198,7 +198,26 @@ public class AllureAnnotationProcessor implements IInvokedMethodListener {
             // Добавление времени выполнения
             long duration = testResult.getEndMillis() - testResult.getStartMillis();
             Allure.label("execution.duration", String.valueOf(duration));
-            Allure.label("execution.status", testResult.getStatus() == ITestResult.SUCCESS ? "passed" : "failed");
+            
+            // Правильная обработка статусов тестов, включая пропущенные (skipped)
+            String status;
+            switch (testResult.getStatus()) {
+                case ITestResult.SUCCESS:
+                    status = "passed";
+                    break;
+                case ITestResult.FAILURE:
+                    status = "failed";
+                    break;
+                case ITestResult.SKIP:
+                    status = "skipped";
+                    // Убеждаемся, что пропущенные тесты также попадают в отчет
+                    Allure.label("skip.reason", testResult.getThrowable() != null ? 
+                        testResult.getThrowable().getMessage() : "Test was skipped");
+                    break;
+                default:
+                    status = "unknown";
+            }
+            Allure.label("execution.status", status);
 
             // Добавление информации о методе
             Method method = testResult.getMethod().getConstructorOrMethod().getMethod();

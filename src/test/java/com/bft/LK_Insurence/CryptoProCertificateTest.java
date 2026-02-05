@@ -11,6 +11,7 @@ import com.bft.strategy.ExecutionStrategyType;
 import com.bft.test.retry.Retry;
 import com.bft.test.retry.RetryAnalyzer;
 import io.qameta.allure.*;
+import io.qameta.allure.AllureId;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -55,8 +56,10 @@ public class CryptoProCertificateTest extends UITestBase {
     }
 
     @Test(groups = {"web", "crypto", "smoke"}, 
+          testName = "#6 Проверка загрузки плагина КриптоПРО",
           description = "Проверка загрузки плагина КриптоПРО",
           retryAnalyzer = RetryAnalyzer.class)
+    @AllureId("CRYPTO-006")
     @Story("Проверка загрузки плагина")
     @Description("Проверка что плагин КриптоПРО загружен и отмечен зеленым")
     @Severity(SeverityLevel.CRITICAL)
@@ -123,7 +126,9 @@ public class CryptoProCertificateTest extends UITestBase {
     }
 
     @Test(groups = {"web", "crypto", "signature", "blocker"}, 
+          testName = "#2 Проверка создания электронной подписи",
           description = "Проверка создания электронной подписи")
+    @AllureId("CRYPTO-002")
     @Story("Проверка создания подписи")
     @Description("Проверка процесса создания электронной подписи")
     @Severity(SeverityLevel.BLOCKER)
@@ -179,7 +184,9 @@ public class CryptoProCertificateTest extends UITestBase {
     }
 
     @Test(groups = {"web", "crypto", "diagnostics", "regression"}, 
+          testName = "#4 Полная проверка всех диагностических элементов",
           description = "Полная проверка всех диагностических элементов")
+    @AllureId("CRYPTO-004")
     @Story("Проверка всех элементов страницы")
     @Description("Полная проверка всех диагностических элементов")
     @Severity(SeverityLevel.NORMAL)
@@ -235,7 +242,9 @@ public class CryptoProCertificateTest extends UITestBase {
     }
 
     @Test(groups = {"web", "crypto", "strategy", "smoke"}, 
+          testName = "#7 Проверка плагина с использованием паттерна Strategy",
           description = "Проверка плагина с использованием паттерна Strategy")
+    @AllureId("CRYPTO-007")
     @Story("Проверка плагина с использованием паттерна Strategy")
     @Description("Проверка плагина с использованием паттерна Strategy")
     @Severity(SeverityLevel.CRITICAL)
@@ -267,7 +276,9 @@ public class CryptoProCertificateTest extends UITestBase {
     }
 
     @Test(groups = {"web", "crypto", "signature", "strategy", "blocker"}, 
+          testName = "#3 Проверка создания подписи с использованием стратегии",
           description = "Проверка создания подписи с использованием стратегии")
+    @AllureId("CRYPTO-003")
     @Story("Проверка создания подписи с использованием стратегии")
     @Description("Проверка создания подписи с использованием стратегии")
     @Severity(SeverityLevel.BLOCKER)
@@ -299,7 +310,9 @@ public class CryptoProCertificateTest extends UITestBase {
     }
 
     @Test(groups = {"web", "crypto", "quick", "sanity"}, 
+          testName = "#1 Быстрая проверка основных элементов плагина",
           description = "Быстрая проверка основных элементов плагина")
+    @AllureId("CRYPTO-001")
     @Story("Быстрая проверка плагина")
     @Description("Быстрая проверка только основных элементов")
     @Severity(SeverityLevel.MINOR)
@@ -327,7 +340,9 @@ public class CryptoProCertificateTest extends UITestBase {
     }
 
     @Test(groups = {"web", "crypto", "negative", "regression"}, 
+          testName = "#5 Проверка поведения при отсутствии плагина",
           description = "Проверка поведения при отсутствии плагина")
+    @AllureId("CRYPTO-005")
     @Story("Негативный сценарий")
     @Description("Проверка поведения при отсутствии плагина")
     @Severity(SeverityLevel.NORMAL)

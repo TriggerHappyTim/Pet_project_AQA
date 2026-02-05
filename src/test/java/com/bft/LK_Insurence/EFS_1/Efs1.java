@@ -31,7 +31,9 @@ import static com.codeborne.selenide.Selenide.$x;
 public class Efs1 extends BaseTest {
     
     @Test(groups = {"web", "efs", "smoke", "xml-upload"}, 
+          testName = "#1 Загрузка отчёта ЕФС-1 через XML файл",
           description = "Загрузка отчёта ЕФС-1 через XML файл")
+    @AllureId("EFS-001")
     @Story("XML Upload")
     @Description("Тест проверяет возможность загрузки отчёта ЕФС-1 через XML файл с ЭЦП")
     @Severity(SeverityLevel.CRITICAL)
@@ -49,7 +51,9 @@ public class Efs1 extends BaseTest {
     }
 
     @Test(groups = {"web", "efs", "regression", "manual-creation"}, 
+          testName = "#2 Ручное создание отчёта ЕФС-1 ТД",
           description = "Ручное создание отчёта ЕФС-1 ТД")
+    @AllureId("EFS-002")
     @Story("Manual Creation - ТД")
     @Description("Тест проверяет ручное создание отчёта ЕФС-1 раздел 1.1 ТД (трудовая деятельность)")
     @Severity(SeverityLevel.CRITICAL)
@@ -108,7 +112,9 @@ public class Efs1 extends BaseTest {
     // ========== Тесты с конкретными пользователями ==========
     
     @Test(groups = {"web", "efs", "smoke", "xml-upload", "user-specific"}, 
+          testName = "#4 Загрузка отчёта ЕФС-1 через XML от пользователя Кривоносов",
           description = "Загрузка отчёта ЕФС-1 через XML от пользователя Кривоносов")
+    @AllureId("EFS-004")
     @Story("XML Upload - Кривоносов А.П.")
     @Description("Тест проверяет загрузку отчёта ЕФС-1 через XML от пользователя Кривоносов Александр Петрович (ОРГАНИЗАЦИЯ -1546025669)")
     @Severity(SeverityLevel.CRITICAL)
@@ -138,7 +144,9 @@ public class Efs1 extends BaseTest {
     }
     
     @Test(groups = {"web", "efs", "regression", "manual-creation", "user-specific"}, 
+          testName = "#6 Ручное создание отчёта ЕФС-1 ТД от пользователя Кривоносов",
           description = "Ручное создание отчёта ЕФС-1 ТД от пользователя Кривоносов")
+    @AllureId("EFS-006")
     @Story("Manual Creation - ТД - Кривоносов А.П.")
     @Description("Тест проверяет ручное создание отчёта ЕФС-1 раздел 1.1 ТД от пользователя Кривоносов Александр Петрович")
     @Severity(SeverityLevel.CRITICAL)

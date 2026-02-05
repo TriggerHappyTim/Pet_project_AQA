@@ -43,8 +43,9 @@ public class NegativeTestCases extends UITestBase {
      * Проверяет, что система корректно обрабатывает попытку входа с несуществующим логином.
      * Ожидается отображение сообщения об ошибке.
      */
-    @Test(groups = {"web", "negative", "login"})
-    @Description("Проверка обработки ошибки при попытке входа с несуществующим логином")
+    @Test(groups = {"web", "negative", "login"},
+          testName = "#1 Авторизация с невалидным логином",
+          description = "Проверка обработки ошибки при попытке входа с несуществующим логином")
     @Severity(SeverityLevel.NORMAL)
     @AllureId("NEG-001")
     public void testLoginWithInvalidUsername() {
@@ -90,8 +91,9 @@ public class NegativeTestCases extends UITestBase {
      * 
      * Проверяет, что система корректно обрабатывает попытку входа с неверным паролем.
      */
-    @Test(groups = {"web", "negative", "login"})
-    @Description("Проверка обработки ошибки при попытке входа с неверным паролем")
+    @Test(groups = {"web", "negative", "login"},
+          testName = "#2 Авторизация с невалидным паролем",
+          description = "Проверка обработки ошибки при попытке входа с неверным паролем")
     @Severity(SeverityLevel.NORMAL)
     @AllureId("NEG-002")
     public void testLoginWithInvalidPassword() {
@@ -161,8 +163,9 @@ public class NegativeTestCases extends UITestBase {
      * 
      * Проверяет, что тест корректно обрабатывает ситуацию, когда элемент не найден.
      */
-    @Test(groups = {"web", "negative", "elements"})
-    @Description("Проверка обработки ситуации, когда элемент не найден на странице")
+    @Test(groups = {"web", "negative", "elements"},
+          testName = "#4 Проверка отсутствующего элемента",
+          description = "Проверка обработки ситуации, когда элемент не найден на странице")
     @Severity(SeverityLevel.NORMAL)
     @AllureId("NEG-004")
     public void testMissingElement() {
@@ -251,8 +254,9 @@ public class NegativeTestCases extends UITestBase {
      * 
      * Проверяет валидацию email поля при вводе невалидного формата.
      */
-    @Test(groups = {"web", "negative", "validation", "email"})
-    @Description("Проверка валидации email поля при вводе невалидного формата")
+    @Test(groups = {"web", "negative", "validation", "email"},
+          testName = "#6 Проверка невалидного email формата",
+          description = "Проверка валидации email поля при вводе невалидного формата")
     @Severity(SeverityLevel.NORMAL)
     @AllureId("NEG-006")
     public void testInvalidEmailFormat() {
@@ -359,8 +363,9 @@ public class NegativeTestCases extends UITestBase {
         };
     }
 
-    @Test(dataProvider = "passwordBoundaryValues", groups = {"web", "negative", "validation", "boundary"})
-    @Description("Проверка валидации пароля на граничных значениях длины")
+    @Test(dataProvider = "passwordBoundaryValues", groups = {"web", "negative", "validation", "boundary"},
+          testName = "#8 Проверка граничных значений для длины пароля",
+          description = "Проверка валидации пароля на граничных значениях длины")
     @Severity(SeverityLevel.NORMAL)
     @AllureId("NEG-008")
     public void testPasswordBoundaryValues(int passwordLength, boolean shouldBeValid, String description) {

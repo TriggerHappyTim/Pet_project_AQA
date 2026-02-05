@@ -3,6 +3,7 @@ package com.bft.LK_Insurence.EFS_1;
 import com.bft.config.TestConfiguration;
 import com.bft.config.TestStrategyType;
 import io.qameta.allure.*;
+import io.qameta.allure.AllureId;
 import org.testng.annotations.Test;
 
 /**
@@ -15,7 +16,9 @@ import org.testng.annotations.Test;
 public class TestConfigurationTest {
 
     @Test(groups = {"config", "smoke"}, 
+          testName = "#1 Проверка инициализации конфигурации",
           description = "Проверка инициализации конфигурации")
+    @AllureId("CONFIG-001")
     @Story("Configuration Initialization")
     @Description("Тест проверяет инициализацию конфигурации с различными стратегиями: автоматическая, UI, API")
     @Severity(SeverityLevel.CRITICAL)

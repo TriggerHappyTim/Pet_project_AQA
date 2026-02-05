@@ -6,6 +6,7 @@ import com.bft.enums.UITypeSelector;
 import com.bft.enums.UIType;
 import com.bft.steps.SzvReportsSteps;
 import io.qameta.allure.*;
+import io.qameta.allure.AllureId;
 import org.testng.annotations.Test;
 
 /**
@@ -20,7 +21,9 @@ import org.testng.annotations.Test;
 public class Szv_td extends BaseTest {
 
     @Test(groups = {"web", "szv-td", "regression", "manual-creation"}, 
+          testName = "#1 Ручное создание отчёта СЗВ-ТД",
           description = "Ручное создание отчёта СЗВ-ТД")
+    @AllureId("SZVTD-001")
     @Story("Manual Creation")
     @Description("Тест проверяет полный цикл создания отчета СЗВ-ТД с заполнением всех полей и добавлением застрахованного лица")
     @Severity(SeverityLevel.CRITICAL)
@@ -43,7 +46,9 @@ public class Szv_td extends BaseTest {
     }
 
     @Test(groups = {"web", "szv-td", "smoke", "xml-upload"}, 
+          testName = "#2 Загрузка отчёта СЗВ-ТД через XML файл",
           description = "Загрузка отчёта СЗВ-ТД через XML файл")
+    @AllureId("SZVTD-002")
     @Story("XML Upload")
     @Description("Тест проверяет возможность загрузки отчёта СЗВ-ТД через XML файл в систему ЕВС")
     @Severity(SeverityLevel.CRITICAL)

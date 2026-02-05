@@ -1562,3 +1562,95 @@ FormStructureParser.parseAndSaveForm(form, "my-form");
 - ✅ Проект компилируется без ошибок
 
 **Статус**: ✅ Задача выполнена, возможность выбора API тестов удалена из GitLab CI и всех скриптов
+
+---
+
+## 🔧 ТЕКУЩИЕ ПРОБЛЕМЫ
+
+### 1. ❌ **Проблема с Firefox в удаленном режиме (Selenium Grid)** (Высокий приоритет)
+
+**Дата создания**: 2026-02-05  
+**Приоритет**: HIGH  
+**Статус**: 🔄 В РАБОТЕ
+
+#### Проблема:
+При запуске тестов с профилем `browser_firefox_remote` в GitLab CI возникает `NullPointerException` в `FirefoxOptions.merge()` на строке 401.
+
+#### Ошибка:
+```
+java.lang.NullPointerException
+	at org.openqa.selenium.firefox.FirefoxOptions.lambda$merge$5(FirefoxOptions.java:401)
+	at org.openqa.selenium.firefox.FirefoxOptions.merge(FirefoxOptions.java:399)
+```
+
+#### Выполненные исправления:
+- ✅ Изменен `FirefoxBrowserFactory.getCapabilities()` для возврата `FirefoxOptions` напрямую вместо `DesiredCapabilities`
+- ✅ Для удаленного запуска используется `configureFirefoxOptionsForRemote()` без `FirefoxProfile`
+- ✅ Preferences устанавливаются напрямую через `FirefoxOptions.addPreference()`
+- ✅ В `UITestStrategy` для Firefox используется `FirefoxOptions` напрямую, без обертки в `MutableCapabilities`
+- ✅ Убрана `videoName` capability для стандартного Selenium Grid (работает только с Selenoid)
+
+#### Текущий статус:
+Проблема все еще воспроизводится. Требуется дополнительное исследование.
+
+#### Следующие шаги:
+1. ⏳ Проверить совместимость версий Selenium и Selenide
+2. ⏳ Исследовать альтернативные способы конфигурации Firefox для удаленного запуска
+3. ⏳ Проверить логи Selenium Grid для Firefox
+4. ⏳ Рассмотреть возможность использования Selenoid вместо стандартного Selenium Grid для Firefox
+
+#### Выполненные исправления:
+- ✅ Изменен `FirefoxBrowserFactory.getCapabilities()` для возврата `FirefoxOptions` напрямую
+- ✅ Для удаленного запуска используется `configureFirefoxOptionsForRemote()` без `FirefoxProfile`
+- ✅ Preferences устанавливаются напрямую через `FirefoxOptions.addPreference()`
+- ✅ В `UITestStrategy` для Firefox используется `FirefoxOptions` напрямую, без обертки в `MutableCapabilities`
+- ✅ Убрана `videoName` capability для стандартного Selenium Grid
+
+---
+
+### 2. ❌ **Проблемы с Allure отчетом** (Высокий приоритет)
+
+**Дата создания**: 2026-02-05  
+**Приоритет**: HIGH  
+**Статус**: 🔄 В РАБОТЕ
+
+#### Проблемы:
+1. **Не все тесты отображаются**: В отчете показано только 18 тестов, но в логе было "Tests run: 65"
+2. **Неправильный порядок тестов**: Тесты отображаются не в правильном порядке (непоследовательная нумерация #1, #4, #6, #7, #5, #3, #2)
+3. **Несоответствие в подсчетах**: На верхнем уровне 3 красных, 7 зеленых, 8 желтых, но в деталях 3 красных, 8 зеленых, 7 желтых
+
+#### Возможные причины:
+1. Не все тесты имеют правильные Allure аннотации (`@DisplayName`, `@Description`, `@AllureId`)
+2. Проблемы с порядком выполнения тестов (TestNG может выполнять тесты не в порядке объявления)
+3. Проблемы с группами тестов - некоторые тесты могут быть пропущены (skipped) и не отображаться правильно
+4. Проблемы с нумерацией - возможно, это связано с `@AllureId` или порядком выполнения
+5. Проблемы с конфигурацией Allure - возможно, не все результаты сохраняются
+
+#### План исправления:
+1. ✅ Проверить конфигурацию Allure в `pom.xml` и `allure.properties`
+2. ✅ Добавить `@AllureId` ко всем тестам в `CryptoProCertificateTest` - ID уникальны и последовательны (CRYPTO-001 до CRYPTO-007)
+3. ✅ Добавить `preserve-order="true"` в конфигурацию maven-surefire-plugin для сохранения порядка выполнения тестов
+4. ✅ Добавить `testName` во все тесты в `CryptoProCertificateTest` для правильного отображения в Allure (используется `testName` вместо `@DisplayName` для TestNG)
+5. ✅ Улучшить обработку пропущенных (skipped) тестов в `AllureAnnotationProcessor` - добавлена правильная обработка статуса SKIP
+6. ✅ Обновлена конфигурация `allure.properties` для правильного отображения всех тестов
+7. ✅ Проверить другие тестовые классы и добавить `@AllureId` и `testName` где необходимо
+   - ✅ Добавлены аннотации в `Efs1.java` (6 тестов: EFS-001 до EFS-006)
+   - ✅ Добавлены аннотации в `Szv_m.java` (2 теста: SZVM-001, SZVM-002)
+   - ✅ Добавлены аннотации в `Szv_ish.java` (2 теста: SZVISH-001, SZVISH-002)
+   - ✅ Добавлены аннотации в `Szv_dso.java` (1 тест: SZVDSO-001)
+   - ✅ Добавлены аннотации в `Szv_k.java` (1 тест: SZVK-001)
+   - ✅ Добавлены аннотации в `Szv_staj.java` (1 тест: SZVSTAJ-001)
+   - ✅ Добавлены аннотации в `Szv_korr.java` (1 тест: SZVKORR-001)
+   - ✅ Добавлены аннотации в `Szv_td.java` (2 теста: SZVTD-001, SZVTD-002)
+   - ✅ Добавлены аннотации в `Odv1.java` (1 тест: ODV-001)
+   - ✅ Добавлены `testName` в `NegativeTestCases.java` (8 тестов: NEG-001 до NEG-008)
+8. ⏳ Добавить логирование для отслеживания, какие тесты генерируют Allure результаты (если проблема сохранится)
+
+#### Файлы для проверки:
+- `pom.xml` - конфигурация maven-surefire-plugin и allure-maven-plugin
+- `src/test/resources/allure.properties` - конфигурация Allure
+- `src/test/java/com/bft/BaseTest.java` - настройка @Listeners
+- `src/test/java/com/bft/test/annotations/AllureAnnotationProcessor.java` - обработка кастомных аннотаций
+- Все тестовые классы - проверка наличия Allure аннотаций
+
+---

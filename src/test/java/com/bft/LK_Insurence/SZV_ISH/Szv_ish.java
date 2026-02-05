@@ -6,6 +6,7 @@ import com.bft.enums.UITypeSelector;
 import com.bft.security.TestUsers;
 import com.bft.steps.SzvReportsSteps;
 import io.qameta.allure.*;
+import io.qameta.allure.AllureId;
 import org.testng.annotations.Test;
 
 /**
@@ -44,7 +45,9 @@ public class Szv_ish extends BaseTest {
     }
     
     @Test(groups = {"web", "szv-ish", "smoke", "xml-upload"}, 
+          testName = "#2 Загрузка отчёта СЗВ-ИСХ через XML файл",
           description = "Загрузка отчёта СЗВ-ИСХ через XML файл")
+    @AllureId("SZVISH-002")
     @Story("XML Upload")
     @Description("Тест проверяет возможность загрузки отчёта СЗВ-ИСХ через XML файл в систему ЕВС")
     @Severity(SeverityLevel.CRITICAL)

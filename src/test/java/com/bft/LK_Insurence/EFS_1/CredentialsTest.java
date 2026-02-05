@@ -2,6 +2,7 @@ package com.bft.LK_Insurence.EFS_1;
 
 import com.bft.security.CredentialManager;
 import io.qameta.allure.*;
+import io.qameta.allure.AllureId;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 
@@ -16,7 +17,9 @@ import org.testng.asserts.SoftAssert;
 public class CredentialsTest {
 
     @Test(groups = {"config", "smoke", "credentials"}, 
+          testName = "#1 Проверка загрузки credentials из переменных окружения",
           description = "Проверка загрузки credentials из переменных окружения")
+    @AllureId("CRED-001")
     @Story("Credential Loading")
     @Description("Тест проверяет корректность загрузки учетных данных EVS и EPGU из переменных окружения")
     @Severity(SeverityLevel.BLOCKER)

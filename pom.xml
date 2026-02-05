@@ -179,6 +179,8 @@
                     <!-- suiteXmlFiles будет использован только если указан параметр -Dsuite в командной строке -->
                     <!-- Listeners добавляются через аннотацию @Listeners в BaseTest -->
                     <useSystemClassLoader>false</useSystemClassLoader>
+                    <!-- Сохраняем порядок выполнения тестов для правильного отображения в Allure -->
+                    <preserveOrder>true</preserveOrder>
                     <argLine>
                         -javaagent:"${settings.localRepository}/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar"
                     </argLine>
