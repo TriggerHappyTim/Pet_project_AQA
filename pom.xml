@@ -327,6 +327,20 @@
                 <selenide.browser>chrome</selenide.browser>
                 <selenide.remote>http://chrome:4444/wd/hub</selenide.remote>
             </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <systemPropertyVariables>
+                                <selenide.browser>${selenide.browser}</selenide.browser>
+                                <selenide.remote>${selenide.remote}</selenide.remote>
+                            </systemPropertyVariables>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
         
         <profile>
@@ -335,6 +349,20 @@
                 <selenide.browser>firefox</selenide.browser>
                 <selenide.remote>http://firefox:4444/wd/hub</selenide.remote>
             </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <systemPropertyVariables>
+                                <selenide.browser>${selenide.browser}</selenide.browser>
+                                <selenide.remote>${selenide.remote}</selenide.remote>
+                            </systemPropertyVariables>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
         
         <profile>
@@ -343,6 +371,20 @@
                 <selenide.browser>chrome</selenide.browser>
                 <selenide.remote>http://moon:4444/wd/hub</selenide.remote>
             </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <systemPropertyVariables>
+                                <selenide.browser>${selenide.browser}</selenide.browser>
+                                <selenide.remote>${selenide.remote}</selenide.remote>
+                            </systemPropertyVariables>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
         
         <!-- Browser profiles для локального запуска -->
@@ -352,6 +394,19 @@
                 <selenide.browser>chrome</selenide.browser>
                 <!-- selenide.remote не указывается - используется локальный браузер -->
             </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <systemPropertyVariables>
+                                <selenide.browser>${selenide.browser}</selenide.browser>
+                            </systemPropertyVariables>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
         
         <profile>
@@ -360,6 +415,19 @@
                 <selenide.browser>firefox</selenide.browser>
                 <!-- selenide.remote не указывается - используется локальный браузер -->
             </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <systemPropertyVariables>
+                                <selenide.browser>${selenide.browser}</selenide.browser>
+                            </systemPropertyVariables>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
         
         <!-- Environment profiles: задают evs.ui.type для UITypeSelector (локально и GitLab CI) -->
