@@ -18,15 +18,19 @@ public class FirefoxBrowserFactory extends BaseBrowserFactory {
     @Override
     public Capabilities getCapabilities() {
         FirefoxOptions options = new FirefoxOptions();
-        FirefoxProfile profile = new FirefoxProfile();
 
-        configureFirefoxProfile(profile);
-        options.setProfile(profile);
+        if (isRemote) {
+            // Для удаленного запуска используем preferences напрямую, без FirefoxProfile
+            // Это избегает проблем с NullPointerException при слиянии capabilities
+            configureFirefoxOptionsForRemote(options);
+        } else {
+            // Для локального запуска используем FirefoxProfile
+            FirefoxProfile profile = new FirefoxProfile();
+            configureFirefoxProfile(profile);
+            options.setProfile(profile);
+            configureFirefoxOptions(options);
+        }
 
-        configureFirefoxOptions(options);
-
-        // Для Selenium 4.x возвращаем FirefoxOptions напрямую, а не через DesiredCapabilities
-        // Это избегает проблем с NullPointerException при слиянии capabilities
         // Базовые capabilities (VNC/Video для Selenoid) добавляем напрямую в FirefoxOptions
         String remoteUrl = System.getProperty("selenide.remote", "");
         if (isRemote && remoteUrl.contains("selenoid")) {
@@ -101,6 +105,31 @@ public class FirefoxBrowserFactory extends BaseBrowserFactory {
         // Опции для лучшей совместимости
         options.addArguments("--width=1920");
         options.addArguments("--height=1080");
+    }
+
+    /**
+     * Настраивает FirefoxOptions для удаленного запуска без использования FirefoxProfile
+     * Использует preferences напрямую через FirefoxOptions, что избегает проблем при слиянии capabilities
+     */
+    private void configureFirefoxOptionsForRemote(FirefoxOptions options) {
+        options.setAcceptInsecureCerts(true);
+
+        // Устанавливаем preferences напрямую через FirefoxOptions
+        // Это безопаснее для удаленного запуска, чем использование FirefoxProfile
+        options.addPreference("intl.accept_languages", "ru");
+        options.addPreference("dom.webnotifications.enabled", false);
+        options.addPreference("xpinstall.signatures.required", false);
+        options.addPreference("extensions.allowPrivateBrowsingByDefault", true);
+        options.addPreference("extensions.experiments.enabled", true);
+        options.addPreference("extensions.enabledScopes", 15);
+        options.addPreference("extensions.autoDisableScopes", 0);
+
+        // Опции для лучшей совместимости
+        options.addArguments("--width=1920");
+        options.addArguments("--height=1080");
+
+        // Для удаленного режима расширение должно быть предустановлено
+        System.out.println("Запуск в удаленном режиме. Расширение должно быть предустановлено на узле.");
     }
 
     private void addCryptoProExtension(FirefoxProfile profile) {
