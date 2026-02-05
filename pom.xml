@@ -229,7 +229,7 @@
                 </plugins>
             </build>
         </profile>
-        
+
         <profile>
             <id>regress_web</id>
             <build>
@@ -244,7 +244,7 @@
                 </plugins>
             </build>
         </profile>
-        
+
         <profile>
             <id>smoke_web_application</id>
             <build>
@@ -259,7 +259,7 @@
                 </plugins>
             </build>
         </profile>
-        
+
         <profile>
             <id>regress_web_application</id>
             <build>
@@ -274,7 +274,7 @@
                 </plugins>
             </build>
         </profile>
-        
+
         <profile>
             <id>smoke_manual</id>
             <build>
@@ -289,7 +289,7 @@
                 </plugins>
             </build>
         </profile>
-        
+
         <profile>
             <id>regress_manual</id>
             <build>
@@ -304,7 +304,7 @@
                 </plugins>
             </build>
         </profile>
-        
+
         <profile>
             <id>all_tests</id>
             <build>
@@ -319,7 +319,7 @@
                 </plugins>
             </build>
         </profile>
-        
+
         <!-- Browser profiles -->
         <profile>
             <id>browser_chrome_remote</id>
@@ -342,7 +342,7 @@
                 </plugins>
             </build>
         </profile>
-        
+
         <profile>
             <id>browser_firefox_remote</id>
             <properties>
@@ -364,7 +364,7 @@
                 </plugins>
             </build>
         </profile>
-        
+
         <profile>
             <id>moon_chrome_browser</id>
             <properties>
@@ -386,7 +386,7 @@
                 </plugins>
             </build>
         </profile>
-        
+
         <!-- Browser profiles для локального запуска -->
         <profile>
             <id>browser_chrome_local</id>
@@ -408,7 +408,7 @@
                 </plugins>
             </build>
         </profile>
-        
+
         <profile>
             <id>browser_firefox_local</id>
             <properties>
@@ -429,7 +429,7 @@
                 </plugins>
             </build>
         </profile>
-        
+
         <!-- Environment profiles: задают evs.ui.type для UITypeSelector (локально и GitLab CI) -->
         <profile>
             <id>test</id>
@@ -451,7 +451,7 @@
                 </plugins>
             </build>
         </profile>
-        
+
         <profile>
             <id>uat</id>
             <properties>
@@ -472,14 +472,14 @@
                 </plugins>
             </build>
         </profile>
-        
+
         <profile>
             <id>int</id>
             <properties>
                 <test.environment>int</test.environment>
             </properties>
         </profile>
-        
+
         <!-- User Account profiles -->
         <profile>
             <id>user_krivonosov</id>
@@ -500,7 +500,7 @@
                 </plugins>
             </build>
         </profile>
-        
+
         <profile>
             <id>user_bezdomniy</id>
             <properties>
@@ -520,7 +520,7 @@
                 </plugins>
             </build>
         </profile>
-        
+
         <profile>
             <id>user_default</id>
             <properties>
@@ -540,7 +540,7 @@
                 </plugins>
             </build>
         </profile>
-        
+
         <profile>
             <id>other-jdk</id>
             <build>
