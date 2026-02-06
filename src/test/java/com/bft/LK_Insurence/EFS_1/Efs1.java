@@ -35,7 +35,7 @@ public class Efs1 extends BaseTest {
           description = "Загрузка отчёта ЕФС-1 через XML файл")
     @AllureId("EFS-001")
     @Story("XML Upload")
-    @Description("Тест проверяет возможность загрузки отчёта ЕФС-1 через XML файл с ЭЦП")
+    @Description("Тест проверяет возможность загрузки отчёта ЕФС-1 через XML файл")
     @Severity(SeverityLevel.CRITICAL)
     public void efs_1_xml() {
 
