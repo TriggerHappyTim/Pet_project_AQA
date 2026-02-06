@@ -138,7 +138,7 @@ maven test:
               TEST_LIST="CryptoProCertificateTest#verifyCryptoProPluginLoaded,CryptoProCertificateTest#testCertificateSelectionAndSigning,CryptoProCertificateTest#testPageDiagnostics,CryptoProCertificateTest#verifyCryptoProPluginWithStrategy,CryptoProCertificateTest#testCertificateSigningWithStrategy,CryptoProCertificateTest#quickPluginCheck,CryptoProCertificateTest#testPluginFailureScenario"
               ;;
             "Ручной ввод")
-              TEST_LIST="Efs1#efs_szv_td,Efs1#efs_szv_staj,Efs1#efs_szv_td_krivonosov,SZVFormTest#testSZVMFormFullScenario,SZVFormTest#testSZVMFormEditMode,SZVFormTest#testSZVMFormWithMultiplePersons,SZVFormTest#testSignAndSendButton,SZVFormTest#testAddInsuredPersonWithDataProvider,Szv_td#szv_td,Szv_m#szv_m"
+              TEST_LIST="Efs1#efs_szv_td,Efs1#efs_szv_staj,Efs1#efs_szv_td_krivonosov,Szv_td#szv_td,Szv_m#szv_m"
               ;;
             "Загрузка через XML")
               TEST_LIST="Efs1#efs_1_xml,Efs1#efs_1_xml_krivonosov,Efs1#efs_1_xml_bezdomniy,Szv_td#szv_td_xml,Szv_m#szv_m_xml,Szv_staj#szv_staj_xml,Szv_korr#szv_korr_xml,Szv_k#szv_k_xml,Szv_ish#szv_ish_xml,Szv_dso#szv_dso_xml,Odv1#odv_1_xml"
@@ -163,7 +163,7 @@ maven test:
               TEST_LIST="CryptoProCertificateTest#verifyCryptoProPluginLoaded,CryptoProCertificateTest#testCertificateSelectionAndSigning,CryptoProCertificateTest#testPageDiagnostics,CryptoProCertificateTest#verifyCryptoProPluginWithStrategy,CryptoProCertificateTest#testCertificateSigningWithStrategy,CryptoProCertificateTest#quickPluginCheck,CryptoProCertificateTest#testPluginFailureScenario"
               ;;
             "Ручной ввод")
-              TEST_LIST="Efs1#efs_szv_td,Efs1#efs_szv_staj,Efs1#efs_szv_td_krivonosov,SZVFormTest#testSZVMFormFullScenario,SZVFormTest#testSZVMFormEditMode,SZVFormTest#testSZVMFormWithMultiplePersons,SZVFormTest#testSignAndSendButton,SZVFormTest#testAddInsuredPersonWithDataProvider,Szv_td#szv_td,Szv_m#szv_m"
+              TEST_LIST="Efs1#efs_szv_td,Efs1#efs_szv_staj,Efs1#efs_szv_td_krivonosov,Szv_td#szv_td,Szv_m#szv_m"
               ;;
             "Загрузка через XML")
               TEST_LIST="Efs1#efs_1_xml,Efs1#efs_1_xml_krivonosov,Efs1#efs_1_xml_bezdomniy,Szv_td#szv_td_xml,Szv_m#szv_m_xml,Szv_staj#szv_staj_xml,Szv_korr#szv_korr_xml,Szv_k#szv_k_xml,Szv_ish#szv_ish_xml,Szv_dso#szv_dso_xml,Odv1#odv_1_xml"
@@ -206,6 +206,10 @@ maven test:
         KUBE_CMD="kubectl port-forward --kubeconfig=/tmp/"${ENVIRONMENT_OVERRIDE}"-user.yaml --namespace="
       elif [ -z "${HELM_NAMESPACE}" ]
       then
+        # Используем ENVIRONMENT напрямую, если HELM_NAMESPACE не установлен
+        ENVIRONMENT_OVERRIDE="${ENVIRONMENT}"
+        echo "Using ENVIRONMENT=${ENVIRONMENT_OVERRIDE} (HELM_NAMESPACE is empty)"
+        
         # Определяем список тестов для группы TEST_SCRIPT
         if [ -n "${TEST_SCRIPT}" ]
         then
@@ -214,7 +218,7 @@ maven test:
               TEST_LIST="CryptoProCertificateTest#verifyCryptoProPluginLoaded,CryptoProCertificateTest#testCertificateSelectionAndSigning,CryptoProCertificateTest#testPageDiagnostics,CryptoProCertificateTest#verifyCryptoProPluginWithStrategy,CryptoProCertificateTest#testCertificateSigningWithStrategy,CryptoProCertificateTest#quickPluginCheck,CryptoProCertificateTest#testPluginFailureScenario"
               ;;
             "Ручной ввод")
-              TEST_LIST="Efs1#efs_szv_td,Efs1#efs_szv_staj,Efs1#efs_szv_td_krivonosov,SZVFormTest#testSZVMFormFullScenario,SZVFormTest#testSZVMFormEditMode,SZVFormTest#testSZVMFormWithMultiplePersons,SZVFormTest#testSignAndSendButton,SZVFormTest#testAddInsuredPersonWithDataProvider,Szv_td#szv_td,Szv_m#szv_m"
+              TEST_LIST="Efs1#efs_szv_td,Efs1#efs_szv_staj,Efs1#efs_szv_td_krivonosov,Szv_td#szv_td,Szv_m#szv_m"
               ;;
             "Загрузка через XML")
               TEST_LIST="Efs1#efs_1_xml,Efs1#efs_1_xml_krivonosov,Efs1#efs_1_xml_bezdomniy,Szv_td#szv_td_xml,Szv_m#szv_m_xml,Szv_staj#szv_staj_xml,Szv_korr#szv_korr_xml,Szv_k#szv_k_xml,Szv_ish#szv_ish_xml,Szv_dso#szv_dso_xml,Odv1#odv_1_xml"
@@ -239,7 +243,7 @@ maven test:
               TEST_LIST="CryptoProCertificateTest#verifyCryptoProPluginLoaded,CryptoProCertificateTest#testCertificateSelectionAndSigning,CryptoProCertificateTest#testPageDiagnostics,CryptoProCertificateTest#verifyCryptoProPluginWithStrategy,CryptoProCertificateTest#testCertificateSigningWithStrategy,CryptoProCertificateTest#quickPluginCheck,CryptoProCertificateTest#testPluginFailureScenario"
               ;;
             "Ручной ввод")
-              TEST_LIST="Efs1#efs_szv_td,Efs1#efs_szv_staj,Efs1#efs_szv_td_krivonosov,SZVFormTest#testSZVMFormFullScenario,SZVFormTest#testSZVMFormEditMode,SZVFormTest#testSZVMFormWithMultiplePersons,SZVFormTest#testSignAndSendButton,SZVFormTest#testAddInsuredPersonWithDataProvider,Szv_td#szv_td,Szv_m#szv_m"
+              TEST_LIST="Efs1#efs_szv_td,Efs1#efs_szv_staj,Efs1#efs_szv_td_krivonosov,Szv_td#szv_td,Szv_m#szv_m"
               ;;
             "Загрузка через XML")
               TEST_LIST="Efs1#efs_1_xml,Efs1#efs_1_xml_krivonosov,Efs1#efs_1_xml_bezdomniy,Szv_td#szv_td_xml,Szv_m#szv_m_xml,Szv_staj#szv_staj_xml,Szv_korr#szv_korr_xml,Szv_k#szv_k_xml,Szv_ish#szv_ish_xml,Szv_dso#szv_dso_xml,Odv1#odv_1_xml"
@@ -254,32 +258,35 @@ maven test:
         # Формируем команду Maven
         if [ -n "${TEST_LIST}" ]
         then
+          echo "Running specific tests: ${TEST_LIST}"
           # Запускаем конкретные тесты через -Dtest
           if [ -n "${SUITE}" ]
           then
-            MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT}","${BROWSERS}","${USER_ACCOUNT}" -Dtest="${TEST_LIST}" -Dsuite="${SUITE}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
+            MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT_OVERRIDE}","${BROWSERS}","${USER_ACCOUNT}" -Dtest="${TEST_LIST}" -Dsuite="${SUITE}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
           else
-            MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT}","${BROWSERS}","${USER_ACCOUNT}" -Dtest="${TEST_LIST}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
+            MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT_OVERRIDE}","${BROWSERS}","${USER_ACCOUNT}" -Dtest="${TEST_LIST}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
           fi
         elif [ -n "${MAVEN_PROFILE}" ]
         then
+          echo "Using Maven profile: ${MAVEN_PROFILE}"
           # Используем Maven профиль (обратная совместимость)
           if [ -n "${SUITE}" ]
           then
-            MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT}","${MAVEN_PROFILE}","${BROWSERS}","${USER_ACCOUNT}" -Dsuite="${SUITE}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
+            MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT_OVERRIDE}","${MAVEN_PROFILE}","${BROWSERS}","${USER_ACCOUNT}" -Dsuite="${SUITE}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
           else
-            MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT}","${MAVEN_PROFILE}","${BROWSERS}","${USER_ACCOUNT}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
+            MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT_OVERRIDE}","${MAVEN_PROFILE}","${BROWSERS}","${USER_ACCOUNT}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
           fi
         else
+          echo "Running ALL tests without filtering (TEST_SCRIPT and SINGLE_TEST are empty)"
           # Запускаем все тесты без фильтрации
           if [ -n "${SUITE}" ]
           then
-            MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT}","${BROWSERS}","${USER_ACCOUNT}" -Dsuite="${SUITE}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
+            MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT_OVERRIDE}","${BROWSERS}","${USER_ACCOUNT}" -Dsuite="${SUITE}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
           else
-            MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT}","${BROWSERS}","${USER_ACCOUNT}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
+            MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT_OVERRIDE}","${BROWSERS}","${USER_ACCOUNT}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
           fi
         fi
-        KUBE_CMD="kubectl port-forward --kubeconfig=/tmp/"${ENVIRONMENT}"-user.yaml --namespace="
+        KUBE_CMD="kubectl port-forward --kubeconfig=/tmp/"${ENVIRONMENT_OVERRIDE}"-user.yaml --namespace="
       fi
     - cat hosts >> /etc/hosts
     - $(echo $KUBE_CMD"ps service/graphql-mesh-java 20266:20266") > /dev/null 2>&1 &
