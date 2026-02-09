@@ -122,7 +122,21 @@ public class CredentialManager {
                     String password = propsProvider.getCredential(userPrefix + ".password");
                     String email = propsProvider.getCredential(userPrefix + ".email");
 
-                    if (username != null || password != null) {
+                    // Создаем credentials только если username и password оба не null и не пустые
+                    if (username != null && !username.trim().isEmpty() && 
+                        password != null && !password.trim().isEmpty()) {
+                        credentials = new EnvironmentCredentialProvider.UserCredentials(username, password, email);
+                    }
+                } else if (provider instanceof MockCredentialProvider) {
+                    // For MockCredentialProvider, we need to construct UserCredentials manually
+                    MockCredentialProvider mockProvider = (MockCredentialProvider) provider;
+                    String username = mockProvider.getCredential(userPrefix + ".username");
+                    String password = mockProvider.getCredential(userPrefix + ".password");
+                    String email = mockProvider.getCredential(userPrefix + ".email");
+
+                    // Создаем credentials только если username и password оба не null и не пустые
+                    if (username != null && !username.trim().isEmpty() && 
+                        password != null && !password.trim().isEmpty()) {
                         credentials = new EnvironmentCredentialProvider.UserCredentials(username, password, email);
                     }
                 }

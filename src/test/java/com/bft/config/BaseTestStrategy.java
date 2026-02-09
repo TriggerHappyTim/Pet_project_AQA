@@ -114,7 +114,8 @@ public abstract class BaseTestStrategy implements TestStrategy {
      * <p>Базовые настройки:
      * <ul>
      *   <li>Размер окна: 1920x1080</li>
-     *   <li>Таймаут: 10000 мс</li>
+     *   <li>Таймаут: 30000 мс для удаленного, 10000 мс для локального</li>
+     *   <li>Таймаут загрузки страницы: 300000 мс (5 минут) для удаленного, 60000 мс для локального</li>
      *   <li>Интервал опроса: 500 мс</li>
      * </ul>
      *
@@ -127,7 +128,16 @@ public abstract class BaseTestStrategy implements TestStrategy {
         Configuration.browserVersion = browserVersion;
         Configuration.browserSize = "1920x1080";
         Configuration.headless = headless;
-        Configuration.timeout = isRemote ? 20000 : 10000; // 20 сек для удаленного, 10 сек для локального
+        
+        // Увеличенные таймауты для удаленного режима из-за сетевых задержек
+        if (isRemote) {
+            Configuration.timeout = 30000; // 30 сек для удаленного (было 20 сек)
+            Configuration.pageLoadTimeout = 300000; // 5 минут для загрузки страницы (было не установлено)
+        } else {
+            Configuration.timeout = 10000; // 10 сек для локального
+            Configuration.pageLoadTimeout = 60000; // 1 минута для локального
+        }
+        
         Configuration.pollingInterval = 500;
     }
 

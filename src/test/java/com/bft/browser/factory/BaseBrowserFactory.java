@@ -41,6 +41,12 @@ public abstract class BaseBrowserFactory implements BrowserConfigFactory {
     protected DesiredCapabilities createBaseCapabilities() {
         DesiredCapabilities capabilities = new DesiredCapabilities();
 
+        // Для удаленного режима устанавливаем pageLoadStrategy "eager" 
+        // чтобы не ждать полной загрузки всех ресурсов (может помочь при проблемах с зависанием)
+        if (isRemote) {
+            capabilities.setCapability("pageLoadStrategy", "eager");
+        }
+
         // VNC and Video capabilities работают только с Selenoid
         // Для стандартного Selenium Grid эти capabilities не нужны
         String remoteUrl = System.getProperty("selenide.remote", "");
