@@ -41,10 +41,11 @@ public abstract class BaseBrowserFactory implements BrowserConfigFactory {
     protected DesiredCapabilities createBaseCapabilities() {
         DesiredCapabilities capabilities = new DesiredCapabilities();
 
-        // Для удаленного режима устанавливаем pageLoadStrategy "eager" 
-        // чтобы не ждать полной загрузки всех ресурсов (может помочь при проблемах с зависанием)
+        // Для удаленного режима устанавливаем pageLoadStrategy "none" 
+        // чтобы вообще не ждать загрузки страницы и сразу переходить к взаимодействию с элементами
+        // Это помогает при проблемах с зависанием страницы при загрузке ресурсов
         if (isRemote) {
-            capabilities.setCapability("pageLoadStrategy", "eager");
+            capabilities.setCapability("pageLoadStrategy", "none");
         }
 
         // VNC and Video capabilities работают только с Selenoid
