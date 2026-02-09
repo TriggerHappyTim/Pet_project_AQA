@@ -75,7 +75,9 @@ public class SelectComponent extends BaseComponent {
         logger.info("Выбираем опцию '{}' в селекте: {}", text, componentName);
         rootElement.click();
         // После клика по селекту обычно появляется список опций
-        SmartElement option = ElementFactory.xpath("//li[contains(@id, 'option') and contains(text(), '" + text + "')]")
+        // Используем contains(., ...) вместо contains(text(), ...) для поиска текста в элементе и его потомках
+        String textEscaped = text.replace("'", "''");
+        SmartElement option = ElementFactory.xpath("//li[contains(@id, 'option') and contains(., '" + textEscaped + "')]")
                 .named("Опция '" + text + "'")
                 .waitClickable()
                 .build();

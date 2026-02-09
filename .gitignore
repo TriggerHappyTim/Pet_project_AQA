@@ -25,3 +25,6 @@ docker/volumes/
 .dockerignore
 docker/build.log
 docker/cache/
+
+# Playwright E2E tests (not used in this project)
+playwright-e2e/
