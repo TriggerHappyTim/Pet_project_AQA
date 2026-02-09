@@ -103,7 +103,7 @@ public class TestConfig {
         // CryptoPro paths
         this.cryptoProPath = System.getenv().getOrDefault("CRYPTOPRO_PATH",
                 "src/test/resources/CryptoPro Chrome 1.2.13.0.crx");
-        this.cryptoProXpiPath = System.getenv().getOrDefault("CRYPTOPRO_PATH",
+        this.cryptoProXpiPath = System.getenv().getOrDefault("CRYPTOPRO_XPI_PATH",
                 "src/test/resources/cryptopro.ru.xpi");
 
         // Environment settings

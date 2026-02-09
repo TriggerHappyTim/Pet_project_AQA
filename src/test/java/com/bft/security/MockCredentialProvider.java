@@ -11,9 +11,9 @@ public class MockCredentialProvider implements CredentialProvider {
 
     /** Префикс и значения для Кривоносов Александр Петрович (evs.user1) */
     private static final String EVS_USER1_PREFIX = "evs.user1";
-    private static final String EVS_USER1_USERNAME = "ci_evs_user1";
-    private static final String EVS_USER1_PASSWORD = "ci_placeholder_password";
-    private static final String EVS_USER1_ORGANIZATION = "ORG-CI-USER1";
+    private static final String EVS_USER1_USERNAME = "133-900-785 49";
+    private static final String EVS_USER1_PASSWORD = "Egisso13?";
+    private static final String EVS_USER1_ORGANIZATION = "ОРГАНИЗАЦИЯ -1546025669";
     private static final String EVS_USER1_FULLNAME = "Кривоносов Александр Петрович";
 
     private final Map<String, String> mockCredentials;
@@ -74,9 +74,9 @@ public class MockCredentialProvider implements CredentialProvider {
         mockCredentials.put(EVS_USER1_PREFIX + ".fullname", EVS_USER1_FULLNAME);
 
         // EVS user2 (Бездомный) — fallback для CI
-        mockCredentials.put("evs.user2.username", "ci_evs_user2");
-        mockCredentials.put("evs.user2.password", "ci_placeholder_password");
-        mockCredentials.put("evs.user2.organization", "ORG-CI-USER2");
+        mockCredentials.put("evs.user2.username", "bedomniy.in@mail.ru");
+        mockCredentials.put("evs.user2.password", "gq3%!UyVI_7");
+        mockCredentials.put("evs.user2.organization", "ОРГАНИЗАЦИЯ -2036470831");
         mockCredentials.put("evs.user2.fullname", "Бездомный Иван Николаевич");
     }
 

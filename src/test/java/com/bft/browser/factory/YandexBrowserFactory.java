@@ -106,11 +106,18 @@ public class YandexBrowserFactory extends BaseBrowserFactory {
         addExtensionForRemote(options, cryptoProPath);
     }
 
+    /**
+     * Добавляет расширение для удаленного запуска Yandex Browser
+     * Использует переменную окружения CRYPTOPRO_BASE64 или автоматически кодирует файл расширения
+     */
     private void addExtensionForRemote(ChromeOptions options, String extensionPath) {
-        // Для удаленного запуска нужно закодировать расширение
-        String encodedExtension = System.getenv("CRYPTOPRO_BASE64");
-        if (encodedExtension != null) {
+        String encodedExtension = encodeExtensionToBase64(extensionPath);
+        if (encodedExtension != null && !encodedExtension.isEmpty()) {
             options.addEncodedExtensions(encodedExtension);
+            System.out.println("Расширение КриптоПРО добавлено в Yandex Browser для удаленного запуска");
+        } else {
+            System.err.println("ВНИМАНИЕ: Расширение КриптоПРО не установлено для удаленного Yandex Browser. " +
+                    "Установите переменную окружения CRYPTOPRO_BASE64 или укажите путь к файлу расширения в CRYPTOPRO_PATH");
         }
     }
 }

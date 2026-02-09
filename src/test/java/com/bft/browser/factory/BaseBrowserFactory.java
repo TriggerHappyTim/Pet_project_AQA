@@ -3,6 +3,9 @@ package com.bft.browser.factory;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.Base64;
 
 /**
  * Базовый класс для фабрик браузеров
@@ -74,5 +77,42 @@ public abstract class BaseBrowserFactory implements BrowserConfigFactory {
      */
     protected String getCryptoProXpiPath() {
         return cryptoProXpiPath;
+    }
+
+    /**
+     * Кодирует файл расширения в base64 для использования в удаленном режиме
+     * 
+     * @param extensionPath путь к файлу расширения (.crx для Chrome, .xpi для Firefox)
+     * @return строка base64 или null, если файл не найден или произошла ошибка
+     */
+    protected String encodeExtensionToBase64(String extensionPath) {
+        if (extensionPath == null || extensionPath.isEmpty()) {
+            return null;
+        }
+
+        // Сначала проверяем переменную окружения CRYPTOPRO_BASE64
+        String encodedFromEnv = System.getenv("CRYPTOPRO_BASE64");
+        if (encodedFromEnv != null && !encodedFromEnv.isEmpty()) {
+            System.out.println("Используется расширение из переменной окружения CRYPTOPRO_BASE64");
+            return encodedFromEnv;
+        }
+
+        // Если переменной нет, пытаемся закодировать файл
+        if (!isExtensionFileExists(extensionPath)) {
+            System.err.println("Файл расширения не найден: " + extensionPath);
+            return null;
+        }
+
+        try {
+            File extensionFile = new File(extensionPath);
+            byte[] fileContent = Files.readAllBytes(extensionFile.toPath());
+            String base64Encoded = Base64.getEncoder().encodeToString(fileContent);
+            System.out.println("Расширение успешно закодировано в base64: " + extensionPath);
+            return base64Encoded;
+        } catch (IOException e) {
+            System.err.println("Ошибка при кодировании расширения в base64: " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
     }
 }
