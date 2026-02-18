@@ -46,7 +46,7 @@ ReportData report = ReportTestDataBuilder.createDefault().build();
 
 // Отчет ЕФС-1 с кастомными данными
 ReportData efs1Report = ReportTestDataBuilder.createDefault()
-    .withReportType(ReportType.EFS_1)
+    .withReportType(ReportFormType.EFS1)
     .withReportNumber("EFS-1-2024-001")
     .withPeriod(LocalDate.now().minusMonths(1), LocalDate.now())
     .withStatus("Черновик")
