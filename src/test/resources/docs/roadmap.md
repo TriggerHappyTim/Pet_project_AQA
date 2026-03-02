@@ -1,7 +1,7 @@
 # EVS Testing Framework - Roadmap по улучшению кода
 
 **Дата создания**: 2026-01-29  
-**Дата последнего обновления**: 2026-02-04 (обновлено: комментирование API и Jira)  
+**Дата последнего обновления**: 2026-02-13 (план проверки и упрощения)  
 **Статус**: ✅ ВСЕ ЗАДАЧИ ВЫПОЛНЕНЫ - Фаза 1, Фаза 2, Фаза 3 завершены  
 **Основание**: Аудит проекта по новым правилам `.cursorrules` и Javadoc стандартам
 
@@ -14,6 +14,67 @@
 - **Выявлено категорий проблем**: 6
 - **Приоритетных задач**: 24
 - **Выполнено задач**: 20+ (основные фазы завершены)
+
+---
+
+## 🔍 Проверка работоспособности (отчёты × браузер)
+
+**Назначение**: фиксация результатов прогонов по типам отчётов и настройкам браузера.
+
+### Матрица проверки
+
+| Тип отчёта | Сценарий (smoke/regression) | Браузер | Дата проверки | Результат |
+|------------|-----------------------------|---------|---------------|-----------|
+| ЕФС-1 | smoke (xml-upload) | chrome local | — | Ожидает проверки |
+| СЗВ-М | smoke (xml-upload) | chrome local | — | Ожидает проверки |
+| СЗВ-ТД | smoke (xml-upload) | chrome local | — | Ожидает проверки |
+| СЗВ-ИСХ | smoke (xml-upload) | chrome local | — | Ожидает проверки |
+| СЗВ-ДСО | smoke (xml-upload) | chrome local | — | Ожидает проверки |
+| СЗВ-К | smoke (xml-upload) | chrome local | — | Ожидает проверки |
+| СЗВ-СТАЖ | smoke (xml-upload) | chrome local | — | Ожидает проверки |
+| СЗВ-КОРР | smoke (xml-upload) | chrome local | — | Ожидает проверки |
+| ОДВ-1 | smoke (xml-upload) | chrome local | — | Ожидает проверки |
+
+При падениях: указывать комбинацию (отчёт + браузер) и краткое описание в столбце «Результат».
+
+### Команды для повторной проверки
+
+- Smoke по всем отчётам (chrome по умолчанию): `mvn clean test -Psmoke_web`
+- Chrome local: `mvn clean test -Psmoke_web,browser_chrome_local`
+- Firefox: `mvn clean test -Psmoke_web -Dselenide.browser=firefox`
+- Chrome headless: `mvn clean test -Psmoke_web -Dselenide.headless=true`
+- Remote (если настроен): `mvn clean test -Psmoke_web,browser_chrome_remote`
+- Регрессия: `mvn clean test -Pregress_web`
+
+---
+
+## 📐 Упрощение проекта
+
+- [x] **3.1 Унификация базового класса**: все UI-тесты отчётов и крипто наследуют `UITestBase` вместо `BaseTest`. (2026-02-13)
+- [x] **3.2 Параметризованный smoke XML-загрузки**: один класс `ReportXmlUploadTest` с DataProvider по типам отчётов вместо дублирования в 9 классах. (2026-02-13)
+- [x] **3.3 Разделение ReportType**: введены `ReportFormType` (UI) и `ReportXmlResource` (пути к XML); `ReportType` помечен как `@Deprecated`. (2026-02-13)
+- [x] **3.4 Документация запуска**: шпаргалка команд smoke/regression и браузеров (см. раздел «Запуск тестов» ниже). (2026-02-13)
+- [x] **3.5 Роль config/browser**: в документации зафиксировано, что браузер задаётся Maven-профилями и системными свойствами; XML в `config/browser/` — справочные. (2026-02-13)
+
+---
+
+## 🚀 Запуск тестов (браузеры и группы)
+
+**Активная конфигурация браузера**: Maven-профили и системные свойства (`-D`), не файлы из `config/browser/`.
+
+| Цель | Команда Maven |
+|------|----------------|
+| Smoke (web) | `mvn clean test -Psmoke_web` |
+| Regression (web) | `mvn clean test -Pregress_web` |
+| Все тесты | `mvn clean test -Pall_tests` |
+| Chrome локально | `mvn clean test -Psmoke_web,browser_chrome_local` или `-Dselenide.browser=chrome` |
+| Firefox | `mvn clean test -Psmoke_web -Dselenide.browser=firefox` |
+| Chrome headless | `mvn clean test -Psmoke_web -Dselenide.headless=true` |
+| Remote (Selenoid) | `mvn clean test -Psmoke_web,browser_chrome_remote` (в профиле заданы `selenide.browser`, `selenide.remote`) |
+
+Переменные окружения: `BROWSER`, `HEADLESS`, `SELENIDE_REMOTE` (см. `TestConfig`).
+
+**config/browser**: файлы в `config/browser/*.xml` — справочные (legacy), не подхватываются TestNG/Surefire автоматически; браузер задаётся только через Maven-профили и системные свойства.
 
 ---
 
@@ -1659,5 +1720,64 @@ java.lang.NullPointerException
 - `src/test/java/com/bft/BaseTest.java` - настройка @Listeners
 - `src/test/java/com/bft/test/annotations/AllureAnnotationProcessor.java` - обработка кастомных аннотаций
 - Все тестовые классы - проверка наличия Allure аннотаций
+
+---
+
+### 2026-03-02 - Добавление автотестов ЛК Архива
+
+**Задача**: Адаптация тестов ЛК Архивной организации из внешнего архива `archives.zip` под текущий фреймворк.
+
+#### ✅ Выполнено:
+
+1. **Создан тестовый класс `ArchivesTest.java`**
+   - ✅ Пакет: `com.bft.LK_Insurence.LK_Archive`
+   - ✅ 5 тестов:
+     - `createRequestInRPU` (ARCH-001) — создание и отправка запроса в архив через РПУ
+     - `addIspolnitel` (ARCH-002) — добавление исполнителя в реестр ЛК Архивной организации
+     - `processRequestInEVS` (ARCH-003) — обработка запроса в ЕВС (поиск, назначение исполнителя, ответ, подписание)
+     - `setRegisterRequests` (ARCH-004) — полная обработка запроса с подписанием
+     - `createNewRequestFullFlow` (ARCH-005) — E2E сценарий РПУ → ЕВС
+   - ✅ Allure аннотации: `@Epic`, `@Feature`, `@Story`, `@AllureId`, `@Description`, `@Severity`
+   - ✅ TestNG groups: `web`, `archive`, `rpu`, `evs`, `e2e`, `smoke`, `regression`
+   - ✅ Наследование `UITestBase`, паттерн аналогичен `Efs1.java`
+
+2. **Обновлён `SzvReportsSteps.java`**
+   - ✅ Добавлена перегрузка `authorizeArhivEVS(UIType uiType)` для поддержки `UITypeSelector`
+   - ✅ Исправлен баг в `authorizeArhivRPU()`: `UIType.valueOf(uiType.value)` → `uiType` (value — URL, не имя enum)
+
+3. **Обновлён `.gitlab-ci.yml`**
+   - ✅ Добавлена опция "ЛК Архива" в переменные `TEST_SCRIPT` и `SINGLE_TEST`
+   - ✅ Добавлен маппинг группы "ЛК Архива" во все 4 блока `case` (TEST_SCRIPT и SINGLE_TEST, с HELM_NAMESPACE и без)
+
+**Ветка**: `experemental`
+
+**Статус**: ✅ Задача выполнена
+
+---
+
+### 2026-03-02 - Реструктуризация ЛК и переменная LK_SCOPE
+
+**Задача**: Вынести `LK_Archive` на уровень `com.bft` (рядом с `LK_Insurence`), добавить переменную GitLab для выбора ЛК.
+
+#### ✅ Выполнено:
+
+1. **Перенос пакета `ArchivesTest.java`**
+   - ✅ `com.bft.LK_Insurence.LK_Archive` → `com.bft.LK_Archive`
+   - ✅ Удалена старая директория `LK_Insurence/LK_Archive`
+
+2. **Добавлена переменная `LK_SCOPE` в `.gitlab-ci.yml`**
+   - ✅ Опции: `""`, `"ЛК Архива"`, `"ЛК Страхователя"`, `"Все ЛК"`
+   - ✅ Убрана опция "ЛК Архива" из `TEST_SCRIPT` и `SINGLE_TEST` (теперь в `LK_SCOPE`)
+   - ✅ Логика:
+     - `ЛК Архива` → запуск только тестов архива
+     - `ЛК Страхователя` → исключаем группу `archive` через `-DexcludedGroups`
+     - `Все ЛК` → тесты из `TEST_SCRIPT/SINGLE_TEST` + тесты архива
+     - `""` (пустое) → обратная совместимость (как раньше)
+   - ✅ Обновлены оба блока `case` (HELM_NAMESPACE и без)
+   - ✅ Добавлен `echo $LK_SCOPE` в print variables
+
+**Ветка**: `experemental`
+
+**Статус**: ✅ Задача выполнена
 
 ---
