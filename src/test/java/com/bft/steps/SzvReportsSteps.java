@@ -59,8 +59,9 @@ public class SzvReportsSteps {
     /**
      * Авторизация в системе ЕВС через ЕПГУ для архивной организации.
      * Контур определяется автоматически из {@code evs.ui.type} через {@link UITypeSelector}.
+     * Использует учётные данные пользователя {@code evs.user2} (Бездомный Иван).
      * 
-     * @throws RuntimeException если учетные данные EPGU недоступны
+     * @throws RuntimeException если учетные данные evs.user2 недоступны
      */
     @Step(value = "Авторизация в ЕВС (ЕПГУ)")
     public void authorizeArhivEVS() {
@@ -68,24 +69,27 @@ public class SzvReportsSteps {
     }
 
     /**
-     * Авторизация в системе ЕВС через ЕПГУ для архивной организации с указанием контура
+     * Авторизация в системе ЕВС через ЕПГУ для архивной организации с указанием контура.
+     * Использует учётные данные пользователя {@code evs.user2} (Бездомный Иван)
+     * и организацию из {@code evs.user2.organization}.
      * 
-     * @param uiType тип UI окружения (EVS_TEST, EVS_UAT и т.д.)
-     * @throws RuntimeException если учетные данные EPGU недоступны
+     * @param uiType тип UI окружения (EVS_TEST_LKS, EVS_UAT_LKS и т.д.)
+     * @throws RuntimeException если учетные данные evs.user2 недоступны
      */
     @Step(value = "Авторизация в ЕВС (ЕПГУ) на контуре {uiType}")
     public void authorizeArhivEVS(UIType uiType) {
-        var credentials = credentialManager.getUserCredentials("epgu");
+        var credentials = credentialManager.getUserCredentials("evs.user2");
         if (credentials == null || !credentials.isValid()) {
-            throw new RuntimeException("EPGU credentials not available. Please set epgu.username and epgu.password environment variables.");
+            throw new RuntimeException("Archive user credentials not available. Please set evs.user2.username and evs.user2.password environment variables.");
         }
 
+        String organization = credentialManager.getCredential("evs.user2.organization", "ОРГАНИЗАЦИЯ -2036470831");
         logger.info("Выполняем авторизацию в ЕВС через ЕПГУ для пользователя: {}", credentials.username);
 
         new LoginPage()
                 .open(uiType)
                 .authorizeEPGU(credentials.username, credentials.password)
-                .selectUserCardEPGU("ОРГАНИЗАЦИЯ -1220859909");
+                .selectUserCardEPGU(organization);
     }
 
     /**
