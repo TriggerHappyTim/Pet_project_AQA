@@ -5,6 +5,7 @@ import com.bft.security.CredentialManager;
 import com.bft.security.TestUsers;
 import com.bft.security.masking.SecureLogger;
 import com.codeborne.selenide.Condition;
+import com.codeborne.selenide.Selenide;
 import com.bft.enums.ReportFormType;
 import com.bft.enums.ReportXmlResource;
 import com.bft.enums.UIType;
@@ -51,6 +52,9 @@ public class SzvReportsSteps {
 
     private final SecureLogger logger = SecureLogger.getLogger(getClass());
     private final CredentialManager credentialManager = CredentialManager.getInstance();
+
+    /** Ключ текущей сессии (username|organization) для пропуска повторной авторизации */
+    private static volatile String currentSessionKey = null;
 
     /**
      * Авторизация в системе ЕВС через ЕПГУ для архивной организации.
@@ -323,10 +327,10 @@ public class SzvReportsSteps {
      */
     @Step("Выход с учетной записи")
     public void logOut() {
-        // Ожидаем завершения всех операций перед выходом
         $x("//body").shouldBe(Condition.visible, SHORT_WAIT);
         new MainPage()
                 .logOut();
+        currentSessionKey = null;
     }
 
     //----------------------------Блок РПУ---------------------------------------------
@@ -717,7 +721,54 @@ public class SzvReportsSteps {
     }
 
     //---------------------EVS----------------------------------
-    
+
+    /**
+     * Проверяет, авторизован ли пользователь в текущей сессии браузера.
+     * Ожидает загрузки страницы (логин или дашборд), затем проверяет наличие user-name.
+     */
+    private boolean isUserLoggedIn() {
+        try {
+            Selenide.Wait().withTimeout(java.time.Duration.ofSeconds(10)).until(webDriver -> {
+                boolean onLoginPage = !webDriver.findElements(
+                    org.openqa.selenium.By.xpath("//a[starts-with(@href,'/esia')]")).isEmpty();
+                boolean onDashboard = !webDriver.findElements(
+                    org.openqa.selenium.By.xpath("//div[contains(@class, 'user-name')]")).isEmpty();
+                return onLoginPage || onDashboard;
+            });
+            return $x("//div[contains(@class, 'user-name')]").isDisplayed();
+        } catch (Throwable e) {
+            return false;
+        }
+    }
+
+    /**
+     * Выполняет авторизацию через ЕПГУ, пропуская если уже авторизован под нужной учёткой.
+     * При авторизации под другой учёткой — сначала разлогинивается.
+     */
+    private void performEpguAuth(UIType uiType, String username, String password, String organization) {
+        String sessionKey = username + "|" + organization;
+
+        new LoginPage().open(uiType);
+
+        if (isUserLoggedIn() && sessionKey.equals(currentSessionKey)) {
+            logger.info("Уже авторизован как '{}', пропускаем повторную авторизацию", organization);
+            return;
+        }
+
+        if (isUserLoggedIn()) {
+            logger.info("Авторизован под другой учёткой, выполняем logout");
+            new LoginPage().logOut();
+            new LoginPage().open(uiType);
+        }
+
+        new LoginPage()
+                .authorizeEPGU(username, password)
+                .selectUserCardEPGU(organization)
+                .open(uiType);
+
+        currentSessionKey = sessionKey;
+    }
+
     /**
      * Авторизация в EVS с использованием предопределенного пользователя из enum
      * 
@@ -742,17 +793,7 @@ public class SzvReportsSteps {
             );
         }
         
-        String username = user.getUsername();
-        String password = user.getPassword();
-        String organization = user.getOrganization();
-        
-        logger.info("Авторизация: пользователь={}, организация={}", username, organization);
-        
-        new LoginPage()
-                .open(uiType)
-                .authorizeEPGU(username, password)
-                .selectUserCardEPGU(organization)
-                .open(uiType);
+        performEpguAuth(uiType, user.getUsername(), user.getPassword(), user.getOrganization());
     }
     
     /**
@@ -773,15 +814,9 @@ public class SzvReportsSteps {
             return;
         }
         
-        logger.info("Выполняем авторизацию в EVS для пользователя: {}", credentials.username);
-        
         String organization = credentialManager.getCredential("evs.organization", "ОРГАНИЗАЦИЯ -1546025669");
         
-        new LoginPage()
-                .open(uiType)
-                .authorizeEPGU(credentials.username, credentials.password)
-                .selectUserCardEPGU(organization)
-                .open(uiType);
+        performEpguAuth(uiType, credentials.username, credentials.password, organization);
     }
 
     /**

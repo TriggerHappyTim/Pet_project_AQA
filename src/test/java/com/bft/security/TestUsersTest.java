@@ -65,6 +65,25 @@ public class TestUsersTest {
         assertEquals(user.getFullName(), "Бездомный Иван Николаевич", "Неверное ФИО");
     }
     
+    @Test(groups = {"unit", "security"}, 
+          testName = "#8 testBabkinaUserCredentials",
+          description = "Проверка credentials пользователя Бабкина")
+    @AllureId("USERS-008")
+    public void testBabkinaUserCredentials() {
+        // Given
+        TestUsers user = TestUsers.BABKINA_VERA;
+        
+        // When
+        String username = user.getUsername();
+        String organization = user.getOrganization();
+        
+        // Then
+        assertNotNull(username, "Username должен быть задан");
+        assertNotNull(organization, "Organization должна быть задана");
+        assertEquals(organization, "ОРГАНИЗАЦИЯ -292426768", "Неверная организация для Бабкиной");
+        assertEquals(user.getFullName(), "Бабкина Вера Васильевна", "Неверное ФИО");
+    }
+    
     @Test(groups = {"unit", "security"})
     public void testDefaultUserCredentials() {
         // Given
@@ -118,6 +137,7 @@ public class TestUsersTest {
         // Given & When & Then
         assertEquals(TestUsers.KRIVONOSOV_ALEXANDER.getCredentialPrefix(), "evs.user1");
         assertEquals(TestUsers.BEZDOMNIY_IVAN.getCredentialPrefix(), "evs.user2");
+        assertEquals(TestUsers.BABKINA_VERA.getCredentialPrefix(), "evs.user3");
         assertEquals(TestUsers.DEFAULT_USER.getCredentialPrefix(), "evs");
     }
     

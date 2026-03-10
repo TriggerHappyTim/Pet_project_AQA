@@ -2,15 +2,20 @@
 
 Этот модуль реализует паттерн Strategy для различных типов тестирования.
 
+> **Примечание**: `ApiTestExecutionStrategy` закомментирован целиком. Активны только `CryptoProValidationStrategy` и `BaseTestExecutionStrategy`.
+
 ## Архитектура
 
-### Основные компоненты:
+### Файлы пакета (8):
 
-1. **TestExecutionStrategy** - интерфейс стратегий выполнения тестов
-2. **DataPreparationStrategy** - интерфейс стратегий подготовки данных
-3. **ValidationStrategy** - интерфейс стратегий валидации
-4. **TestStrategyManager** - менеджер для управления стратегиями
-5. **BaseTestExecutionStrategy** - абстрактный базовый класс
+- **TestExecutionStrategy** — интерфейс стратегий выполнения тестов
+- **DataPreparationStrategy** — интерфейс стратегий подготовки данных
+- **ValidationStrategy** — интерфейс стратегий валидации
+- **TestStrategyManager** — менеджер стратегий
+- **BaseTestExecutionStrategy** — абстрактный базовый класс (активен)
+- **CryptoProValidationStrategy** — валидация CryptoPro через UI (активна)
+- **ExecutionStrategyType** — типы стратегий выполнения
+- **ApiTestExecutionStrategy** — закомментирован
 
 ## Быстрый старт
 
@@ -21,7 +26,6 @@
 public void myTest() {
     TestStrategyManager manager = TestStrategyManager.createDefault();
 
-    // Менеджер автоматически выберет подходящую стратегию
     var context = manager.executeTest("crypto_pro_validation_test", softAssert);
 
     System.out.println("Выполнено за: " + context.getDuration() + " мс");
@@ -35,7 +39,6 @@ public void myTest() {
 public void explicitStrategyTest() {
     TestStrategyManager manager = TestStrategyManager.createDefault();
 
-    // Явно указываем тип стратегии
     var context = manager.executeTestWithStrategy(
         "my_test",
         TestStrategyType.UI_CRYPTO_PRO_VALIDATION,
@@ -51,7 +54,6 @@ public void explicitStrategyTest() {
 public void fullStrategyTest() {
     TestStrategyManager manager = TestStrategyManager.createDefault();
 
-    // Настройка всех аспектов тестирования
     var context = manager.executeTestWithFullSetup(
         "full_test",
         TestStrategyType.UI_CRYPTO_PRO_VALIDATION,
@@ -64,7 +66,7 @@ public void fullStrategyTest() {
 
 ## Реализованные стратегии
 
-### UI стратегии
+### Активные стратегии
 
 #### CryptoProValidationStrategy
 ```java
@@ -78,26 +80,8 @@ CryptoProValidationStrategy strategy = new CryptoProValidationStrategy(true, fal
 CryptoProValidationStrategy strategy = new CryptoProValidationStrategy(true, true);
 ```
 
-### API стратегии
-
-#### ApiTestExecutionStrategy
-```java
-// Простой GET запрос
-ApiTestExecutionStrategy apiStrategy = new ApiTestExecutionStrategy(
-    "/health", "GET", 200
-);
-
-// Полная настройка
-ApiTestExecutionStrategy apiStrategy = new ApiTestExecutionStrategy(
-    "http://api.example.com",
-    "/users/123",
-    "GET",
-    Map.of("Authorization", "Bearer token"),
-    Map.of("format", "json"),
-    "{\"param\": \"value\"}",
-    200
-);
-```
+#### BaseTestExecutionStrategy
+Базовый абстрактный класс для создания кастомных стратегий выполнения.
 
 ## Создание кастомной стратегии
 
@@ -112,7 +96,7 @@ public class CustomTestStrategy extends BaseTestExecutionStrategy<String> {
 
     @Override
     public TestStrategyType getType() {
-        return TestStrategyType.UI_NAVIGATION; // или создайте новый тип
+        return TestStrategyType.UI_NAVIGATION;
     }
 
     @Override
@@ -122,27 +106,23 @@ public class CustomTestStrategy extends BaseTestExecutionStrategy<String> {
 
     @Override
     protected void performPreparation(TestContext context) {
-        // Подготовка данных и окружения
         System.out.println("Подготовка кастомного теста");
     }
 
     @Override
     protected void performExecution(TestContext context) {
-        // Основная логика теста
         System.out.println("Выполнение кастомного теста");
         context.setActualResult("success");
     }
 
     @Override
     protected void performValidation(TestContext context, SoftAssert softAssert) {
-        // Валидация результатов
         String result = (String) context.getActualResult();
         softAssert.assertEquals(result, "success");
     }
 
     @Override
     protected void performCleanup(TestContext context) {
-        // Очистка после теста
         System.out.println("Очистка кастомного теста");
     }
 }
@@ -155,10 +135,8 @@ public class CustomTestStrategy extends BaseTestExecutionStrategy<String> {
 public void customStrategyTest() {
     TestStrategyManager manager = TestStrategyManager.createDefault();
 
-    // Регистрация стратегии
     manager.registerExecutionStrategy(new CustomTestStrategy());
 
-    // Выполнение
     var context = manager.executeTest("custom_test_name", softAssert);
 
     softAssert.assertAll();
@@ -179,13 +157,11 @@ public class DatabaseDataStrategy implements DataPreparationStrategy<User> {
 
     @Override
     public void prepareTestData(User data) {
-        // Сохранение в базу данных
         database.save(data);
     }
 
     @Override
     public void cleanupTestData(User data) {
-        // Удаление из базы данных
         database.delete(data);
     }
 
@@ -235,7 +211,6 @@ public class StrictValidationStrategy implements ValidationStrategy<Order> {
 
     @Override
     public void validateBusinessRules(Order result, SoftAssert softAssert) {
-        // Проверка бизнес-правил
         if (result.getStatus().equals("COMPLETED")) {
             softAssert.assertNotNull(result.getCompletedDate());
         }
@@ -297,17 +272,14 @@ long duration = context.getDuration();
 ```java
 TestStrategyManager manager = TestStrategyManager.createDefault();
 
-// Регистрация стратегий
 manager.registerExecutionStrategy(new MyExecutionStrategy());
 manager.registerDataStrategy(new MyDataStrategy());
 manager.registerValidationStrategy(new MyValidationStrategy());
 
-// Выполнение тестов
 var context1 = manager.executeTest("auto_test", softAssert);
 var context2 = manager.executeTestWithStrategy("explicit_test", TestStrategyType.UI_FORM_SUBMISSION, softAssert);
 var context3 = manager.executeTestWithFullSetup("full_test", executionType, dataType, validationType, softAssert);
 
-// Проверка доступных стратегий
 List<TestStrategyType> executionTypes = manager.getAvailableExecutionStrategies();
 List<DataPreparationType> dataTypes = manager.getAvailableDataStrategies();
 List<ValidationType> validationTypes = manager.getAvailableValidationStrategies();
@@ -316,11 +288,11 @@ List<ValidationType> validationTypes = manager.getAvailableValidationStrategies(
 ## Лучшие практики
 
 ### 1. Принципы SOLID
-- **Single Responsibility**: Каждая стратегия отвечает за один аспект тестирования
-- **Open/Closed**: Добавление новых стратегий не требует изменения существующих
-- **Liskov Substitution**: Все стратегии взаимозаменяемы
-- **Interface Segregation**: Четкие интерфейсы для разных нужд
-- **Dependency Inversion**: Зависимости инвертированы через интерфейсы
+- **Single Responsibility**: Каждая стратегия отвечает за один аспект
+- **Open/Closed**: Новые стратегии не требуют изменения существующих
+- **Liskov Substitution**: Стратегии взаимозаменяемы
+- **Interface Segregation**: Четкие интерфейсы
+- **Dependency Inversion**: Зависимости через интерфейсы
 
 ### 2. Соглашения по именованию
 - Стратегии выполнения: `*ExecutionStrategy`
@@ -333,35 +305,18 @@ List<ValidationType> validationTypes = manager.getAvailableValidationStrategies(
 @Override
 protected void performExecution(TestContext context) {
     try {
-        // Логика выполнения
         context.setActualResult(result);
     } catch (Exception e) {
         context.setActualResult(e);
-        throw e; // Передаем исключение выше
+        throw e;
     }
 }
 ```
 
-### 4. Логирование
-```java
-@Override
-protected void performPreparation(TestContext context) {
-    System.out.println("Подготовка: " + context.getTestName());
-    // ... подготовка ...
-}
-
-@Override
-protected void performCleanup(TestContext context) {
-    System.out.println("Очистка: " + context.getTestName());
-    // ... очистка ...
-}
-```
-
-### 5. Приоритизация
+### 4. Приоритизация
 ```java
 @Override
 public int getPriority() {
-    // Чем выше приоритет, тем предпочтительнее стратегия
     return 10; // Высокий приоритет
 }
 ```
@@ -369,32 +324,19 @@ public int getPriority() {
 ## Примеры в проекте
 
 ### CryptoPro стратегии
-- `CryptoProValidationStrategy` - валидация плагина через UI
-- `ApiTestExecutionStrategy` - API тестирование
+- `CryptoProValidationStrategy` — валидация плагина через UI
 
 ### Тесты с использованием стратегий
-- `ExampleTest` - демонстрация различных способов использования
-- `CryptoProCertificateTest` - интеграция стратегий в реальные тесты
+- `ExampleTest` — демонстрация использования
+- `CryptoProCertificateTest` — интеграция стратегий в тесты
 
 ## Расширение функциональности
 
 ### Добавление нового типа стратегии
 
-1. Добавить значение в `TestStrategyType`
+1. Добавить значение в `TestStrategyType` (или `ExecutionStrategyType`)
 2. Создать реализацию интерфейса
 3. Зарегистрировать в `TestStrategyManager`
 4. Обновить документацию
-
-### Интеграция с CI/CD
-
-```yaml
-# GitLab CI
-test:strategy:
-  script:
-    - mvn test -Dtest.strategy=UI_CRYPTO_PRO_VALIDATION
-  artifacts:
-    reports:
-      strategy_results: results/
-```
 
 Этот паттерн обеспечивает гибкость, поддерживаемость и расширяемость системы тестирования.

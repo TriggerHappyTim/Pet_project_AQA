@@ -59,7 +59,8 @@ public class TestUserSelector {
      * <p><b>Примеры значений property:</b>
      * <ul>
      *   <li>"KRIVONOSOV_ALEXANDER" → TestUsers.KRIVONOSOV_ALEXANDER</li>
-     *   <li>"BEZDOMNIY_IVAN" → TestUsers.BEZDOMNIY_IVAN</li>
+     *   <li>"BABKINA_VERA" → TestUsers.BABKINA_VERA (ЛК Страхователя)</li>
+     *   <li>"BEZDOMNIY_IVAN" → TestUsers.BEZDOMNIY_IVAN (ЛК Архива)</li>
      *   <li>"DEFAULT_USER" → TestUsers.DEFAULT_USER</li>
      * </ul>
      * 
@@ -78,7 +79,7 @@ public class TestUserSelector {
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException(
                 String.format("Неизвестный пользователь в system property '%s': '%s'. " +
-                    "Доступные значения: KRIVONOSOV_ALEXANDER, BEZDOMNIY_IVAN, DEFAULT_USER",
+                    "Доступные значения: KRIVONOSOV_ALEXANDER, BABKINA_VERA, BEZDOMNIY_IVAN, DEFAULT_USER",
                     TEST_USER_PROPERTY, userProperty),
                 e
             );

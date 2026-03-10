@@ -2,17 +2,19 @@
 
 Этот модуль предоставляет слой абстракции для конфигурации автоматизированных тестов.
 
+> **Примечание**: Код API стратегии сохранён в проекте, но закомментирован. Активна только UI стратегия.
+
 ## Архитектура
 
-### Основные компоненты:
+### Файлы пакета (7):
 
-1. **TestStrategy** - интерфейс стратегий тестирования
-2. **TestConfig** - конфигурационные данные
-3. **TestContext** - контекст выполнения тестов
-4. **TestConfiguration** - основной класс конфигурации
-5. **Стратегии**:
-   - `UITestStrategy` - для UI тестирования
-   - `ApiTestStrategy` - для API тестирования
+1. **TestStrategy** — интерфейс стратегий тестирования
+2. **TestConfig** — конфигурационные данные
+3. **TestContext** — контекст выполнения тестов (методы ApiTestStrategy закомментированы)
+4. **TestConfiguration** — основной класс конфигурации (`isApiTest()` закомментирован)
+5. **BaseTestStrategy** — базовый класс стратегий
+6. **UITestStrategy** — для UI тестирования (активна)
+7. **TestStrategyType** — тип стратегии (значение API закомментировано)
 
 ## Быстрый старт
 
@@ -21,7 +23,7 @@
 ```java
 public class MyTest extends BaseTest {
     // Конфигурация инициализируется автоматически
-    // Стратегия выбирается автоматически на основе окружения
+    // Доступна только UI стратегия
 }
 ```
 
@@ -52,6 +54,10 @@ public class CustomTest extends BaseTest {
 }
 ```
 
+## Стратегии
+
+Активна только **UI стратегия** (`UITestStrategy`). API стратегия закомментирована.
+
 ## Использование в тестах
 
 ### Получение конфигурации
@@ -65,7 +71,7 @@ public void myTest() {
     // Получение стратегии
     TestStrategy strategy = TestConfiguration.getCurrentStrategy();
 
-    // Проверка типа теста
+    // Проверка типа теста (только UI)
     if (TestConfiguration.isUITest()) {
         // UI тест логика
     }
@@ -100,7 +106,6 @@ public void browserTest() {
 | `HEADLESS` | Режим без интерфейса | `false` |
 | `CRYPTOPRO_PATH` | Путь к расширению CryptoPro | `src/test/resources/...` |
 | `ENVIRONMENT` | Окружение (dev/test/uat) | `dev` |
-| `API_BASE_URL` | Базовый URL для API тестов | `http://localhost:8080` |
 
 ### Свойства системы
 
@@ -127,7 +132,6 @@ public class MobileTestStrategy extends BaseTestStrategy {
 
     @Override
     public boolean isApplicable() {
-        // Логика проверки применимости
         return checkMobileEnvironment();
     }
 
@@ -148,7 +152,6 @@ public class MobileTestStrategy extends BaseTestStrategy {
 
     @Override
     protected boolean checkEnvironmentAvailability() {
-        // Проверка доступности мобильного окружения
         return true;
     }
 }
@@ -170,13 +173,6 @@ mvn test -Dselenide.remote=http://localhost:4444/wd/hub
 
 # Headless режим
 HEADLESS=true mvn test
-```
-
-### API тестирование
-
-```java
-// В коде указываем стратегию
-TestConfiguration.initialize(TestStrategyType.API);
 ```
 
 ## Расширение функциональности
@@ -202,7 +198,7 @@ TestConfiguration.initialize(customConfig);
 ## Лучшие практики
 
 1. **Инициализация**: Всегда инициализируйте конфигурацию в `@BeforeSuite`
-2. **Стратегии**: Выбирайте стратегию явно для специфических типов тестов
+2. **Стратегии**: Используйте UI стратегию для тестов
 3. **Конфигурация**: Используйте переменные окружения для разных сред
 4. **Обработка ошибок**: Проверяйте доступность окружения перед тестами
 5. **Чистка**: Используйте `TestConfiguration.reset()` в интеграционных тестах

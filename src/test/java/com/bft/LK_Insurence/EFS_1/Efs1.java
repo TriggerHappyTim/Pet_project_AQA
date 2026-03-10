@@ -130,14 +130,14 @@ public class Efs1 extends UITestBase {
     }
     
     @Test(groups = {"web", "efs", "smoke", "xml-upload", "user-specific"}, 
-          description = "Загрузка отчёта ЕФС-1 через XML от пользователя Бездомный")
-    @Story("XML Upload - Бездомный И.Н.")
-    @Description("Тест проверяет загрузку отчёта ЕФС-1 через XML от пользователя Бездомный Иван Николаевич (ОРГАНИЗАЦИЯ -2036470831)")
+          description = "Загрузка отчёта ЕФС-1 через XML от пользователя Бабкина")
+    @Story("XML Upload - Бабкина В.В.")
+    @Description("Тест проверяет загрузку отчёта ЕФС-1 через XML от пользователя Бабкина Вера Васильевна (ОРГАНИЗАЦИЯ -292426768)")
     @Severity(SeverityLevel.CRITICAL)
-    public void efs_1_xml_bezdomniy() {
+    public void efs_1_xml_babkina() {
         SzvReportsSteps steps = new SzvReportsSteps();
 
-        steps.authorizeEVS(UITypeSelector.getSelectedUIType(), TestUsers.BEZDOMNIY_IVAN);
+        steps.authorizeEVS(UITypeSelector.getSelectedUIType(), TestUsers.BABKINA_VERA);
         steps.addReports();
         steps.selectReportType(ReportFormType.EFS1);
         steps.addNewReport();

@@ -73,11 +73,17 @@ public class MockCredentialProvider implements CredentialProvider {
         mockCredentials.put(EVS_USER1_PREFIX + ".organization", EVS_USER1_ORGANIZATION);
         mockCredentials.put(EVS_USER1_PREFIX + ".fullname", EVS_USER1_FULLNAME);
 
-        // EVS user2 (Бездомный) — fallback для CI
+        // EVS user2 (Бездомный, ЛК Архива) — fallback для CI
         mockCredentials.put("evs.user2.username", "bedomniy.in@mail.ru");
         mockCredentials.put("evs.user2.password", "gq3%!UyVI_7");
         mockCredentials.put("evs.user2.organization", "ОРГАНИЗАЦИЯ -2036470831");
         mockCredentials.put("evs.user2.fullname", "Бездомный Иван Николаевич");
+
+        // EVS user3 (Бабкина, ЛК Страхователя) — fallback для CI
+        mockCredentials.put("evs.user3.username", "vera.babkina.2000@mail.ru");
+        mockCredentials.put("evs.user3.password", "gq3%!UyVI_7");
+        mockCredentials.put("evs.user3.organization", "ОРГАНИЗАЦИЯ -292426768");
+        mockCredentials.put("evs.user3.fullname", "Бабкина Вера Васильевна");
     }
 
     @Override
