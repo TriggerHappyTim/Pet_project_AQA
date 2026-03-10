@@ -5,7 +5,8 @@ import com.bft.security.CredentialManager;
 import com.bft.security.TestUsers;
 import com.bft.security.masking.SecureLogger;
 import com.codeborne.selenide.Condition;
-import com.bft.enums.ReportType;
+import com.bft.enums.ReportFormType;
+import com.bft.enums.ReportXmlResource;
 import com.bft.enums.UIType;
 import com.bft.gui.LoginPage;
 import com.bft.ui.pages.MainPage;
@@ -36,7 +37,7 @@ import static com.bft.enums.UIType.EVS_TEST;
  * SzvReportsSteps steps = new SzvReportsSteps();
  * steps.authorizeEVS(UIType.EVS_UAT_LKS, TestUsers.DEFAULT_USER);
  * steps.addReports();
- * steps.selectReportType(ReportType.SZV_M);
+ * steps.selectReportType(ReportFormType.SZVM);
  * }</pre>
  * 
  * @author QA Automation Team
@@ -62,6 +63,17 @@ public class SzvReportsSteps {
      */
     @Step(value = "Авторизация в ЕВС (ЕПГУ)")
     public void authorizeArhivEVS() {
+        authorizeArhivEVS(EVS_TEST);
+    }
+
+    /**
+     * Авторизация в системе ЕВС через ЕПГУ для архивной организации с указанием контура
+     * 
+     * @param uiType тип UI окружения (EVS_TEST, EVS_UAT и т.д.)
+     * @throws RuntimeException если учетные данные EPGU недоступны
+     */
+    @Step(value = "Авторизация в ЕВС (ЕПГУ) на контуре {uiType}")
+    public void authorizeArhivEVS(UIType uiType) {
         var credentials = credentialManager.getUserCredentials("epgu");
         if (credentials == null || !credentials.isValid()) {
             throw new RuntimeException("EPGU credentials not available. Please set epgu.username and epgu.password environment variables.");
@@ -70,7 +82,7 @@ public class SzvReportsSteps {
         logger.info("Выполняем авторизацию в ЕВС через ЕПГУ для пользователя: {}", credentials.username);
 
         new LoginPage()
-                .open(EVS_TEST)
+                .open(uiType)
                 .authorizeEPGU(credentials.username, credentials.password)
                 .selectUserCardEPGU("ОРГАНИЗАЦИЯ -1220859909");
     }
@@ -341,7 +353,7 @@ public class SzvReportsSteps {
         logger.info("Выполняем авторизацию в РПУ для пользователя: {}", credentials.username);
 
         new LoginPage()
-                .open(UIType.valueOf(uiType.value))
+                .open(uiType)
                 .authorize(credentials.username, credentials.password);
     }
 
@@ -523,15 +535,15 @@ public class SzvReportsSteps {
      * Добавляет приложение к запросу
      * 
      * Загружает файл отчета в качестве приложения к запросу.
-     * Тип файла определяется по типу отчета (reportType.value содержит путь к файлу).
+     * Тип файла определяется по пути из reportXmlResource.
      * 
-     * @param reportType тип отчета, определяющий какой файл загружать
+     * @param reportXmlResource ресурс с путём к файлу для загрузки
      */
     @Step("Заполнение блока ПРИЛОЖЕНИЯ К ЗАПРОСУ")
-    public void attachmentsRequest(ReportType reportType) {
+    public void attachmentsRequest(ReportXmlResource reportXmlResource) {
         new MainPage()
                 .clickThirdButton("Добавить")
-                .uploadFile(reportType.value)
+                .uploadFile(reportXmlResource.getPath())
                 .clickButtonModal("Сохранить изменения");
     }
 
@@ -796,11 +808,11 @@ public class SzvReportsSteps {
      * Выбирает тип отчета через радиокнопку и подтверждает выбор кнопкой "Добавить".
      * Добавлена проверка, что правильный тип отчета выбран перед подтверждением.
      * 
-     * @param reportType тип отчета из enum ReportType (например, EFS1, SZVM, SZVTD)
+     * @param reportFormType тип отчёта для выбора в UI (название формы)
      */
-    @Step(value = "Выбор типа отчета: {reportType.value}")
-    public void selectReportType(ReportType reportType) {
-        String reportTypeText = reportType.value;
+    @Step(value = "Выбор типа отчета: {reportFormType}")
+    public void selectReportType(ReportFormType reportFormType) {
+        String reportTypeText = reportFormType.getDisplayName();
         String escaped = reportTypeText.replace("'", "''");
         logger.info("Выбираем тип отчета: {}", reportTypeText);
         
@@ -1215,13 +1227,13 @@ public class SzvReportsSteps {
      * 3. Подтверждает загрузку в модальном окне
      * 4. Подтверждает действие в диалоге
      * 
-     * @param reportType тип отчета, определяющий какой XML файл загружать
+     * @param reportXmlResource ресурс с путём к XML-файлу для загрузки
      */
     @Step(value = "Загрузка XML")
-    public void sendXml(ReportType reportType) {
+    public void sendXml(ReportXmlResource reportXmlResource) {
         new MainPage()
                 .clickBtnSecondary("Загрузить отчет")
-                .uploadFile(reportType.value)
+                .uploadFile(reportXmlResource.getPath())
                 .clickButtonModal("Загрузить")
                 .clickButtonModalDialog("Да");
     }
