@@ -148,7 +148,7 @@ http://localhost:[случайный_порт]/
 ```batch
 @echo off
 REM Скрипт для локального запуска тестов, имитирующий настройки GitLab CI/CD
-REM Использование: run-local-gitlab-style.bat [ENVIRONMENT] [TEST_SCRIPT] [USER_ACCOUNT] [SINGLE_TEST] [SUITE]
+REM Использование: run-local-gitlab-style.bat [ENVIRONMENT] [TEST_SCRIPT] [SINGLE_TEST] [SUITE]
 
 setlocal enabledelayedexpansion
 
@@ -159,18 +159,14 @@ if "%ENVIRONMENT%"=="" set ENVIRONMENT=test
 set TEST_SCRIPT=%2
 if "%TEST_SCRIPT%"=="" set TEST_SCRIPT=smoke_web
 
-set USER_ACCOUNT=%3
-if "%USER_ACCOUNT%"=="" set USER_ACCOUNT=user_krivonosov
-
-set SINGLE_TEST=%4
-set SUITE=%5
+set SINGLE_TEST=%3
+set SUITE=%4
 
 echo ========================================
 echo Локальный запуск тестов (GitLab CI/CD стиль)
 echo ========================================
 echo ENVIRONMENT: %ENVIRONMENT%
 echo TEST_SCRIPT: %TEST_SCRIPT%
-echo USER_ACCOUNT: %USER_ACCOUNT%
 if not "%SINGLE_TEST%"=="" echo SINGLE_TEST: %SINGLE_TEST%
 if not "%SUITE%"=="" echo SUITE: %SUITE%
 echo ========================================
@@ -180,7 +176,7 @@ REM Переход в директорию проекта
 cd /d "%~dp0.."
 
 REM Формирование команды Maven
-set MVN_CMD=mvn clean test --activate-profiles %ENVIRONMENT%,%TEST_SCRIPT%,%USER_ACCOUNT%
+set MVN_CMD=mvn clean test --activate-profiles %ENVIRONMENT%,%TEST_SCRIPT%
 
 REM Добавление параметров если указаны
 if not "%SINGLE_TEST%"=="" set MVN_CMD=!MVN_CMD! -Dtest=%SINGLE_TEST%
@@ -218,20 +214,18 @@ if %ERRORLEVEL% EQU 0 (
 ```bash
 #!/bin/bash
 # Скрипт для локального запуска тестов, имитирующий настройки GitLab CI/CD
-# Использование: ./run-local-gitlab-style.sh [ENVIRONMENT] [TEST_SCRIPT] [USER_ACCOUNT] [SINGLE_TEST] [SUITE]
+# Использование: ./run-local-gitlab-style.sh [ENVIRONMENT] [TEST_SCRIPT] [SINGLE_TEST] [SUITE]
 
 ENVIRONMENT=${1:-test}
 TEST_SCRIPT=${2:-smoke_web}
-USER_ACCOUNT=${3:-user_krivonosov}
-SINGLE_TEST=${4:-}
-SUITE=${5:-}
+SINGLE_TEST=${3:-}
+SUITE=${4:-}
 
 echo "========================================"
 echo "Локальный запуск тестов (GitLab CI/CD стиль)"
 echo "========================================"
 echo "ENVIRONMENT: $ENVIRONMENT"
 echo "TEST_SCRIPT: $TEST_SCRIPT"
-echo "USER_ACCOUNT: $USER_ACCOUNT"
 [ -n "$SINGLE_TEST" ] && echo "SINGLE_TEST: $SINGLE_TEST"
 [ -n "$SUITE" ] && echo "SUITE: $SUITE"
 echo "========================================"
@@ -239,7 +233,7 @@ echo ""
 
 cd "$(dirname "$0")/.." || exit 1
 
-MVN_CMD="mvn clean test --activate-profiles $ENVIRONMENT,$TEST_SCRIPT,$USER_ACCOUNT"
+MVN_CMD="mvn clean test --activate-profiles $ENVIRONMENT,$TEST_SCRIPT"
 
 [ -n "$SINGLE_TEST" ] && MVN_CMD="$MVN_CMD -Dtest=$SINGLE_TEST"
 [ -n "$SUITE" ] && MVN_CMD="$MVN_CMD -Dsuite=$SUITE"
@@ -275,8 +269,8 @@ REM Базовый запуск
 scripts\run-local-gitlab-style.bat
 
 REM Запуск одного теста
-scripts\run-local-gitlab-style.bat test smoke_web user_krivonosov "CryptoProCertificateTest#verifyCryptoProPluginLoaded"
+scripts\run-local-gitlab-style.bat test smoke_web "CryptoProCertificateTest#verifyCryptoProPluginLoaded"
 
 REM Запуск EFS-1 тестов
-scripts\run-local-gitlab-style.bat test smoke_efs user_krivonosov
+scripts\run-local-gitlab-style.bat test smoke_efs
 ```

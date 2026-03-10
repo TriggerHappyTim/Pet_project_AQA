@@ -43,16 +43,6 @@ variables:
       - "moon_chrome_browser"
     description:
       "Выберите целевой браузер из списка. Для GitLab CI используются только удаленные профили (browser_chrome_remote, browser_firefox_remote, browser_yandex_remote, moon_chrome_browser). Локальные профили (browser_chrome_local, browser_firefox_local) доступны только для локального запуска."
-  USER_ACCOUNT:
-    value:
-      "user_krivonosov"
-    options:
-      - "user_krivonosov"
-      - "user_babkina"
-      - "user_bezdomniy"
-      - "user_default"
-    description:
-      "Выберите учетную запись для тестирования (должны быть описаны в секции <profiles> файла pom.xml)"
   LK_SCOPE:
     value:
       ""
@@ -148,7 +138,7 @@ maven test:
             ENVIRONMENT_OVERRIDE=dev
             ;;
         esac
-        #MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT_OVERRIDE}","${TEST_SCRIPT}","${BROWSERS}","${USER_ACCOUNT}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
+        #MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT_OVERRIDE}","${TEST_SCRIPT}","${BROWSERS}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
         ARCHIVE_TESTS="ArchivesTest#createRequestInRPU,ArchivesTest#addIspolnitel,ArchivesTest#processRequestInEVS,ArchivesTest#setRegisterRequests,ArchivesTest#createNewRequestFullFlow"
         EXCLUDE_GROUPS=""
 
@@ -196,24 +186,24 @@ maven test:
         then
           if [ -n "${SUITE}" ]
           then
-            MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT_OVERRIDE}","${BROWSERS}","${USER_ACCOUNT}" -Dtest="${TEST_LIST}" -Dsuite="${SUITE}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
+            MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT_OVERRIDE}","${BROWSERS}" -Dtest="${TEST_LIST}" -Dsuite="${SUITE}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
           else
-            MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT_OVERRIDE}","${BROWSERS}","${USER_ACCOUNT}" -Dtest="${TEST_LIST}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
+            MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT_OVERRIDE}","${BROWSERS}" -Dtest="${TEST_LIST}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
           fi
         elif [ -n "${MAVEN_PROFILE}" ]
         then
           if [ -n "${SUITE}" ]
           then
-            MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT_OVERRIDE}","${MAVEN_PROFILE}","${BROWSERS}","${USER_ACCOUNT}" -Dsuite="${SUITE}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
+            MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT_OVERRIDE}","${MAVEN_PROFILE}","${BROWSERS}" -Dsuite="${SUITE}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
           else
-            MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT_OVERRIDE}","${MAVEN_PROFILE}","${BROWSERS}","${USER_ACCOUNT}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
+            MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT_OVERRIDE}","${MAVEN_PROFILE}","${BROWSERS}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
           fi
         else
           if [ -n "${SUITE}" ]
           then
-            MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT_OVERRIDE}","${BROWSERS}","${USER_ACCOUNT}" -Dsuite="${SUITE}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
+            MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT_OVERRIDE}","${BROWSERS}" -Dsuite="${SUITE}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
           else
-            MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT_OVERRIDE}","${BROWSERS}","${USER_ACCOUNT}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
+            MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT_OVERRIDE}","${BROWSERS}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
           fi
         fi
 
@@ -277,26 +267,26 @@ maven test:
           echo "Running specific tests: ${TEST_LIST}"
           if [ -n "${SUITE}" ]
           then
-            MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT_OVERRIDE}","${BROWSERS}","${USER_ACCOUNT}" -Dtest="${TEST_LIST}" -Dsuite="${SUITE}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
+            MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT_OVERRIDE}","${BROWSERS}" -Dtest="${TEST_LIST}" -Dsuite="${SUITE}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
           else
-            MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT_OVERRIDE}","${BROWSERS}","${USER_ACCOUNT}" -Dtest="${TEST_LIST}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
+            MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT_OVERRIDE}","${BROWSERS}" -Dtest="${TEST_LIST}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
           fi
         elif [ -n "${MAVEN_PROFILE}" ]
         then
           echo "Using Maven profile: ${MAVEN_PROFILE}"
           if [ -n "${SUITE}" ]
           then
-            MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT_OVERRIDE}","${MAVEN_PROFILE}","${BROWSERS}","${USER_ACCOUNT}" -Dsuite="${SUITE}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
+            MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT_OVERRIDE}","${MAVEN_PROFILE}","${BROWSERS}" -Dsuite="${SUITE}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
           else
-            MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT_OVERRIDE}","${MAVEN_PROFILE}","${BROWSERS}","${USER_ACCOUNT}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
+            MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT_OVERRIDE}","${MAVEN_PROFILE}","${BROWSERS}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
           fi
         else
           echo "Running ALL tests without filtering (TEST_SCRIPT is empty)"
           if [ -n "${SUITE}" ]
           then
-            MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT_OVERRIDE}","${BROWSERS}","${USER_ACCOUNT}" -Dsuite="${SUITE}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
+            MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT_OVERRIDE}","${BROWSERS}" -Dsuite="${SUITE}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
           else
-            MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT_OVERRIDE}","${BROWSERS}","${USER_ACCOUNT}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
+            MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT_OVERRIDE}","${BROWSERS}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
           fi
         fi
 

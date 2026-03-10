@@ -77,7 +77,7 @@ src/test/java/com/bft/
 ├── security/                    # Безопасность (13 файлов)
 │   ├── CredentialManager.java, CredentialProvider.java
 │   ├── EnvironmentCredentialProvider.java, TestUsers.java
-│   ├── TestUserSelector.java, OrganizationProfile.java
+│   ├── OrganizationProfile.java
 │   ├── masking/                     # SecureLogger, DataMasker
 │   └── providers/                   # PropertiesCredentialProvider
 ├── helpers/                     # Вспомогательные классы (9 файлов)

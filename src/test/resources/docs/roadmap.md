@@ -1896,3 +1896,37 @@ java.lang.NullPointerException
 **Статус**: ✅ Задача выполнена
 
 ---
+
+### 2026-03-11 - Удаление неиспользуемой переменной USER_ACCOUNT
+
+**Задача**: Убрать переменную `USER_ACCOUNT` из CI/CD pipeline и связанную инфраструктуру — переменная не влияла на выполнение тестов (`TestUserSelector` никогда не вызывался в тестах).
+
+#### ✅ Выполнено:
+
+1. **Удаление из GitLab CI/CD**
+   - ✅ Удалена переменная `USER_ACCOUNT` из `.gitlab-ci.yml`
+   - ✅ Удалены все `,"${USER_ACCOUNT}"` из команд Maven (13 вхождений)
+
+2. **Удаление Maven profiles**
+   - ✅ Удалены 4 профиля из `pom.xml`: `user_krivonosov`, `user_babkina`, `user_bezdomniy`, `user_default`
+
+3. **Удаление мёртвого кода**
+   - ✅ Удалён `TestUserSelector.java` (никогда не вызывался в тестах)
+   - ✅ Удалён `README_USER_ACCOUNT.md` (документация удалённого функционала)
+
+4. **Обновление документации**
+   - ✅ `security/README.md` — убраны ссылки на `TestUserSelector` и `README_USER_ACCOUNT.md`
+   - ✅ `ARCHITECTURE.md` — убрана строка `TestUserSelector.java`
+   - ✅ `README.md` — убрана строка `TestUserSelector.java`
+   - ✅ `QUICK_RUN.md` — убран параметр `USER_ACCOUNT` из скриптов локального запуска
+
+5. **Результат: форма Run Pipeline**
+   - **Было** 5 полей: ENVIRONMENT, TEST_SCRIPT, BROWSERS, USER_ACCOUNT, LK_SCOPE
+   - **Стало** 4 поля: ENVIRONMENT, TEST_SCRIPT, BROWSERS, LK_SCOPE
+   - Убрано **1 поле** (−20%)
+
+**Примечание**: `TestUsers` enum и тесты, использующие его напрямую (`TestUsers.KRIVONOSOV_ALEXANDER`), не затронуты — они работают корректно.
+
+**Статус**: ✅ Задача выполнена
+
+---

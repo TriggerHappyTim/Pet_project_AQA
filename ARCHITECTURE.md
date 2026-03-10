@@ -105,7 +105,6 @@ security/
 ├── EnvironmentCredentialProvider.java # Провайдер из переменных окружения
 ├── MockCredentialProvider.java     # Mock провайдер для тестов
 ├── TestUsers.java                  # Enum тестовых пользователей
-├── TestUserSelector.java           # Селектор тестовых пользователей
 ├── OrganizationProfile.java       # Профиль организации
 ├── masking/                        # Маскировка данных
 │   ├── SecureLogger.java               # Безопасное логирование
