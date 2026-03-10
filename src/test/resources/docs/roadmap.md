@@ -1,7 +1,7 @@
 # EVS Testing Framework - Roadmap по улучшению кода
 
 **Дата создания**: 2026-01-29  
-**Дата последнего обновления**: 2026-03-10  
+**Дата последнего обновления**: 2026-03-11  
 **Статус**: ✅ ВСЕ ОСНОВНЫЕ ФАЗЫ ЗАВЕРШЕНЫ (Фаза 1–4)  
 **Основание**: Аудит проекта по правилам `.cursorrules` и Javadoc стандартам
 
@@ -1867,6 +1867,31 @@ java.lang.NullPointerException
    - ✅ Удалены неиспользуемые импорты
 
 **Примечание**: Оригинальное расширение КриптоПРО (v1.2.13) удалено из Chrome Web Store в феврале 2025. Новая версия (Manifest V3, v1.3.12) доступна под ID `pfhgbfnnjiafkhfdkmpiflachepdcjod`.
+
+**Статус**: ✅ Задача выполнена
+
+---
+
+### 2026-03-11 - Упрощение формы Run Pipeline в GitLab CI
+
+**Задача**: Уменьшить количество переменных в форме "Run Pipeline" GitLab CI, убрать дублирование.
+
+#### ✅ Выполнено:
+
+1. **Объединение `TEST_SCRIPT` и `SINGLE_TEST` в одну переменную**
+   - ✅ Удалена переменная `SINGLE_TEST` (дублировала `TEST_SCRIPT` с теми же опциями)
+   - ✅ Удалены оба блока `case "${SINGLE_TEST}"` из скрипта (HELM_NAMESPACE и без)
+   - ✅ Обновлена логика `send_notif` — убрана проверка `SINGLE_TEST`
+   - ✅ Убрана ссылка на `SINGLE_TEST` из описания `LK_SCOPE`
+
+2. **Скрытие редко используемых переменных**
+   - ✅ `SUITE` — убран `description`, переменная скрыта из формы (доступна через "Add variable")
+   - ✅ `HELM_NAMESPACE` — убран `description`, переменная скрыта из формы (обычно задаётся через FORWARDED_HELM_NAMESPACE)
+
+3. **Результат: форма Run Pipeline**
+   - **Было** 8 полей: ENVIRONMENT, TEST_SCRIPT, BROWSERS, USER_ACCOUNT, SINGLE_TEST, LK_SCOPE, SUITE, HELM_NAMESPACE
+   - **Стало** 5 полей: ENVIRONMENT, TEST_SCRIPT, BROWSERS, USER_ACCOUNT, LK_SCOPE
+   - Убрано **3 поля** (−37.5%)
 
 **Статус**: ✅ Задача выполнена
 
