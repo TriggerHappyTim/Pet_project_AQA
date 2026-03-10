@@ -1,7 +1,8 @@
 package com.bft.LK_Insurence.SZV_ISH;
 
-import com.bft.BaseTest;
-import com.bft.enums.ReportType;
+import com.bft.test.base.UITestBase;
+import com.bft.enums.ReportFormType;
+import com.bft.enums.ReportXmlResource;
 import com.bft.enums.UITypeSelector;
 import com.bft.security.TestUsers;
 import com.bft.steps.SzvReportsSteps;
@@ -21,7 +22,7 @@ import org.testng.annotations.Test;
  */
 @Epic("Формы отчетности")
 @Feature("СЗВ-ИСХ Reports")
-public class Szv_ish extends BaseTest {
+public class Szv_ish extends UITestBase {
     
     @Test(groups = {"web", "szv-ish", "regression", "manual-creation"}, 
           description = "Ручное заполнение отчёта СЗВ-ИСХ")
@@ -33,7 +34,7 @@ public class Szv_ish extends BaseTest {
         
         steps.authorizeEVS(UITypeSelector.getSelectedUIType(), TestUsers.KRIVONOSOV_ALEXANDER);
         steps.addReports();
-        steps.selectReportType(ReportType.SZVISH);
+        steps.selectReportType(ReportFormType.SZVISH);
         steps.addNewReport();
         steps.addGeneralInfoISH();
         steps.createContinue();
@@ -57,8 +58,8 @@ public class Szv_ish extends BaseTest {
 
         steps.authorizeEVS(UITypeSelector.getSelectedUIType(), TestUsers.KRIVONOSOV_ALEXANDER); //Вход через Госуслуги, орг. «ОРГАНИЗАЦИЯ -154*»
         steps.addReports(); //Добавление отчета
-        steps.selectReportType(ReportType.SZVISH); //Выбор отчета
+        steps.selectReportType(ReportFormType.SZVISH); //Выбор отчета
         steps.addNewReport(); // выбор нового отчета
-        steps.sendXml(ReportType.SZV_ISH_AF2); //отправка xml
+        steps.sendXml(ReportXmlResource.SZV_ISH_AF2); //отправка xml
     }
 }

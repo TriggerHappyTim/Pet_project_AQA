@@ -17,7 +17,7 @@ import static com.bft.constants.TimeoutConstants.*;
 
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$x;
-import static com.bft.enums.UIType.EVS_TEST;
+import com.bft.enums.UITypeSelector;
 
 /**
  * Steps класс для работы с отчетами СЗВ в системе EVS
@@ -53,17 +53,14 @@ public class SzvReportsSteps {
     private final CredentialManager credentialManager = CredentialManager.getInstance();
 
     /**
-     * Авторизация в системе ЕВС через ЕПГУ для архивной организации
-     * 
-     * Выполняет авторизацию в системе EVS через единый портал государственных услуг (ЕПГУ).
-     * Использует учетные данные из CredentialManager по префиксу "epgu".
-     * После авторизации автоматически выбирает карточку организации.
+     * Авторизация в системе ЕВС через ЕПГУ для архивной организации.
+     * Контур определяется автоматически из {@code evs.ui.type} через {@link UITypeSelector}.
      * 
      * @throws RuntimeException если учетные данные EPGU недоступны
      */
     @Step(value = "Авторизация в ЕВС (ЕПГУ)")
     public void authorizeArhivEVS() {
-        authorizeArhivEVS(EVS_TEST);
+        authorizeArhivEVS(UITypeSelector.getSelectedUIType());
     }
 
     /**

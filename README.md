@@ -1,23 +1,28 @@
 # EVS Testing Framework
 
-[![Java](https://img.shields.io/badge/Java-11%2B-orange)](https://openjdk.java.net/)
+[![Java](https://img.shields.io/badge/Java-11-orange)](https://openjdk.java.net/)
 [![Maven](https://img.shields.io/badge/Maven-3.6%2B-blue)](https://maven.apache.org/)
-[![Selenide](https://img.shields.io/badge/Selenide-6.0%2B-green)](https://selenide.org/)
-[![TestNG](https://img.shields.io/badge/TestNG-7.0%2B-red)](https://testng.org/)
-[![Allure](https://img.shields.io/badge/Allure-2.0%2B-purple)](https://docs.qameta.io/allure/)
+[![Selenide](https://img.shields.io/badge/Selenide-6.19.0-green)](https://selenide.org/)
+[![TestNG](https://img.shields.io/badge/TestNG-7.8.0-red)](https://testng.org/)
+[![Allure](https://img.shields.io/badge/Allure-2.22.2-purple)](https://docs.qameta.io/allure/)
 
 ## 📋 Описание
 
-**EVS Testing Framework** - это современный, масштабируемый фреймворк для автоматизированного тестирования веб-приложений. Фреймворк построен на принципах SOLID, следует паттернам проектирования и предоставляет мощные инструменты для создания надежных и поддерживаемых тестов.
+**EVS Testing Framework** — фреймворк для автоматизированного UI-тестирования системы ЕВС (Единая Вычислительная Система). Построен на Java 11 + TestNG + Selenide + Allure. Поддерживает два ЛК: **ЛК Страхователя** и **ЛК Архивной организации**.
 
 ### 🎯 Основные возможности
 
 - **Многоуровневая архитектура** с четким разделением ответственности
-- **Расширяемая система компонентов** для работы с UI элементами
-- **Стратегический подход** к организации тестовых сценариев
-- **Интеграция с Allure** для красивой отчетности
-- **Поддержка Docker** для изолированного выполнения тестов
-- **Безопасное управление** учетными данными и чувствительной информацией
+- **12 переиспользуемых UI-компонентов** (Button, Input, Select, Checkbox, Table и др.)
+- **Page Object + Steps** — два уровня абстракции для UI
+- **138 Java файлов** (1 main + 137 test), 15 тестовых классов по отчетам
+- **Интеграция с Allure** для отчетности, скриншоты при падениях
+- **3 браузера** — Chrome, Firefox, Yandex (локально и удаленно через Selenoid)
+- **Безопасность** — CredentialManager, SecureLogger, маскировка данных
+- **Мониторинг** — отслеживание медленных и нестабильных тестов
+- **GitLab CI/CD** с выбором ЛК, группы тестов, контура и браузера
+
+> **Примечание**: API тесты (RestAssured) и Jira/Zephyr интеграция подготовлены, но **закомментированы** — не используются в текущей версии.
 
 ## 🏗️ Архитектура
 
@@ -46,60 +51,69 @@
 
 ```
 src/test/java/com/bft/
-├── config/                  # Конфигурация фреймворка
-│   ├── TestConfiguration.java    # Главная конфигурация
-│   ├── TestContext.java          # Контекст выполнения тестов
-│   ├── TestStrategy.java         # Базовый интерфейс стратегий
-│   ├── TestStrategyType.java     # Типы стратегий
-│   ├── ApiTestStrategy.java      # Стратегия API тестов (ЗАКОММЕНТИРОВАНО: не используется)
-│   └── UITestStrategy.java       # Стратегия UI тестов
-├── ui/                      # Пользовательский интерфейс
-│   ├── pages/               # Page Object'ы
-│   ├── components/          # Переиспользуемые компоненты
-│   └── core/                # Базовые классы и элементы
-├── gui/                     # Page Object'ы (legacy, используется)
-│   ├── LoginPage.java
-│   ├── MainPage.java
-│   └── CryptoProDemoPage.java
-├── security/                # Безопасность и маскировка данных
-│   ├── CredentialManager.java
-│   ├── EnvironmentCredentialProvider.java
-│   ├── TestUsers.java
-│   └── masking/             # Маскировка чувствительных данных
-├── helpers/                 # Вспомогательные классы
-│   ├── ConfigReader.java        # Централизованное чтение конфигурации
-│   ├── StandardWaits.java        # Типовые ожидания для UI
-│   ├── api/                      # API helper классы
-│   │   ├── Specifications.java   # RequestSpec/ResponseSpec
-│   │   └── ApiCoreRequests.java  # Переиспользуемые API методы
-│   └── forms/                    # Работа с формами
-├── strategy/                # Стратегии тестирования
-│   ├── TestStrategyManager.java
+├── BaseTest.java                # Базовый класс всех тестов
+├── config/                      # Конфигурация фреймворка (7 файлов)
+│   ├── TestConfiguration.java       # Главная конфигурация
+│   ├── TestContext.java             # Контекст выполнения тестов
+│   ├── TestConfig.java              # Настройки теста (браузер, таймауты)
+│   ├── TestStrategy.java            # Интерфейс стратегий
+│   ├── BaseTestStrategy.java        # Базовая реализация стратегии
+│   ├── UITestStrategy.java          # Стратегия UI тестов
+│   └── TestStrategyType.java        # Enum типов стратегий
+├── ui/                          # Пользовательский интерфейс (18 файлов)
+│   ├── pages/                       # Page Objects (BasePage, LoginPage, MainPage)
+│   ├── component/                   # 12 переиспользуемых UI-компонентов
+│   └── core/                        # BasePage, SmartElement, WaitStrategies
+├── gui/                         # Legacy Page Objects (используются в Steps)
+│   ├── LoginPage.java, MainPage.java, BasePage.java, CryptoProDemoPage.java
+├── LK_Insurence/                # Тесты ЛК Страхователя (14 файлов)
+│   ├── ReportXmlUploadTest.java     # Универсальный smoke XML-загрузки
+│   ├── CryptoProCertificateTest.java
+│   ├── EFS_1/, SZV_M/, SZV_TD/, SZV_ISH/, SZV_DSO/
+│   ├── SZV_K/, SZV_STAJ/, SZV_KORR/, ODV_1/
+│   └── CredentialsTest.java, TestConfigurationTest.java, ExampleTest.java
+├── LK_Archive/                  # Тесты ЛК Архивной организации
+│   └── ArchivesTest.java            # 5 тестов (РПУ → ЕВС → подписание)
+├── security/                    # Безопасность (13 файлов)
+│   ├── CredentialManager.java, CredentialProvider.java
+│   ├── EnvironmentCredentialProvider.java, TestUsers.java
+│   ├── TestUserSelector.java, OrganizationProfile.java
+│   ├── masking/                     # SecureLogger, DataMasker
+│   └── providers/                   # PropertiesCredentialProvider
+├── helpers/                     # Вспомогательные классы (9 файлов)
+│   ├── ConfigReader.java            # Чтение конфигурации с кешированием
+│   ├── StandardWaits.java           # Типовые ожидания для UI
+│   ├── DataFiller.java, TestDataGenerator.java
+│   └── forms/                       # FormElements, FormFacade, FormValidator
+├── strategy/                    # Стратегии тестирования (8 файлов)
+│   ├── TestStrategyManager.java, TestExecutionStrategy.java
 │   ├── BaseTestExecutionStrategy.java
 │   └── CryptoProValidationStrategy.java
-├── test/                    # Тестовая инфраструктура
-│   ├── base/                # Базовые классы тестов
-│   │   ├── UITestBase.java
-│   │   ├── ApiTestBase.java      # ЗАКОММЕНТИРОВАНО: API тесты не используются
-│   │   └── DataDrivenTestBase.java
-│   ├── annotations/         # Кастомные аннотации
-│   ├── logging/             # Логирование
-│   └── examples/            # Примеры использования
-├── testdata/                # TestData builders
-│   ├── TestDataBuilder.java      # Базовый builder
-│   ├── UserTestDataBuilder.java # Builder для пользователей
-│   └── ReportTestDataBuilder.java # Builder для отчетов
-├── monitoring/              # Мониторинг тестов
-│   ├── PerformanceMonitor.java   # Отслеживание производительности
-│   └── FlakyTestDetector.java    # Выявление нестабильных тестов
-├── constants/               # Константы
-│   ├── TimeoutConstants.java    # Константы таймаутов
-│   └── UrlConstants.java         # Константы URL
-├── steps/                   # Шаги для сложных бизнес-процессов
+├── test/                        # Тестовая инфраструктура (16 файлов)
+│   ├── base/                        # UITestBase, DataDrivenTestBase
+│   ├── annotations/                 # @TestType, @TestPriority, @Requirement и др.
+│   ├── logging/                     # TestLogger, AllureIntegration
+│   ├── helpers/                     # TestSetupHelper, LoginHelper, SmartWaits
+│   ├── negative/                    # NegativeTestCases
+│   ├── retry/                       # RetryAnalyzer
+│   └── examples/                    # ImprovedTestExamples
+├── testdata/                    # TestData builders (3 файла)
+│   ├── TestDataBuilder.java, UserTestDataBuilder.java, ReportTestDataBuilder.java
+├── monitoring/                  # Мониторинг (2 файла)
+│   ├── PerformanceMonitor.java, FlakyTestDetector.java
+├── enums/                       # Перечисления (6 файлов)
+│   ├── UIType.java, UITypeSelector.java, ReportType.java
+│   ├── ReportFormType.java, ReportXmlResource.java, TabType.java
+├── constants/                   # Константы (2 файла)
+│   ├── TimeoutConstants.java, UrlConstants.java
+├── steps/                       # Бизнес-шаги
 │   └── SzvReportsSteps.java
-├── browser/                 # Фабрики браузеров
-│   └── factory/
-└── utils/                   # Утилиты
+├── integration/                 # Jira/Zephyr/Allure (14 файлов, закомментировано)
+├── browser/factory/             # Фабрики браузеров (6 файлов)
+│   ├── ChromeBrowserFactory, FirefoxBrowserFactory, YandexBrowserFactory
+└── utils/                       # Утилиты (3 файла)
+    ├── FormStructureParser.java, FormFieldMetadata.java
+    └── CryptoProPluginVerifier.java
 ```
 
 ## 🚀 Быстрый старт
@@ -141,11 +155,18 @@ docker run --network evs-testing-network evs-testing-framework
 
 ## 📚 Документация
 
-- **[Архитектура проекта](ARCHITECTURE.md)** - детальное описание структуры
-- **[Руководство по компонентам](COMPONENTS_GUIDE.md)** - использование UI компонентов
-- **[Настройка среды](SETUP_GUIDE.md)** - конфигурация и развертывание
-- **[Руководство разработчика](DEVELOPMENT_GUIDE.md)** - лучшие практики
-- **[API Reference](API_REFERENCE.md)** - справочник API
+### Основные документы
+- **[Архитектура проекта](ARCHITECTURE.md)** — слои, пакеты, паттерны, зависимости
+- **[Руководство по компонентам](COMPONENTS_GUIDE.md)** — 12 UI-компонентов с примерами
+- **[Настройка среды](SETUP_GUIDE.md)** — установка, конфигурация, Docker, CI/CD
+- **[Руководство разработчика](DEVELOPMENT_GUIDE.md)** — SOLID, Arrange-Act-Assert, best practices
+- **[API Reference](API_REFERENCE.md)** — справочник всех классов и методов
+
+### Дополнительно
+- **[Roadmap](src/test/resources/docs/roadmap.md)** — план улучшений и прогресс
+- **[Анализ архитектуры](src/test/resources/docs/ARCHITECTURE_ANALYSIS.md)** — аудит кода
+- **[Тест-кейсы ЛК](src/test/resources/docs/test-cases-lks-krivonosov.md)** — тест-кейсы
+- **[Баг-репорт ЛК](src/test/resources/docs/bug-report-lks.md)** — найденные дефекты
 
 ## 🧪 Примеры использования
 
@@ -507,30 +528,20 @@ ls -la allure-results/
 mvn allure:report -Dallure.results.directory=allure-results
 ```
 
-## 📞 Поддержка
+## 🛠 Стек технологий
 
-### Контакты
-- **Email:** support@evs-testing-framework.com
-- **Issues:** [GitHub Issues](https://github.com/evs-testing-framework/issues)
-- **Wiki:** [Project Wiki](https://github.com/evs-testing-framework/wiki)
-
-### Сообщество
-- **Slack:** #evs-testing-framework
-- **Telegram:** @evs_testing_chat
-- **Forum:** [Community Forum](https://forum.evs-testing-framework.com)
-
-## 📄 Лицензия
-
-Этот проект распространяется под лицензией MIT. Подробности в файле [LICENSE](LICENSE).
-
-## 🙏 Благодарности
-
-- [Selenide](https://selenide.org/) - для удобной работы с Selenium
-- [TestNG](https://testng.org/) - для мощной тестовой инфраструктуры
-- [Allure](https://docs.qameta.io/allure/) - для красивых отчетов
-- [Docker](https://www.docker.com/) - за контейнеризацию
+| Технология | Версия | Назначение |
+|-----------|--------|------------|
+| Java | 11 | Язык |
+| TestNG | 7.8.0 | Тестовый фреймворк |
+| Selenide | 6.19.0 | UI-автоматизация |
+| Allure | 2.22.2 | Отчетность |
+| Spring Boot | 2.6.14 | Базовый фреймворк |
+| Lombok | 1.18.20 | Сокращение boilerplate |
+| JavaFaker | 1.0.2 | Генерация тестовых данных |
+| Maven | 3.6+ | Сборка |
 
 ---
 
-**EVS Testing Framework** - сделайте тестирование проще, надежнее и эффективнее! 🚀</contents>
+**EVS Testing Framework** — надежная автоматизация тестирования системы ЕВС.</contents>
 </xai:function_call">Создал основной README.md файл с подробным описанием фреймворка

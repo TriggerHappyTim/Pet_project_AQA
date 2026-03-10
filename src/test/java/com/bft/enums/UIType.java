@@ -9,7 +9,7 @@ public enum UIType {
     RPU_TEST("https://portal.test.ecp/rpu/#/?location=rpu"),
     RPU_UAT("https://rpu-common-bo.uat.ecp/#/"),
     UOS_TEST("https://front-uos-service.test.ecp/"),
-    UOS_UAT("https://front-uos-service.test.ecp/");
+    UOS_UAT("https://front-uos-service.uat.ecp/");
 
     public final String value;
 

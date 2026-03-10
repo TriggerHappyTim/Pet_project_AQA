@@ -180,7 +180,7 @@
                     <!-- Listeners добавляются через аннотацию @Listeners в BaseTest -->
                     <useSystemClassLoader>false</useSystemClassLoader>
                     <!-- Сохраняем порядок выполнения тестов для правильного отображения в Allure -->
-                    <preserveOrder>true</preserveOrder>
+                    <!--<preserveOrder>true</preserveOrder>-->
                     <argLine>
                         -javaagent:"${settings.localRepository}/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar"
                     </argLine>
@@ -454,12 +454,14 @@
             </build>
         </profile>
 
-        <!-- Environment profiles: задают evs.ui.type для UITypeSelector (локально и GitLab CI) -->
+        <!-- Environment profiles: задают evs/rpu/uos.ui.type для UITypeSelector (локально и GitLab CI) -->
         <profile>
             <id>test</id>
             <properties>
                 <test.environment>test</test.environment>
                 <evs.ui.type>EVS_TEST_LKS</evs.ui.type>
+                <rpu.ui.type>RPU_TEST</rpu.ui.type>
+                <uos.ui.type>UOS_TEST</uos.ui.type>
             </properties>
             <build>
                 <plugins>
@@ -469,6 +471,8 @@
                         <configuration>
                             <systemPropertyVariables>
                                 <evs.ui.type>EVS_TEST_LKS</evs.ui.type>
+                                <rpu.ui.type>RPU_TEST</rpu.ui.type>
+                                <uos.ui.type>UOS_TEST</uos.ui.type>
                             </systemPropertyVariables>
                         </configuration>
                     </plugin>
@@ -481,6 +485,8 @@
             <properties>
                 <test.environment>uat</test.environment>
                 <evs.ui.type>EVS_UAT_LKS</evs.ui.type>
+                <rpu.ui.type>RPU_UAT</rpu.ui.type>
+                <uos.ui.type>UOS_UAT</uos.ui.type>
             </properties>
             <build>
                 <plugins>
@@ -490,6 +496,8 @@
                         <configuration>
                             <systemPropertyVariables>
                                 <evs.ui.type>EVS_UAT_LKS</evs.ui.type>
+                                <rpu.ui.type>RPU_UAT</rpu.ui.type>
+                                <uos.ui.type>UOS_UAT</uos.ui.type>
                             </systemPropertyVariables>
                         </configuration>
                     </plugin>

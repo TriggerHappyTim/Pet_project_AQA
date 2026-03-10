@@ -1,7 +1,8 @@
 package com.bft.LK_Insurence.ODV_1;
 
-import com.bft.BaseTest;
-import com.bft.enums.ReportType;
+import com.bft.test.base.UITestBase;
+import com.bft.enums.ReportFormType;
+import com.bft.enums.ReportXmlResource;
 import com.bft.enums.UITypeSelector;
 import com.bft.steps.SzvReportsSteps;
 import io.qameta.allure.*;
@@ -15,7 +16,7 @@ import org.testng.annotations.Test;
  */
 @Epic("Формы отчетности")
 @Feature("ОДВ-1 Reports")
-public class Odv1 extends BaseTest {
+public class Odv1 extends UITestBase {
     
     @Test(groups = {"web", "odv", "smoke", "xml-upload"}, 
           testName = "#1 Загрузка отчёта ОДВ-1 через XML файл",
@@ -30,8 +31,8 @@ public class Odv1 extends BaseTest {
 
         steps.authorizeEVS(UITypeSelector.getSelectedUIType());
         steps.addReports(); //Добавление отчета
-        steps.selectReportType(ReportType.ODV1); //Выбор отчета
+        steps.selectReportType(ReportFormType.ODV1); //Выбор отчета
         steps.addNewReport(); // выбор нового отчета
-        steps.sendXml(ReportType.SZV_ODV_1_AF2); //отправка xml
+        steps.sendXml(ReportXmlResource.SZV_ODV_1_AF2); //отправка xml
     }
 }

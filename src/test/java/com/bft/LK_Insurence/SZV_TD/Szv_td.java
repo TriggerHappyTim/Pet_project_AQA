@@ -1,7 +1,8 @@
 package com.bft.LK_Insurence.SZV_TD;
 
-import com.bft.BaseTest;
-import com.bft.enums.ReportType;
+import com.bft.test.base.UITestBase;
+import com.bft.enums.ReportFormType;
+import com.bft.enums.ReportXmlResource;
 import com.bft.enums.UITypeSelector;
 import com.bft.enums.UIType;
 import com.bft.steps.SzvReportsSteps;
@@ -18,7 +19,7 @@ import org.testng.annotations.Test;
  */
 @Epic("Формы отчетности")
 @Feature("СЗВ-ТД Reports")
-public class Szv_td extends BaseTest {
+public class Szv_td extends UITestBase {
 
     @Test(groups = {"web", "szv-td", "regression", "manual-creation"}, 
           testName = "#1 Ручное создание отчёта СЗВ-ТД",
@@ -32,7 +33,7 @@ public class Szv_td extends BaseTest {
 
         steps.authorizeEVS(UITypeSelector.getSelectedUIType(UIType.EVS_TEST_LKS));
         steps.addReports();
-        steps.selectReportType(ReportType.SZVTD);
+        steps.selectReportType(ReportFormType.SZVTD);
         steps.addNewReport();
         steps.addGeneralInfoTD();
         steps.createContinue();
@@ -58,8 +59,8 @@ public class Szv_td extends BaseTest {
 
         steps.authorizeEVS(UITypeSelector.getSelectedUIType());
         steps.addReports(); //Добавление отчета
-        steps.selectReportType(ReportType.SZVTD); //Выбор отчета
+        steps.selectReportType(ReportFormType.SZVTD); //Выбор отчета
         steps.addNewReport(); // выбор нового отчета
-        steps.sendXml(ReportType.SZV_TD_TYPE1); //отправка xml
+        steps.sendXml(ReportXmlResource.SZV_TD_TYPE1); //отправка xml
     }
 }

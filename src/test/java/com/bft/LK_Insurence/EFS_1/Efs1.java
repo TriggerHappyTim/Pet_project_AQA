@@ -1,7 +1,8 @@
 package com.bft.LK_Insurence.EFS_1;
 
-import com.bft.BaseTest;
-import com.bft.enums.ReportType;
+import com.bft.test.base.UITestBase;
+import com.bft.enums.ReportFormType;
+import com.bft.enums.ReportXmlResource;
 import com.bft.enums.UITypeSelector;
 import com.bft.security.TestUsers;
 import com.bft.steps.SzvReportsSteps;
@@ -28,7 +29,7 @@ import static com.codeborne.selenide.Selenide.$x;
  */
 @Epic("Формы отчетности")
 @Feature("EFS-1 Reports")
-public class Efs1 extends BaseTest {
+public class Efs1 extends UITestBase {
     
     @Test(groups = {"web", "efs", "smoke", "xml-upload"}, 
           testName = "#1 Загрузка отчёта ЕФС-1 через XML файл",
@@ -43,9 +44,9 @@ public class Efs1 extends BaseTest {
 
         steps.authorizeEVS(UITypeSelector.getSelectedUIType()); // контур из evs.ui.type (локально/GitLab)
         steps.addReports();
-        steps.selectReportType(ReportType.EFS1);
+        steps.selectReportType(ReportFormType.EFS1);
         steps.addNewReport();
-        steps.sendXml(ReportType.EFS_FULL_ECP);
+        steps.sendXml(ReportXmlResource.EFS_FULL_ECP);
         /*steps.chooseCriptoProvider(); //Выбор провайдера
         steps.selectCertificate(); //Выбор сертификата*/
     }
@@ -62,7 +63,7 @@ public class Efs1 extends BaseTest {
 
         steps.authorizeEVS(UITypeSelector.getSelectedUIType());
         steps.addReports();
-        steps.selectReportType(ReportType.EFS1);
+        steps.selectReportType(ReportFormType.EFS1);
         steps.addNewReport(); // Создание нового черновика
         steps.addGeneralInfoEFS(); // Заполнение общих сведений
         steps.createContinue(); //Продолжить
@@ -92,7 +93,7 @@ public class Efs1 extends BaseTest {
 
         steps.authorizeEVS(UITypeSelector.getSelectedUIType());
         steps.addReports();
-        steps.selectReportType(ReportType.EFS1);
+        steps.selectReportType(ReportFormType.EFS1);
         steps.addNewReport();
         steps.addGeneralInfoEFS();
         steps.createContinue();
@@ -123,9 +124,9 @@ public class Efs1 extends BaseTest {
 
         steps.authorizeEVS(UITypeSelector.getSelectedUIType(), TestUsers.KRIVONOSOV_ALEXANDER);
         steps.addReports();
-        steps.selectReportType(ReportType.EFS1);
+        steps.selectReportType(ReportFormType.EFS1);
         steps.addNewReport();
-        steps.sendXml(ReportType.EFS_FULL_ECP);
+        steps.sendXml(ReportXmlResource.EFS_FULL_ECP);
     }
     
     @Test(groups = {"web", "efs", "smoke", "xml-upload", "user-specific"}, 
@@ -138,9 +139,9 @@ public class Efs1 extends BaseTest {
 
         steps.authorizeEVS(UITypeSelector.getSelectedUIType(), TestUsers.BEZDOMNIY_IVAN);
         steps.addReports();
-        steps.selectReportType(ReportType.EFS1);
+        steps.selectReportType(ReportFormType.EFS1);
         steps.addNewReport();
-        steps.sendXml(ReportType.EFS_FULL_ECP);
+        steps.sendXml(ReportXmlResource.EFS_FULL_ECP);
     }
     
     @Test(groups = {"web", "efs", "regression", "manual-creation", "user-specific"}, 
@@ -155,7 +156,7 @@ public class Efs1 extends BaseTest {
 
         steps.authorizeEVS(UITypeSelector.getSelectedUIType(), TestUsers.KRIVONOSOV_ALEXANDER);
         steps.addReports();
-        steps.selectReportType(ReportType.EFS1);
+        steps.selectReportType(ReportFormType.EFS1);
         steps.addNewReport();
         steps.addGeneralInfoEFS();
         steps.createContinue();

@@ -1,7 +1,8 @@
 package com.bft.LK_Insurence.SZV_KORR;
 
-import com.bft.BaseTest;
-import com.bft.enums.ReportType;
+import com.bft.test.base.UITestBase;
+import com.bft.enums.ReportFormType;
+import com.bft.enums.ReportXmlResource;
 import com.bft.enums.UITypeSelector;
 import com.bft.steps.SzvReportsSteps;
 import io.qameta.allure.*;
@@ -15,7 +16,7 @@ import org.testng.annotations.Test;
  */
 @Epic("Формы отчетности")
 @Feature("СЗВ-КОРР Reports")
-public class Szv_korr extends BaseTest {
+public class Szv_korr extends UITestBase {
     
     @Test(groups = {"web", "szv-korr", "smoke", "xml-upload"}, 
           testName = "#1 Загрузка отчёта СЗВ-КОРР через XML файл",
@@ -30,8 +31,8 @@ public class Szv_korr extends BaseTest {
 
         steps.authorizeEVS(UITypeSelector.getSelectedUIType());
         steps.addReports(); //Добавление отчета
-        steps.selectReportType(ReportType.SZVKORR); //Выбор отчета
+        steps.selectReportType(ReportFormType.SZVKORR); //Выбор отчета
         steps.addNewReport(); // выбор нового отчета
-        steps.sendXml(ReportType.SZV_KORR_AF2); //отправка xml
+        steps.sendXml(ReportXmlResource.SZV_KORR_AF2); //отправка xml
     }
 }

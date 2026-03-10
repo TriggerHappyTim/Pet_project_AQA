@@ -1,7 +1,8 @@
 package com.bft.LK_Insurence.SZV_DSO;
 
-import com.bft.BaseTest;
-import com.bft.enums.ReportType;
+import com.bft.test.base.UITestBase;
+import com.bft.enums.ReportFormType;
+import com.bft.enums.ReportXmlResource;
 import com.bft.enums.UITypeSelector;
 import com.bft.steps.SzvReportsSteps;
 import io.qameta.allure.*;
@@ -15,7 +16,7 @@ import org.testng.annotations.Test;
  */
 @Epic("Формы отчетности")
 @Feature("СЗВ-ДСО Reports")
-public class Szv_dso extends BaseTest {
+public class Szv_dso extends UITestBase {
     
     @Test(groups = {"web", "szv-dso", "smoke", "xml-upload"}, 
           testName = "#1 Загрузка отчёта СЗВ-ДСО через XML файл",
@@ -30,8 +31,8 @@ public class Szv_dso extends BaseTest {
 
         steps.authorizeEVS(UITypeSelector.getSelectedUIType());
         steps.addReports(); //Добавление отчета
-        steps.selectReportType(ReportType.SZVDSO); //Выбор отчета
+        steps.selectReportType(ReportFormType.SZVDSO); //Выбор отчета
         steps.addNewReport(); // выбор нового отчета
-        steps.sendXml(ReportType.SZV_DSO_AF2); //отправка xml
+        steps.sendXml(ReportXmlResource.SZV_DSO_AF2); //отправка xml
     }
 }

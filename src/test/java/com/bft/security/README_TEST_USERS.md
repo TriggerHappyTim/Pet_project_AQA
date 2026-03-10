@@ -132,9 +132,9 @@ public void efs_1_xml_krivonosov() {
     steps.authorizeEVS(UIType.EVS_UAT_LKS, TestUsers.KRIVONOSOV_ALEXANDER);
     
     steps.addReports();
-    steps.selectReportType(ReportType.EFS1);
+    steps.selectReportType(ReportFormType.EFS1);
     steps.addNewReport();
-    steps.sendXml(ReportType.EFS_FULL_ECP);
+    steps.sendXml(ReportXmlResource.EFS_FULL_ECP);
 }
 
 @Test

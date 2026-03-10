@@ -24,56 +24,53 @@ EVS Testing Framework построен на принципах **чистой а
 ### Configuration Layer (Конфигурация)
 
 ```
-config/                      # Конфигурация фреймворка
-├── TestConfiguration.java      # Главная конфигурация
-├── TestContext.java           # Контекст выполнения тестов
-├── TestStrategy.java          # Базовый интерфейс стратегий
-├── TestStrategyType.java      # Типы стратегий
-├── ApiTestStrategy.java       # Стратегия API тестов
-├── UITestStrategy.java        # Стратегия UI тестов
-└── BaseTestStrategy.java      # Базовая стратегия
+config/                          # Конфигурация фреймворка (7 файлов)
+├── TestConfiguration.java          # Главная конфигурация (Singleton)
+├── TestContext.java                # Контекст выполнения тестов
+├── TestConfig.java                 # Настройки теста (браузер, таймауты, credentials)
+├── TestStrategy.java               # Интерфейс стратегий
+├── BaseTestStrategy.java           # Абстрактная реализация стратегии
+├── UITestStrategy.java             # Стратегия UI тестов (основная)
+└── TestStrategyType.java           # Enum типов стратегий (UI; API — закомментировано)
 ```
 
 **Ответственность:**
 - Глобальная конфигурация фреймворка
 - Управление жизненным циклом тестов
 - Предоставление контекста для всех компонентов
+- Выбор стратегии выполнения (UI)
 
 ### UI Layer (Пользовательский интерфейс)
 
 ```
-ui/
-├── pages/                   # Page Object'ы (новый пакет)
-│   ├── BasePage.java            # Базовый класс для страниц
-│   ├── MainPage.java            # Главная страница приложения
-│   └── LoginPage.java          # Страница авторизации
-├── components/              # Переиспользуемые UI компоненты
-│   ├── BaseComponent.java       # Базовый класс компонентов
-│   ├── ButtonComponent.java     # Компоненты кнопок
-│   ├── InputComponent.java      # Компоненты полей ввода
-│   ├── SelectComponent.java     # Компоненты выпадающих списков
-│   ├── CheckboxComponent.java   # Компоненты чекбоксов
-│   ├── RadioButtonComponent.java # Компоненты радиокнопок
-│   ├── DateComponent.java       # Компоненты дат
-│   ├── TextareaComponent.java   # Компоненты текстовых областей
-│   ├── FileComponent.java       # Компоненты загрузки файлов
-│   ├── TableComponent.java      # Компоненты таблиц
-│   ├── NavigationComponent.java # Компоненты навигации
-│   └── StatusIndicatorComponent.java # Компоненты статусов
-└── core/                    # Базовые классы и элементы
-    ├── BasePage.java            # Базовый класс страниц (core)
-    ├── element/                 # Умные элементы
-    │   ├── SmartElement.java        # Умный элемент с ожиданиями
-    │   ├── SmartElementList.java   # Список умных элементов
-    │   └── ElementFactory.java     # Фабрика элементов
-    └── wait/                    # Стратегии ожидания
-        ├── WaitStrategy.java       # Интерфейс стратегий
-        └── WaitStrategies.java     # Реализации стратегий
+ui/                              # 18 файлов
+├── pages/                       # Page Objects (новый пакет)
+│   ├── BasePage.java                # Базовый класс для страниц
+│   ├── MainPage.java                # Главная страница ЛК (~80 методов)
+│   └── LoginPage.java              # Страница авторизации
+├── component/                   # 12 переиспользуемых UI-компонентов
+│   ├── BaseComponent.java           # Базовый класс компонентов
+│   ├── ButtonComponent.java         # Кнопки (primary, secondary, modal, footer)
+│   ├── InputComponent.java          # Поля ввода (labeled, masked, numeric)
+│   ├── SelectComponent.java         # Выпадающие списки (MUI, native)
+│   ├── CheckboxComponent.java       # Чекбоксы
+│   ├── RadioButtonComponent.java    # Радиокнопки
+│   ├── DateComponent.java           # Поля дат
+│   ├── TextareaComponent.java       # Текстовые области
+│   ├── FileComponent.java           # Загрузка файлов
+│   ├── TableComponent.java          # Таблицы
+│   ├── NavigationComponent.java     # Навигация и вкладки
+│   └── StatusIndicatorComponent.java # Индикаторы статуса
+└── core/                        # Базовые элементы
+    ├── BasePage.java                # Абстрактный Page Object (generic)
+    ├── element/                     # SmartElement, SmartElementList, ElementFactory
+    └── wait/                        # WaitStrategy, WaitStrategies
 
-gui/                         # Page Object'ы (legacy, используется)
-├── LoginPage.java           # Используется в SzvReportsSteps
-├── MainPage.java            # Используется в тестах
-└── CryptoProDemoPage.java   # Демо-страница КриптоПРО
+gui/                             # Legacy Page Objects (4 файла, активно используются)
+├── BasePage.java                # Базовый (WebDriver + SoftAssert)
+├── LoginPage.java               # Используется в SzvReportsSteps
+├── MainPage.java                # Используется в тестах
+└── CryptoProDemoPage.java       # Демо-страница КриптоПРО
 ```
 
 **Ответственность:**
@@ -127,26 +124,22 @@ security/
 ### Helpers Layer (Вспомогательные классы)
 
 ```
-helpers/
-├── ConfigReader.java           # Централизованное чтение конфигурации
-├── StandardWaits.java          # Типовые ожидания для UI тестов
-├── TestConfig.java             # Тестовые конфигурации и данные
-├── DataFiller.java            # Заполнение данными
-├── TestDataGenerator.java     # Генерация тестовых данных
-├── api/                       # API helper классы
-│   ├── Specifications.java        # RequestSpec/ResponseSpec для RestAssured
-│   └── ApiCoreRequests.java       # Переиспользуемые API методы с retry
-└── forms/                     # Работа с формами
-    ├── FormElements.java          # Элементы форм
-    ├── FormFacade.java            # Фасад для работы с формами
-    ├── FormValidator.java         # Валидация форм
-    └── InsuredPerson.java         # Модель застрахованного лица
+helpers/                         # 9 файлов
+├── ConfigReader.java                # Чтение конфигурации с кешированием и профилями
+├── StandardWaits.java               # Типовые ожидания для UI (spinner, modal, ajax)
+├── TestConfig.java                  # Тестовые конфигурации и данные (селекторы)
+├── DataFiller.java                  # Заполнение форм тестовыми данными
+├── TestDataGenerator.java           # Генерация тестовых данных
+└── forms/                           # Работа с формами
+    ├── FormElements.java                # Элементы форм (extends BasePage)
+    ├── FormFacade.java                  # Фасад для работы с формами
+    ├── FormValidator.java               # Валидация форм
+    └── InsuredPerson.java               # Модель застрахованного лица
 ```
 
 **Ответственность:**
 - Централизованное чтение конфигурации (ConfigReader)
 - Типовые ожидания для UI (StandardWaits)
-- API helper классы для RestAssured (Specifications, ApiCoreRequests)
 - Доменная логика для работы с формами
 - Генерация и управление тестовыми данными
 - Валидация бизнес-правил
@@ -154,46 +147,48 @@ helpers/
 ### Strategies Layer (Стратегии)
 
 ```
-strategy/                      # Стратегии тестирования
-├── TestExecutionStrategy.java     # Интерфейс стратегий выполнения
-├── BaseTestExecutionStrategy.java # Базовая реализация стратегии
-├── TestStrategyManager.java       # Менеджер стратегий
-├── ExecutionStrategyType.java    # Типы стратегий выполнения
-├── ApiTestExecutionStrategy.java  # Стратегия API тестов
+strategy/                        # Стратегии тестирования (8 файлов)
+├── TestExecutionStrategy.java       # Интерфейс стратегий выполнения
+├── BaseTestExecutionStrategy.java   # Базовая реализация стратегии
+├── TestStrategyManager.java         # Менеджер регистрации и выполнения
+├── ExecutionStrategyType.java       # Enum типов стратегий
 ├── CryptoProValidationStrategy.java # Стратегия валидации КриптоПРО
-├── DataPreparationStrategy.java   # Стратегия подготовки данных
-└── ValidationStrategy.java        # Общие стратегии валидации
+├── DataPreparationStrategy.java     # Интерфейс подготовки данных
+├── ValidationStrategy.java          # Интерфейс валидации
+└── ApiTestExecutionStrategy.java    # Стратегия API тестов (закомментировано)
 ```
 
 **Ответственность:**
 - Определение различных подходов к выполнению тестов
-- Инкапсуляция сложной логики тестирования
+- Инкапсуляция сложной логики тестирования (КриптоПРО и др.)
 - Переиспользование стратегий между тестами
 
 ### Test Infrastructure Layer (Тестовая инфраструктура)
 
 ```
-test/
-├── base/                    # Базовые классы тестов
-│   ├── UITestBase.java          # Базовый класс UI тестов (extends BaseTest)
-│   ├── ApiTestBase.java         # Базовый класс API тестов (extends BaseTest)
-│   └── DataDrivenTestBase.java  # Базовый класс data-driven тестов (extends UITestBase)
-├── annotations/             # Кастомные аннотации
-│   ├── AutomationAction.java    # Действия автоматизации
-│   ├── Requirement.java         # Требования
-│   ├── TestEnvironment.java     # Среда тестирования
-│   ├── TestPriority.java        # Приоритеты тестов
-│   ├── TestType.java            # Типы тестов
-│   ├── ZephyrTest.java          # Интеграция с Zephyr
-│   └── AllureAnnotationProcessor.java # Процессор аннотаций
-├── logging/                 # Логирование
-│   ├── TestLogger.java          # Специализированный логгер
-│   └── AllureIntegration.java   # Интеграция с Allure
-└── examples/                # Примеры использования
-    ├── ImprovedTestExamples.java    # Улучшенные примеры
-    └── AdvancedReportingExample.java # Примеры отчетности
+test/                            # 16 файлов
+├── base/                        # Базовые классы тестов
+│   ├── UITestBase.java              # Базовый класс UI тестов (extends BaseTest)
+│   ├── ApiTestBase.java             # API тесты (закомментировано)
+│   └── DataDrivenTestBase.java      # Data-driven тесты (extends UITestBase)
+├── annotations/                 # Кастомные аннотации (6 файлов)
+│   ├── TestType.java, TestPriority.java, TestEnvironment.java
+│   ├── Requirement.java, AutomationAction.java
+│   ├── ZephyrTest.java              # (закомментировано)
+│   └── AllureAnnotationProcessor.java
+├── helpers/                     # Хелперы тестов (5 файлов)
+│   ├── TestSetupHelper.java, LoginHelper.java, PageObjectHelper.java
+│   ├── AssertionHelper.java, SmartWaits.java
+├── logging/                     # Логирование
+│   ├── TestLogger.java, AllureIntegration.java
+├── negative/                    # Негативные тест-кейсы
+│   ├── NegativeTestCases.java       # UI негативные тесты
+│   └── ApiNegativeTestCases.java    # (закомментировано)
+├── retry/                       # Повторный запуск тестов
+│   ├── RetryAnalyzer.java, Retry.java
+└── examples/                    # Примеры (закомментированы)
 
-BaseTest.java                # Базовый класс всех тестов (корень пакета com.bft)
+BaseTest.java                    # Базовый класс всех тестов (корень com.bft)
 ```
 
 **Ответственность:**
@@ -255,39 +250,69 @@ steps/
 - Переиспользуемые шаги для тестов
 - Упрощение написания тестов через высокоуровневые методы
 
-### Integration Layer (Интеграции)
+### Integration Layer (Интеграции) — ЗАКОММЕНТИРОВАНО
 
 ```
-integration/
-├── zephyr/                  # Интеграция с Zephyr
-│   ├── ZephyrClient.java         # Интерфейс клиента
-│   ├── ZephyrSquadClient.java   # Клиент для Zephyr Squad
-│   ├── ZephyrScaleClient.java   # Клиент для Zephyr Scale
-│   └── ZephyrClientFactory.java # Фабрика клиентов
-├── jira/                    # Интеграция с Jira
-│   └── JiraClient.java          # Клиент для Jira
-├── allure/                  # Интеграция с Allure
-│   ├── AllureResultsPublisher.java # Публикация результатов
-│   └── AllureTestResult.java      # Модель результата
-└── listeners/               # TestNG listeners
-    └── ZephyrTestListener.java   # Listener для Zephyr
+integration/                     # 14 файлов (весь код закомментирован)
+├── zephyr/                      # Zephyr Squad/Scale клиенты
+├── jira/                        # JiraClient
+├── allure/                      # AllureResultsPublisher, AllureTestResult
+├── config/                      # IntegrationConfig, ZephyrType
+├── mapper/                      # TestResult, TestResultMapper, TestStatus
+└── listeners/                   # ZephyrTestListener
 ```
 
-**Ответственность:**
-- Интеграция с внешними системами (Zephyr, Jira)
-- Публикация результатов тестов
-- Автоматизация процессов тестирования
+> **Примечание**: Jira/Zephyr интеграция подготовлена, но не используется в текущей версии.
+> Код можно восстановить, раскомментировав соответствующие классы.
+
+### Enums Layer (Перечисления)
+
+```
+enums/                           # 6 файлов
+├── UIType.java                      # Контуры (EVS_UAT_LKS, EVS_TEST, RPU_UAT и др.)
+├── UITypeSelector.java              # Выбор контура из system properties
+├── ReportType.java                  # Типы отчётов (@Deprecated)
+├── ReportFormType.java              # Типы форм отчётов (UI)
+├── ReportXmlResource.java           # Пути к XML-ресурсам отчётов
+└── TabType.java                     # Типы вкладок
+```
 
 ### Utils Layer (Утилиты)
 
 ```
-utils/
-└── CryptoProPluginVerifier.java  # Верификация плагина КриптоПРО
+utils/                           # 3 файла
+├── CryptoProPluginVerifier.java     # Проверка плагина КриптоПРО
+├── FormStructureParser.java         # Парсинг структуры форм → JSON
+└── FormFieldMetadata.java           # Метаданные полей формы
 ```
 
 **Ответственность:**
-- Специализированные утилиты для конкретных задач
+- Проверка плагинов (КриптоПРО)
+- Парсинг и сохранение структуры форм для отладки
 - Вспомогательные функции общего назначения
+
+### Test Classes Layer (Тестовые классы)
+
+```
+LK_Insurence/                    # ЛК Страхователя (14 файлов)
+├── ReportXmlUploadTest.java         # Универсальный smoke XML-загрузки (DataProvider)
+├── CryptoProCertificateTest.java    # Тесты электронной подписи
+├── EFS_1/Efs1.java                  # Тесты ЕФС-1
+├── SZV_M/Szv_m.java                # Тесты СЗВ-М
+├── SZV_TD/Szv_td.java              # Тесты СЗВ-ТД
+├── SZV_ISH/Szv_ish.java            # Тесты СЗВ-ИСХ
+├── SZV_DSO/Szv_dso.java            # Тесты СЗВ-ДСО
+├── SZV_K/Szv_k.java                # Тесты СЗВ-К
+├── SZV_STAJ/Szv_staj.java          # Тесты СЗВ-СТАЖ
+├── SZV_KORR/Szv_korr.java          # Тесты СЗВ-КОРР
+├── ODV_1/Odv1.java                  # Тесты ОДВ-1
+├── CredentialsTest.java             # Тесты credentials
+├── TestConfigurationTest.java       # Тесты конфигурации
+└── ExampleTest.java                 # Примеры стратегий (закомментировано)
+
+LK_Archive/                      # ЛК Архивной организации (1 файл)
+└── ArchivesTest.java                # 5 тестов (РПУ → ЕВС → подписание)
+```
 
 ## 🔄 Поток данных
 
@@ -595,23 +620,27 @@ manager.executeTestWithStrategy("test", TestStrategyType.NEW_STRATEGY);
 
 ## 🔄 Эволюция архитектуры
 
-### Версия 1.0 - Базовая структура
-- Простые Page Objects
-- Базовая конфигурация
+### Версия 1.0 — Базовая структура
+- Простые Page Objects (`gui/`)
+- Базовая конфигурация (`BaseTest`)
 - Минимальная безопасность
 
-### Версия 2.0 - Компонентная архитектура
-- Введение компонентов
-- Стратегический подход
-- Расширенная безопасность
+### Версия 2.0 — Компонентная архитектура (текущая)
+- 12 переиспользуемых UI-компонентов (`ui/component/`)
+- Strategy Pattern для тестирования
+- Расширенная безопасность (CredentialManager, SecureLogger)
+- TestData builders с Faker
+- Мониторинг (PerformanceMonitor, FlakyTestDetector)
+- Два ЛК: Страхователя и Архивной организации
+- 138 Java файлов, 15 тестовых классов
+- GitLab CI/CD с выбором ЛК, контура, браузера
 
-### Версия 3.0 - Enterprise-ready (планируется)
-- Микросервисная архитектура
-- Распределенное выполнение
-- AI-powered тестирование
-- Cloud интеграция
+### Версия 3.0 — Планируется
+- OpenAPI интеграция (генерация моделей)
+- Раскомментирование Jira/Zephyr интеграции
+- Расширение тестового покрытия ЛК Архива
 
 ---
 
-Эта архитектура обеспечивает надежную основу для роста и развития фреймворка, сохраняя при этом простоту использования и высокую поддерживаемость.</contents>
+Архитектура обеспечивает надежную основу для роста фреймворка, сохраняя простоту и поддерживаемость.</contents>
 </xai:function_call">Создал детальную архитектурную документацию

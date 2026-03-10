@@ -1,7 +1,6 @@
 package com.bft.LK_Archive;
 
 import com.bft.test.base.UITestBase;
-import com.bft.enums.UIType;
 import com.bft.enums.UITypeSelector;
 import com.bft.steps.SzvReportsSteps;
 import io.qameta.allure.AllureId;
@@ -38,7 +37,7 @@ public class ArchivesTest extends UITestBase {
     public void createRequestInRPU() {
         SzvReportsSteps steps = new SzvReportsSteps();
 
-        steps.authorizeArhivRPU(UIType.RPU_UAT);
+        steps.authorizeArhivRPU(UITypeSelector.getSelectedRpuType());
         steps.createZaprosRPU();
         steps.genegalInfo();
         steps.infoCitizen();
@@ -127,7 +126,7 @@ public class ArchivesTest extends UITestBase {
         SzvReportsSteps steps = new SzvReportsSteps();
 
         // --- РПУ: создание и отправка запроса ---
-        steps.authorizeArhivRPU(UIType.RPU_UAT);
+        steps.authorizeArhivRPU(UITypeSelector.getSelectedRpuType());
         steps.createZaprosRPU();
         steps.genegalInfo();
         steps.infoCitizen();

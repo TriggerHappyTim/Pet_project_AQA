@@ -1,6 +1,6 @@
 package com.bft.testdata;
 
-import com.bft.enums.ReportType;
+import com.bft.enums.ReportFormType;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -19,7 +19,7 @@ import java.util.UUID;
  * 
  * // Создание отчета ЕФС-1
  * ReportData efs1Report = ReportTestDataBuilder.createDefault()
- *     .withReportType(ReportType.EFS1)
+ *     .withReportType(ReportFormType.EFS1)
  *     .withReportNumber("EFS-1-2024-001")
  *     .withPeriod(LocalDate.now().minusMonths(1), LocalDate.now())
  *     .build();
@@ -30,12 +30,12 @@ import java.util.UUID;
  * 
  * @author QA Automation Team
  * @version 2.0
- * @see ReportType для типов отчетов
+ * @see ReportFormType для типов отчетов в UI
  * @since 2.0
  */
 public class ReportTestDataBuilder extends TestDataBuilder<ReportTestDataBuilder.ReportData, ReportTestDataBuilder> {
     
-    private ReportType reportType;
+    private ReportFormType reportFormType;
     private String reportNumber;
     private LocalDate periodStart;
     private LocalDate periodEnd;
@@ -52,7 +52,7 @@ public class ReportTestDataBuilder extends TestDataBuilder<ReportTestDataBuilder
     public static ReportTestDataBuilder createDefault() {
         LocalDate now = LocalDate.now();
         return new ReportTestDataBuilder()
-            .withReportType(ReportType.EFS1)
+            .withReportType(ReportFormType.EFS1)
             .withReportNumber("REPORT-" + now.getYear() + "-001")
             .withPeriod(now.minusMonths(1), now)
             .withStatus("Черновик")
@@ -70,7 +70,7 @@ public class ReportTestDataBuilder extends TestDataBuilder<ReportTestDataBuilder
         LocalDate startDate = endDate.minusMonths(faker.number().numberBetween(1, 12));
         
         return new ReportTestDataBuilder()
-            .withReportType(ReportType.values()[faker.number().numberBetween(0, ReportType.values().length)])
+            .withReportType(ReportFormType.values()[faker.number().numberBetween(0, ReportFormType.values().length)])
             .withReportNumber("REPORT-" + faker.number().numberBetween(1000, 9999))
             .withPeriod(startDate, endDate)
             .withStatus(faker.options().option("Черновик", "Отправлен", "Обработан", "Ошибка"))
@@ -81,11 +81,11 @@ public class ReportTestDataBuilder extends TestDataBuilder<ReportTestDataBuilder
     /**
      * Устанавливает тип отчета
      * 
-     * @param reportType тип отчета
+     * @param reportFormType тип отчета для UI
      * @return текущий экземпляр builder для цепочки вызовов
      */
-    public ReportTestDataBuilder withReportType(ReportType reportType) {
-        this.reportType = reportType;
+    public ReportTestDataBuilder withReportType(ReportFormType reportFormType) {
+        this.reportFormType = reportFormType;
         return self();
     }
     
@@ -168,7 +168,7 @@ public class ReportTestDataBuilder extends TestDataBuilder<ReportTestDataBuilder
         // Валидация данных перед созданием объекта
         validateReportData();
         
-        return new ReportData(reportType, reportNumber, periodStart, periodEnd,
+        return new ReportData(reportFormType, reportNumber, periodStart, periodEnd,
             status, organization, processId, xmlContent);
     }
     
@@ -179,7 +179,7 @@ public class ReportTestDataBuilder extends TestDataBuilder<ReportTestDataBuilder
      */
     private void validateReportData() {
         // Валидация типа отчета
-        if (reportType == null) {
+        if (reportFormType == null) {
             throw new IllegalArgumentException("Тип отчета является обязательным полем");
         }
         
@@ -285,7 +285,7 @@ public class ReportTestDataBuilder extends TestDataBuilder<ReportTestDataBuilder
      * Класс данных для хранения информации об отчете
      */
     public static class ReportData {
-        private final ReportType reportType;
+        private final ReportFormType reportFormType;
         private final String reportNumber;
         private final LocalDate periodStart;
         private final LocalDate periodEnd;
@@ -294,10 +294,10 @@ public class ReportTestDataBuilder extends TestDataBuilder<ReportTestDataBuilder
         private final String processId;
         private final String xmlContent;
         
-        public ReportData(ReportType reportType, String reportNumber, LocalDate periodStart,
+        public ReportData(ReportFormType reportFormType, String reportNumber, LocalDate periodStart,
                          LocalDate periodEnd, String status, String organization,
                          String processId, String xmlContent) {
-            this.reportType = reportType;
+            this.reportFormType = reportFormType;
             this.reportNumber = reportNumber;
             this.periodStart = periodStart;
             this.periodEnd = periodEnd;
@@ -307,7 +307,7 @@ public class ReportTestDataBuilder extends TestDataBuilder<ReportTestDataBuilder
             this.xmlContent = xmlContent;
         }
         
-        public ReportType getReportType() { return reportType; }
+        public ReportFormType getReportFormType() { return reportFormType; }
         public String getReportNumber() { return reportNumber; }
         public LocalDate getPeriodStart() { return periodStart; }
         public LocalDate getPeriodEnd() { return periodEnd; }
@@ -331,8 +331,8 @@ public class ReportTestDataBuilder extends TestDataBuilder<ReportTestDataBuilder
         
         @Override
         public String toString() {
-            return String.format("ReportData{reportType=%s, reportNumber='%s', status='%s', organization='%s'}",
-                reportType, reportNumber, status, organization);
+            return String.format("ReportData{reportFormType=%s, reportNumber='%s', status='%s', organization='%s'}",
+                reportFormType, reportNumber, status, organization);
         }
     }
 }
