@@ -10,6 +10,7 @@ import org.openqa.selenium.By;
 import org.testng.asserts.SoftAssert;
 
 import static com.bft.constants.TimeoutConstants.*;
+import static com.bft.constants.UrlConstants.CRYPTOPRO_DEMO_PAGE_URL;
 import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selenide.$$;
 import static com.codeborne.selenide.Selenide.$;
@@ -99,7 +100,7 @@ public class CryptoProDemoPage extends BasePage<CryptoProDemoPage> {
 
     @Override
     protected String getPageUrl() {
-        return com.bft.constants.UrlConstants.CRYPTOPRO_DEMO_PAGE_URL;
+        return CRYPTOPRO_DEMO_PAGE_URL;
     }
 
     @Override

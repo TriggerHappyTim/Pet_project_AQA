@@ -50,10 +50,10 @@ public class YandexBrowserFactory extends BaseBrowserFactory {
 
         // Ищем в стандартных путях
         String[] possiblePaths = {
-            "/usr/bin/yandex-browser",
-            "/usr/local/bin/yandex-browser",
-            "C:\\Program Files\\Yandex\\YandexBrowser\\browser.exe",
-            "C:\\Program Files (x86)\\Yandex\\YandexBrowser\\browser.exe"
+                "/usr/bin/yandex-browser",
+                "/usr/local/bin/yandex-browser",
+                "C:\\Program Files\\Yandex\\YandexBrowser\\browser.exe",
+                "C:\\Program Files (x86)\\Yandex\\YandexBrowser\\browser.exe"
         };
 
         for (String path : possiblePaths) {
@@ -92,6 +92,9 @@ public class YandexBrowserFactory extends BaseBrowserFactory {
         if (isExtensionFileExists(cryptoProPath)) {
             File cryptoProExtension = new File(cryptoProPath);
             options.addExtensions(cryptoProExtension);
+            System.out.println("Расширение КриптоПРО добавлено: " + cryptoProExtension.getAbsolutePath());
+        } else {
+            logMissingExtensionWarning(cryptoProPath, "Yandex");
         }
 
         // Установка драйвера из переменной окружения

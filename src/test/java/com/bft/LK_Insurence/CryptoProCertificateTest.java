@@ -3,7 +3,6 @@ package com.bft.LK_Insurence;
 import com.bft.test.base.UITestBase;
 import com.bft.gui.CryptoProDemoPage;
 import com.bft.utils.CryptoProPluginVerifier;
-import com.codeborne.selenide.Selenide;
 import com.bft.strategy.CryptoProValidationStrategy;
 import com.bft.strategy.TestExecutionStrategy;
 import com.bft.strategy.TestStrategyManager;
@@ -14,6 +13,8 @@ import io.qameta.allure.*;
 import io.qameta.allure.AllureId;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
+import static com.bft.constants.UrlConstants.CRYPTOPRO_DEMO_PAGE_URL;
 
 /**
  * Тесты для проверки сертификатов КриптоПРО
@@ -36,19 +37,15 @@ import org.testng.annotations.Test;
 @Feature("Электронная подпись")
 public class CryptoProCertificateTest extends UITestBase {
 
-    private static final String DEMO_PAGE_URL = "https://cryptopro.ru/sites/default/files/products/cades/demopage/cades_bes_sample.html";
-
     private CryptoProDemoPage cryptoProPage;
 
     @BeforeMethod
     public void initializePageObject() {
-        // Используем helper для инициализации SoftAssert
         softAssert = com.bft.test.helpers.TestSetupHelper.ensureSoftAssert(softAssert);
-        
-        // Используем helper для инициализации Page Object
+
         cryptoProPage = com.bft.test.helpers.PageObjectHelper.initializePageObjectWithUrlCheck(
             cryptoProPage,
-            DEMO_PAGE_URL,
+            CRYPTOPRO_DEMO_PAGE_URL,
             new String[]{"cryptopro", "cades"},
             () -> new CryptoProDemoPage(softAssert),
             "CryptoProDemoPage"

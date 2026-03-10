@@ -106,6 +106,14 @@ public class TestConfig {
         this.cryptoProXpiPath = System.getenv().getOrDefault("CRYPTOPRO_XPI_PATH",
                 "src/test/resources/cryptopro.ru.xpi");
 
+        if (!new java.io.File(this.cryptoProPath).exists() &&
+            !new java.io.File(this.cryptoProXpiPath).exists() &&
+            (System.getenv("CRYPTOPRO_BASE64") == null || System.getenv("CRYPTOPRO_BASE64").isEmpty())) {
+            System.err.println("[TestConfig] Расширение КриптоПРО не найдено. " +
+                    "Задайте CRYPTOPRO_PATH, CRYPTOPRO_XPI_PATH или CRYPTOPRO_BASE64. " +
+                    "Тесты группы 'crypto' будут пропущены.");
+        }
+
         // Environment settings
         this.environment = System.getProperty("environment",
                 System.getenv().getOrDefault("ENVIRONMENT", "dev"));

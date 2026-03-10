@@ -1,19 +1,43 @@
 # EVS Testing Framework - Roadmap по улучшению кода
 
 **Дата создания**: 2026-01-29  
-**Дата последнего обновления**: 2026-02-13 (план проверки и упрощения)  
-**Статус**: ✅ ВСЕ ЗАДАЧИ ВЫПОЛНЕНЫ - Фаза 1, Фаза 2, Фаза 3 завершены  
-**Основание**: Аудит проекта по новым правилам `.cursorrules` и Javadoc стандартам
+**Дата последнего обновления**: 2026-03-10  
+**Статус**: ✅ ВСЕ ОСНОВНЫЕ ФАЗЫ ЗАВЕРШЕНЫ (Фаза 1–4)  
+**Основание**: Аудит проекта по правилам `.cursorrules` и Javadoc стандартам
 
 ---
 
 ## 📋 Общая статистика
 
-- **Всего Java файлов**: 102
-- **Проверено файлов**: 50+ ключевых
+- **Всего Java файлов**: 138
+- **Main**: 1 (`Application.java`)
+- **Test**: 137 (Page Objects, Components, Tests, Helpers, Config, Security, Integration, Strategy, Monitoring)
+- **Проверено файлов**: 100+ ключевых
 - **Выявлено категорий проблем**: 6
 - **Приоритетных задач**: 24
-- **Выполнено задач**: 20+ (основные фазы завершены)
+- **Выполнено задач**: 24 (все основные фазы завершены)
+
+### Структура тестов по пакетам
+
+| Пакет | Файлов | Описание |
+|-------|--------|----------|
+| `com.bft.LK_Insurence` | 14 | Тесты ЛК Страхователя (EFS, SZV, ODV) |
+| `com.bft.LK_Archive` | 1 | Тесты ЛК Архивной организации |
+| `com.bft.ui` | 18 | Page Objects, Components, Core |
+| `com.bft.gui` | 4 | Legacy Page Objects (используются) |
+| `com.bft.config` | 7 | Конфигурация и стратегии |
+| `com.bft.security` | 13 | Безопасность и маскировка |
+| `com.bft.helpers` | 9 | Вспомогательные классы |
+| `com.bft.integration` | 14 | Jira/Zephyr (закомментировано) |
+| `com.bft.strategy` | 8 | Стратегии тестирования |
+| `com.bft.test` | 16 | Base classes, annotations, logging |
+| `com.bft.browser.factory` | 6 | Фабрики браузеров |
+| `com.bft.testdata` | 3 | TestData builders |
+| `com.bft.monitoring` | 2 | PerformanceMonitor, FlakyTestDetector |
+| `com.bft.enums` | 6 | Перечисления (UIType, ReportType и др.) |
+| `com.bft.constants` | 2 | TimeoutConstants, UrlConstants |
+| `com.bft.steps` | 1 | SzvReportsSteps |
+| `com.bft.utils` | 3 | FormStructureParser и др. |
 
 ---
 
@@ -461,15 +485,18 @@ public class ExampleTest extends BaseTest {
 
 ## 📈 Метрики и отслеживание
 
-### Текущее состояние (обновлено 2026-02-02)
+### Текущее состояние (обновлено 2026-03-10)
 - **Javadoc coverage**: ~85% ✅ (было ~15%)
 - **Thread.sleep usage**: 0 ✅ (было 10+ мест)
 - **Tests with groups**: 100% ✅ (было ~5%)
 - **Hardcoded values**: <5 ✅ (было 20+ мест, вынесены в константы)
 - **Allure annotations coverage**: ~80% ✅ (было ~30%)
+- **Java файлов в проекте**: 138 (1 main + 137 test)
+- **Тестовых классов ЛК Страхователя**: 14
+- **Тестовых классов ЛК Архива**: 1
 
 ### Целевые показатели (target)
-- **Javadoc coverage**: ≥90% ⏳ (85% достигнуто, осталось ~5%)
+- **Javadoc coverage**: ≥90% ⏳ (85% достигнуто, осталось Security + Utilities + Core Elements)
 - **Thread.sleep usage**: 0 ✅ **ДОСТИГНУТО**
 - **Tests with groups**: 100% ✅ **ДОСТИГНУТО**
 - **Hardcoded values**: <5 ✅ **ДОСТИГНУТО**
@@ -584,7 +611,7 @@ public class ExampleTest extends BaseTest {
 
 **Следующий пересмотр**: через 1 месяц  
 **Ответственный**: QA Automation Team  
-**Статус обновления**: Roadmap актуален на 2026-01-29
+**Статус обновления**: Roadmap актуален на 2026-03-10
 
 ---
 
@@ -1255,11 +1282,13 @@ public class ExampleTest extends BaseTest {
 
 | Метрика | Было | Стало | Цель | Статус |
 |---------|------|-------|------|--------|
-| Javadoc coverage | ~15% | ~85% | ≥90% | ⏳ 85% |
-| Thread.sleep usage | 10+ мест | 0 | 0 | ✅ **100%** |
-| Tests with groups | ~5% | 100% | 100% | ✅ **100%** |
-| Hardcoded values | 20+ мест | <5 | <5 | ✅ **100%** |
-| Allure annotations | ~30% | ~80% | ≥80% | ✅ **100%** |
+| Javadoc coverage | ~15% | ~85% | ≥90% | ⏳ 85% (осталось Security, Utilities, Core) |
+| Thread.sleep usage | 10+ мест | 0 | 0 | ✅ **ДОСТИГНУТО** |
+| Tests with groups | ~5% | 100% | 100% | ✅ **ДОСТИГНУТО** |
+| Hardcoded values | 20+ мест | <5 | <5 | ✅ **ДОСТИГНУТО** |
+| Allure annotations | ~30% | ~80% | ≥80% | ✅ **ДОСТИГНУТО** |
+| Java файлов | — | 138 | — | ℹ️ 1 main + 137 test |
+| ЛК тестов | 0 | 15 | — | ℹ️ 14 Страхователь + 1 Архив |
 
 ### 🎯 Осталось (опционально):
 
@@ -1777,6 +1806,67 @@ java.lang.NullPointerException
    - ✅ Добавлен `echo $LK_SCOPE` в print variables
 
 **Ветка**: `experemental`
+
+**Статус**: ✅ Задача выполнена
+
+---
+
+### 2026-03-10 - Исправление переменных для разделения ЛК
+
+**Задача**: Аудит и исправление механизма переключения контуров (UIType) для разных ЛК.
+
+#### ✅ Выполнено:
+
+1. **Исправлен URL `UOS_UAT` в `UIType.java`**
+   - ✅ Был: `https://front-uos-service.test.ecp/` (дубликат UOS_TEST)
+   - ✅ Стал: `https://front-uos-service.uat.ecp/`
+
+2. **Расширен `UITypeSelector` — добавлены селекторы для РПУ и УОС**
+   - ✅ `getSelectedRpuType()` — контур РПУ из `rpu.ui.type` или автомаппинг из EVS
+   - ✅ `getSelectedUosType()` — контур УОС из `uos.ui.type` или автомаппинг из EVS
+   - ✅ `isTestEnvironment()` — определяет test/uat по имени EVS-контура
+   - ✅ Рефакторинг: общие методы `resolveType()`, `resolveTypeOrNull()`, `parseUIType()`
+
+3. **Исправлен `authorizeArhivEVS()` без параметров в `SzvReportsSteps.java`**
+   - ✅ Был: хардкод `EVS_TEST`
+   - ✅ Стал: `UITypeSelector.getSelectedUIType()`
+
+4. **Исправлен `ArchivesTest.java` — убран хардкод `UIType.RPU_UAT`**
+   - ✅ `createRequestInRPU()` и `createNewRequestFullFlow()` теперь используют `UITypeSelector.getSelectedRpuType()`
+
+5. **Обновлены Maven-профили в `pom.xml`**
+   - ✅ Профиль `test`: добавлены `rpu.ui.type=RPU_TEST`, `uos.ui.type=UOS_TEST`
+   - ✅ Профиль `uat`: добавлены `rpu.ui.type=RPU_UAT`, `uos.ui.type=UOS_UAT`
+
+**Статус**: ✅ Задача выполнена
+
+---
+
+### 2026-03-10 - Исправление плагина КриптоПРО
+
+**Задача**: Плагин КриптоПРО не работал из-за нескольких критических проблем.
+
+#### ✅ Выполнено:
+
+1. **Создан класс `UrlConstants.java`**
+   - ✅ Пакет: `com.bft.constants`
+   - ✅ Константы: `CRYPTOPRO_DEMO_PAGE_URL`, `CRYPTOPRO_BASE_URL`, `CRYPTOPRO_PRODUCTS_URL`, `API_BASE_URL_DEFAULT`
+
+2. **Исправлен `CryptoProDemoPage.getPageUrl()`**
+   - ✅ Был пустой метод без `return` (не компилировался)
+   - ✅ Теперь возвращает `UrlConstants.CRYPTOPRO_DEMO_PAGE_URL`
+
+3. **Graceful fallback при отсутствии расширений `.crx`/`.xpi`**
+   - ✅ Добавлен метод `logMissingExtensionWarning()` в `BaseBrowserFactory` с подробной инструкцией
+   - ✅ Добавлен метод `isCryptoProExtensionAvailable()` для проверки доступности расширения
+   - ✅ Chrome, Yandex, Firefox фабрики логируют понятное предупреждение при отсутствии файла
+   - ✅ `TestConfig` логирует предупреждение при инициализации, если расширение не найдено
+
+4. **Устранён хардкод URL в `CryptoProCertificateTest`**
+   - ✅ Заменён `DEMO_PAGE_URL` на `UrlConstants.CRYPTOPRO_DEMO_PAGE_URL`
+   - ✅ Удалены неиспользуемые импорты
+
+**Примечание**: Оригинальное расширение КриптоПРО (v1.2.13) удалено из Chrome Web Store в феврале 2025. Новая версия (Manifest V3, v1.3.12) доступна под ID `pfhgbfnnjiafkhfdkmpiflachepdcjod`.
 
 **Статус**: ✅ Задача выполнена
 

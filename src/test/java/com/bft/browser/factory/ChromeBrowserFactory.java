@@ -55,7 +55,6 @@ public class ChromeBrowserFactory extends BaseBrowserFactory {
         return false;
     }
 
-
     @Override
     public void configureSpecificOptions() {
         // Дополнительная настройка может быть добавлена здесь
@@ -88,6 +87,9 @@ public class ChromeBrowserFactory extends BaseBrowserFactory {
         if (isExtensionFileExists(cryptoProPath)) {
             File cryptoProExtension = new File(cryptoProPath);
             options.addExtensions(cryptoProExtension);
+            System.out.println("Расширение КриптоПРО добавлено: " + cryptoProExtension.getAbsolutePath());
+        } else {
+            logMissingExtensionWarning(cryptoProPath, "Chrome");
         }
 
         // Установка драйвера из переменной окружения
@@ -107,9 +109,9 @@ public class ChromeBrowserFactory extends BaseBrowserFactory {
 
     private String findWindowsChromeBinary() {
         String[] chromePaths = {
-            "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
-            "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
-            System.getenv("LOCALAPPDATA") + "\\Google\\Chrome\\Application\\chrome.exe"
+                "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+                "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
+                System.getenv("LOCALAPPDATA") + "\\Google\\Chrome\\Application\\chrome.exe"
         };
 
         for (String path : chromePaths) {
