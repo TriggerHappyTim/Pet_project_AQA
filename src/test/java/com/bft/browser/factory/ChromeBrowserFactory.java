@@ -1,6 +1,8 @@
 package com.bft.browser.factory;
 
 import org.openqa.selenium.Capabilities;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
@@ -12,6 +14,8 @@ import java.util.Map;
  * Фабрика для создания конфигурации Chrome браузера
  */
 public class ChromeBrowserFactory extends BaseBrowserFactory {
+
+    private static final Logger log = LoggerFactory.getLogger(ChromeBrowserFactory.class);
 
     public ChromeBrowserFactory(String cryptoProPath, String cryptoProXpiPath, boolean isRemote) {
         super(cryptoProPath, cryptoProXpiPath, isRemote);
@@ -87,7 +91,7 @@ public class ChromeBrowserFactory extends BaseBrowserFactory {
         if (isExtensionFileExists(cryptoProPath)) {
             File cryptoProExtension = new File(cryptoProPath);
             options.addExtensions(cryptoProExtension);
-            System.out.println("Расширение КриптоПРО добавлено: " + cryptoProExtension.getAbsolutePath());
+            log.info("Расширение КриптоПРО добавлено: {}", cryptoProExtension.getAbsolutePath());
         } else {
             logMissingExtensionWarning(cryptoProPath, "Chrome");
         }
@@ -147,10 +151,9 @@ public class ChromeBrowserFactory extends BaseBrowserFactory {
         String encodedExtension = encodeExtensionToBase64(extensionPath);
         if (encodedExtension != null && !encodedExtension.isEmpty()) {
             options.addEncodedExtensions(encodedExtension);
-            System.out.println("Расширение КриптоПРО добавлено в Chrome для удаленного запуска");
+            log.info("Расширение КриптоПРО добавлено в Chrome для удаленного запуска");
         } else {
-            System.err.println("ВНИМАНИЕ: Расширение КриптоПРО не установлено для удаленного Chrome. " +
-                    "Установите переменную окружения CRYPTOPRO_BASE64 или укажите путь к файлу расширения в CRYPTOPRO_PATH");
+            log.warn("Расширение КриптоПРО не установлено для удаленного Chrome. Задайте CRYPTOPRO_BASE64 или CRYPTOPRO_PATH.");
         }
     }
 }

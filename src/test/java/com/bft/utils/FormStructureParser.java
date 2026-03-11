@@ -5,6 +5,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -28,7 +30,9 @@ import static com.codeborne.selenide.WebDriverRunner.getWebDriver;
  * @version 1.0
  */
 public class FormStructureParser {
-    
+
+    private static final Logger log = LoggerFactory.getLogger(FormStructureParser.class);
+
     private static final Gson gson = new GsonBuilder()
         .setPrettyPrinting()
         .create();
@@ -108,7 +112,7 @@ public class FormStructureParser {
             }
             
         } catch (Exception e) {
-            System.err.println("Ошибка при парсинге структуры формы: " + e.getMessage());
+            log.warn("Ошибка при парсинге структуры формы: " + e.getMessage());
             e.printStackTrace();
         }
         
@@ -153,7 +157,7 @@ public class FormStructureParser {
             metadata.setAttributes(attrs != null ? attrs : new HashMap<>());
             
         } catch (Exception e) {
-            System.err.println("Ошибка при парсинге input: " + e.getMessage());
+            log.warn("Ошибка при парсинге input: " + e.getMessage());
             return null;
         }
         
@@ -191,7 +195,7 @@ public class FormStructureParser {
             }
             
         } catch (Exception e) {
-            System.err.println("Ошибка при парсинге select: " + e.getMessage());
+            log.warn("Ошибка при парсинге select: " + e.getMessage());
             return null;
         }
         
@@ -225,7 +229,7 @@ public class FormStructureParser {
             metadata.setXpath(xpath);
             
         } catch (Exception e) {
-            System.err.println("Ошибка при парсинге button: " + e.getMessage());
+            log.warn("Ошибка при парсинге button: " + e.getMessage());
             return null;
         }
         
@@ -263,7 +267,7 @@ public class FormStructureParser {
             }
             
         } catch (Exception e) {
-            System.err.println("Ошибка при парсинге textarea: " + e.getMessage());
+            log.warn("Ошибка при парсинге textarea: " + e.getMessage());
             return null;
         }
         
@@ -312,7 +316,7 @@ public class FormStructureParser {
             }
             
         } catch (Exception e) {
-            System.err.println("Ошибка при парсинге combobox: " + e.getMessage());
+            log.warn("Ошибка при парсинге combobox: " + e.getMessage());
             return null;
         }
         
@@ -391,7 +395,7 @@ public class FormStructureParser {
             }
             
         } catch (Exception e) {
-            System.err.println("Ошибка при поиске метки: " + e.getMessage());
+            log.warn("Ошибка при поиске метки: " + e.getMessage());
         }
         
         return null;
@@ -442,7 +446,7 @@ public class FormStructureParser {
             }
             
         } catch (Exception e) {
-            System.err.println("Ошибка при поиске метки для combobox: " + e.getMessage());
+            log.warn("Ошибка при поиске метки для combobox: " + e.getMessage());
         }
         
         return null;
@@ -472,7 +476,7 @@ public class FormStructureParser {
                 "} " +
                 "return getElementXPath(arguments[0]);", element.toWebElement());
         } catch (Exception e) {
-            System.err.println("Ошибка при получении XPath: " + e.getMessage());
+            log.warn("Ошибка при получении XPath: " + e.getMessage());
             return null;
         }
     }
@@ -494,7 +498,7 @@ public class FormStructureParser {
                 "} " +
                 "return items;", element.toWebElement());
         } catch (Exception e) {
-            System.err.println("Ошибка при получении атрибутов: " + e.getMessage());
+            log.warn("Ошибка при получении атрибутов: " + e.getMessage());
             return null;
         }
     }
@@ -524,16 +528,16 @@ public class FormStructureParser {
                 gson.toJson(fields, writer);
             }
             
-            System.out.println("========================================");
-            System.out.println("Структура формы сохранена в файл:");
-            System.out.println(jsonFile.getAbsolutePath());
-            System.out.println("Всего полей: " + fields.size());
-            System.out.println("========================================");
+            log.info("========================================");
+            log.info("Структура формы сохранена в файл:");
+            log.info(jsonFile.getAbsolutePath());
+            log.info("Всего полей: " + fields.size());
+            log.info("========================================");
             
             return jsonFile.getAbsolutePath();
             
         } catch (IOException e) {
-            System.err.println("Ошибка при сохранении структуры формы в JSON: " + e.getMessage());
+            log.warn("Ошибка при сохранении структуры формы в JSON: " + e.getMessage());
             e.printStackTrace();
             return null;
         }
@@ -563,12 +567,12 @@ public class FormStructureParser {
                 writer.write(html != null ? html : "");
             }
             
-            System.out.println("HTML сохранён в файл: " + htmlFile.getAbsolutePath());
+            log.info("HTML сохранён в файл: " + htmlFile.getAbsolutePath());
             
             return htmlFile.getAbsolutePath();
             
         } catch (IOException e) {
-            System.err.println("Ошибка при сохранении HTML: " + e.getMessage());
+            log.warn("Ошибка при сохранении HTML: " + e.getMessage());
             return null;
         }
     }

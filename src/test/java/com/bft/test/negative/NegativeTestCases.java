@@ -6,16 +6,19 @@ import com.bft.test.helpers.AssertionHelper;
 import com.bft.test.helpers.SmartWaits;
 import com.bft.ui.pages.LoginPage;
 import com.bft.enums.UITypeSelector;
-import com.bft.constants.TimeoutConstants;
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.Selenide;
-import io.qameta.allure.*;
+import io.qameta.allure.AllureId;
+import io.qameta.allure.Description;
+import io.qameta.allure.Epic;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Severity;
+import io.qameta.allure.SeverityLevel;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import java.time.Duration;
 
-import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$x;
 
 /**

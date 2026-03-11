@@ -1,6 +1,10 @@
 package com.bft.config;
 
 import com.bft.browser.factory.BrowserFactoryManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Objects;
 
 /**
  * Центральная точка управления конфигурацией тестового фреймворка
@@ -42,6 +46,8 @@ import com.bft.browser.factory.BrowserFactoryManager;
  */
 public class TestConfiguration {
 
+    private static final Logger log = LoggerFactory.getLogger(TestConfiguration.class);
+
     /**
      * Текущий контекст тестирования
      * Содержит активную стратегию, конфигурацию и состояние
@@ -82,10 +88,10 @@ public class TestConfiguration {
             currentContext.initializeEnvironment();
             initialized = true;
 
-            System.out.println("Test configuration initialized successfully");
+            log.info("Test configuration initialized successfully");
 
         } catch (Exception e) {
-            System.err.println("Failed to initialize test configuration: " + e.getMessage());
+            log.error("Failed to initialize test configuration: {}", e.getMessage());
             throw new RuntimeException("Test configuration initialization failed", e);
         }
     }
@@ -102,6 +108,7 @@ public class TestConfiguration {
      * @see TestStrategyType для доступных стратегий
      */
     public static synchronized void initialize(TestStrategyType strategyType) {
+        Objects.requireNonNull(strategyType, "strategyType");
         if (initialized) {
             return;
         }
@@ -111,10 +118,10 @@ public class TestConfiguration {
             currentContext.initializeEnvironment();
             initialized = true;
 
-            System.out.println("Test configuration initialized with strategy: " + strategyType);
+            log.info("Test configuration initialized with strategy: {}", strategyType);
 
         } catch (Exception e) {
-            System.err.println("Failed to initialize test configuration: " + e.getMessage());
+            log.error("Failed to initialize test configuration: {}", e.getMessage());
             throw new RuntimeException("Test configuration initialization failed", e);
         }
     }
@@ -130,6 +137,7 @@ public class TestConfiguration {
      * @see TestConfig для всех доступных настроек
      */
     public static synchronized void initialize(TestConfig config) {
+        Objects.requireNonNull(config, "config");
         if (initialized) {
             return;
         }
@@ -139,10 +147,10 @@ public class TestConfiguration {
             currentContext.initializeEnvironment();
             initialized = true;
 
-            System.out.println("Test configuration initialized with custom config");
+            log.info("Test configuration initialized with custom config");
 
         } catch (Exception e) {
-            System.err.println("Failed to initialize test configuration: " + e.getMessage());
+            log.error("Failed to initialize test configuration: {}", e.getMessage());
             throw new RuntimeException("Test configuration initialization failed", e);
         }
     }

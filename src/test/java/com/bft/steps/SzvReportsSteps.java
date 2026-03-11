@@ -200,7 +200,6 @@ public class SzvReportsSteps {
     @Step("Назначение исполнителя")
     public void assignPerformer(){
         new MainPage()
-                // Ожидаем появления кнопки "Назначить исполнителя" перед кликом
                 .clickBtnSecondary1("Назначить исполнителя")
                 .clickMuiInputLabelID("mui-38","Cлатова Марина Николаевна")
                 .clickSpanButton("Подтвердить");

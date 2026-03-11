@@ -1,6 +1,8 @@
 package com.bft.security.providers;
 
 import com.bft.security.CredentialProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,6 +13,8 @@ import java.util.Properties;
  * Безопасно получает credentials из файлов конфигурации
  */
 public class PropertiesCredentialProvider implements CredentialProvider {
+
+    private static final Logger log = LoggerFactory.getLogger(PropertiesCredentialProvider.class);
 
     private final Properties properties;
     private final String propertiesFile;
@@ -53,10 +57,10 @@ public class PropertiesCredentialProvider implements CredentialProvider {
                 props.load(inputStream);
             } else {
                 // Если файл не найден, создаем пустые properties
-                System.out.println("Properties file '" + propertiesFile + "' not found in classpath. Using empty properties.");
+                log.debug("Properties file '{}' not found in classpath. Using empty properties.", propertiesFile);
             }
         } catch (IOException e) {
-            System.err.println("Error loading properties file '" + propertiesFile + "': " + e.getMessage());
+            log.warn("Error loading properties file '{}': {}", propertiesFile, e.getMessage());
         }
 
         return props;

@@ -1,11 +1,14 @@
 package com.bft.config;
 
-import com.codeborne.selenide.Configuration;
 import io.qameta.allure.selenide.AllureSelenide;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.codeborne.selenide.logevents.SelenideLogger;
 import org.testng.asserts.SoftAssert;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 /**
  * Контекст выполнения тестов
@@ -43,6 +46,8 @@ import java.util.*;
  * @since 1.0
  */
 public class TestContext {
+
+    private static final Logger log = LoggerFactory.getLogger(TestContext.class);
 
     private final TestConfig config;
     private final TestStrategy strategy;
@@ -135,8 +140,8 @@ public class TestContext {
         strategy.configureEnvironment();
         strategy.configureSelenide();
 
-        System.out.println("Test environment initialized with strategy: " + strategy.getType());
-        System.out.println("Configuration: " + config);
+        log.info("Test environment initialized with strategy: {}", strategy.getType());
+        log.debug("Configuration: {}", config);
     }
 
     /**

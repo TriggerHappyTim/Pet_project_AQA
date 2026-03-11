@@ -2,8 +2,15 @@ package com.bft.LK_Insurence.EFS_1;
 
 import com.bft.config.TestConfiguration;
 import com.bft.config.TestStrategyType;
-import io.qameta.allure.*;
 import io.qameta.allure.AllureId;
+import io.qameta.allure.Description;
+import io.qameta.allure.Epic;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Severity;
+import io.qameta.allure.SeverityLevel;
+import io.qameta.allure.Story;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.testng.annotations.Test;
 
 /**
@@ -14,6 +21,8 @@ import org.testng.annotations.Test;
 @Epic("Configuration")
 @Feature("Test Configuration")
 public class TestConfigurationTest {
+
+    private static final Logger log = LoggerFactory.getLogger(TestConfigurationTest.class);
 
     @Test(groups = {"config", "smoke"}, 
           testName = "#1 Проверка инициализации конфигурации",
@@ -26,14 +35,14 @@ public class TestConfigurationTest {
         try {
             // Test automatic strategy selection
             TestConfiguration.initialize();
-            System.out.println("✓ Automatic configuration initialization successful");
+            log.info("✓ Automatic configuration initialization successful");
 
             // Reset for next test
             TestConfiguration.reset();
 
             // Test explicit UI strategy
             TestConfiguration.initialize(TestStrategyType.UI);
-            System.out.println("✓ UI strategy configuration initialization successful");
+            log.info("✓ UI strategy configuration initialization successful");
 
             // Reset for next test
             TestConfiguration.reset();
@@ -44,7 +53,7 @@ public class TestConfigurationTest {
             // System.out.println("✓ API strategy configuration initialization successful");
 
         } catch (Exception e) {
-            System.err.println("✗ Configuration initialization failed: " + e.getMessage());
+            log.error("✗ Configuration initialization failed: {}", e.getMessage());
             throw e;
         }
     }

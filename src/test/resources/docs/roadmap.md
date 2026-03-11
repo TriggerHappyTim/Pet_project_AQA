@@ -1930,3 +1930,21 @@ java.lang.NullPointerException
 **Статус**: ✅ Задача выполнена
 
 ---
+
+### 2026-03-11 - Продолжение рефакторинга: константы MainPage, импорты, таймауты
+
+**Задача**: Продолжение плана аудита — вынести магические строки в константы, убрать неиспользуемые импорты, использовать TimeoutConstants в MainPage.
+
+#### ✅ Выполнено:
+
+1. **MainPage.java — константы**
+   - Добавлены `GRACE_PERIOD_DIALOG_TITLE` ("Льготный стаж"), `INPUT_NAME_TU_BASIS` ("tuBasis"), `DEBUG_OUTPUT_DIR` ("target/debug/").
+   - Все вхождения "tuBasis", XPath по "Льготный стаж" и сообщения "target/debug/" заменены на константы.
+   - Подключён `TimeoutConstants`; одно ожидание (поле tuBasis в диалоге) переведено на `TimeoutConstants.DEFAULT_WAIT`.
+
+2. **NegativeTestCases.java — оптимизация импортов**
+   - Удалены неиспользуемые: `TimeoutConstants`, `Story`, статический импорт `$` (используется только `$x`).
+
+**Статус**: ✅ Задача выполнена
+
+---

@@ -1,17 +1,19 @@
 package com.bft.browser.factory;
 
 import org.openqa.selenium.Capabilities;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.firefox.FirefoxProfile;
 
 import java.io.File;
-import java.nio.file.Files;
-import java.util.Base64;
 
 /**
  * Фабрика для создания конфигурации Firefox браузера
  */
 public class FirefoxBrowserFactory extends BaseBrowserFactory {
+
+    private static final Logger log = LoggerFactory.getLogger(FirefoxBrowserFactory.class);
 
     public FirefoxBrowserFactory(String cryptoProPath, String cryptoProXpiPath, boolean isRemote) {
         super(cryptoProPath, cryptoProXpiPath, isRemote);
@@ -91,7 +93,7 @@ public class FirefoxBrowserFactory extends BaseBrowserFactory {
             addCryptoProExtension(profile);
         } else {
             // Для удаленного режима расширение должно быть предустановлено
-            System.out.println("Запуск в удаленном режиме. Расширение должно быть предустановлено на узле.");
+            log.info("Запуск в удаленном режиме. Расширение должно быть предустановлено на узле.");
         }
 
         // Установка драйвера
@@ -145,45 +147,8 @@ public class FirefoxBrowserFactory extends BaseBrowserFactory {
      * Альтернативно: установите переменную окружения CRYPTOPRO_BASE64 с закодированным расширением.
      */
     private void addExtensionForRemoteFirefox(FirefoxOptions options) {
-        String encodedExtension = encodeExtensionToBase64(cryptoProXpiPath);
-        if (encodedExtension != null && !encodedExtension.isEmpty()) {
-            try {
-                // Создаем временный FirefoxProfile для установки расширения
-                // ВАЖНО: Это может вызвать проблемы с merge в некоторых версиях Selenium
-                FirefoxProfile tempProfile = new FirefoxProfile();
-
-                // Настройки для установки расширений (дублируем из configureFirefoxOptionsForRemote)
-                tempProfile.setPreference("xpinstall.signatures.required", false);
-                tempProfile.setPreference("extensions.allowPrivateBrowsingByDefault", true);
-                tempProfile.setPreference("extensions.enabledScopes", 15);
-                tempProfile.setPreference("extensions.autoDisableScopes", 0);
-
-                // Декодируем base64 и создаем временный файл для расширения
-                byte[] extensionBytes = Base64.getDecoder().decode(encodedExtension);
-                File tempExtensionFile = File.createTempFile("cryptopro_", ".xpi");
-                tempExtensionFile.deleteOnExit();
-                Files.write(tempExtensionFile.toPath(), extensionBytes);
-
-                // Добавляем расширение в профиль
-                tempProfile.addExtension(tempExtensionFile);
-
-                // Устанавливаем профиль в опции
-                // ВАЖНО: Это может вызвать проблемы с merge, но это единственный способ установить расширение программно
-                options.setProfile(tempProfile);
-
-                System.out.println("Расширение КриптоПРО добавлено в Firefox для удаленного запуска через временный профиль");
-                System.out.println("Если возникают ошибки с merge capabilities, рекомендуется предустановить расширение в Docker-образе Selenium");
-            } catch (Exception e) {
-                System.err.println("Ошибка при добавлении расширения в Firefox для удаленного запуска: " + e.getMessage());
-                e.printStackTrace();
-                System.err.println("ВНИМАНИЕ: Расширение КриптоПРО не установлено для удаленного Firefox.");
-                System.err.println("Рекомендуется предустановить расширение в Docker-образе Selenium или установить переменную окружения CRYPTOPRO_BASE64");
-            }
-        } else {
-            System.err.println("ВНИМАНИЕ: Расширение КриптоПРО не установлено для удаленного Firefox.");
-            System.err.println("Установите переменную окружения CRYPTOPRO_BASE64 или укажите путь к файлу расширения в CRYPTOPRO_PATH");
-            System.err.println("Альтернативно: предустановите расширение в Docker-образе Selenium для стабильной работы");
-        }
+        log.warn("Для удалённого Firefox расширение КриптоПРО НЕ устанавливается программно. " +
+                "Предустановите расширение в Docker-образе Selenium для стабильной работы.");
     }
 
     private void addCryptoProExtension(FirefoxProfile profile) {
@@ -198,13 +163,12 @@ public class FirefoxBrowserFactory extends BaseBrowserFactory {
             // Убедимся, что это файл XPI
             if (cryptoProXpiPath.toLowerCase().endsWith(".xpi")) {
                 profile.addExtension(cryptoProExtension);
-                System.out.println("Расширение CryptoPro добавлено в Firefox: " + cryptoProExtension.getAbsolutePath());
+                log.info("Расширение CryptoPro добавлено в Firefox: {}", cryptoProExtension.getAbsolutePath());
             } else {
-                System.err.println("Файл расширения должен иметь расширение .xpi: " + cryptoProXpiPath);
+                log.warn("Файл расширения должен иметь расширение .xpi: {}", cryptoProXpiPath);
             }
         } catch (Exception e) {
-            System.err.println("Ошибка при добавлении расширения: " + e.getMessage());
-            e.printStackTrace();
+            log.warn("Ошибка при добавлении расширения: {}", e.getMessage());
         }
     }
 }

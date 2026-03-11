@@ -1,11 +1,19 @@
 package com.bft.ui.pages;
 
-import com.bft.ui.component.*;
+import com.bft.ui.component.ButtonComponent;
+import com.bft.ui.component.CheckboxComponent;
+import com.bft.ui.component.DateComponent;
+import com.bft.ui.component.FileComponent;
+import com.bft.ui.component.InputComponent;
+import com.bft.ui.component.NavigationComponent;
+import com.bft.ui.component.RadioButtonComponent;
+import com.bft.ui.component.SelectComponent;
+import com.bft.ui.component.TableComponent;
+import com.bft.ui.component.TextareaComponent;
 import com.bft.utils.FormStructureParser;
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.ElementsCollection;
 
-import com.bft.enums.ReportType;
 import com.bft.enums.TabType;
 import org.testng.Assert;
 import org.testng.asserts.SoftAssert;
@@ -13,15 +21,15 @@ import org.testng.asserts.SoftAssert;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.interactions.Actions;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.time.Duration;
+
+import com.bft.constants.TimeoutConstants;
 
 import static com.codeborne.selenide.Selenide.*;
 import static com.codeborne.selenide.WebDriverRunner.getWebDriver;
-import static com.bft.enums.ReportType.*;
-
 /**
  * Page Object для главной страницы системы EVS
  * 
@@ -49,10 +57,21 @@ import static com.bft.enums.ReportType.*;
  * @see TableComponent для работы с таблицами
  */
 public class MainPage {
-    SoftAssert softAssert = new SoftAssert();
+
+    private static final Logger log = LoggerFactory.getLogger(MainPage.class);
+
+    /** Заголовок диалога "Льготный стаж" для поиска по тексту. */
+    private static final String GRACE_PERIOD_DIALOG_TITLE = "Льготный стаж";
+    /** Имя поля input для льготного стажа в форме. */
+    private static final String INPUT_NAME_TU_BASIS = "tuBasis";
+    /** Каталог для отладочного вывода (парсинг структуры страницы). */
+    private static final String DEBUG_OUTPUT_DIR = "target/debug/";
+
+    private SoftAssert softAssert = new SoftAssert();
 
     // Компоненты для работы с различными элементами интерфейса
     private final NavigationComponent navigation = NavigationComponent.createMainNavigation("Главная навигация");
+    @SuppressWarnings("unused") // резерв для работы с главной таблицей
     private final TableComponent mainTable = TableComponent.createMainTable("Главная таблица");
     /**
      * Компонент таблицы результатов
@@ -779,7 +798,6 @@ public class MainPage {
     public MainPage inputDateEventDateViaCalendar(String dateDDMMYYYY) {
         String[] parts = dateDDMMYYYY.replace("-", ".").split("\\.");
         int day = parts.length > 0 ? Integer.parseInt(parts[0].trim()) : 1;
-        int month = parts.length > 1 ? Integer.parseInt(parts[1].trim()) : 1;
         int year = parts.length > 2 ? Integer.parseInt(parts[2].trim()) : 2025;
 
         $x("//input[@id='eventDate']").shouldBe(Condition.visible, Duration.ofSeconds(10)).click();
@@ -904,12 +922,8 @@ public class MainPage {
         
         addBtn.click();
         
-        // Небольшая задержка для начала открытия нового диалога
-        try {
-            Thread.sleep(800);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+        // Ожидание появления нового диалога (React рендеринг)
+        sleep(800);
         
         // АЛЬТЕРНАТИВНАЯ СТРАТЕГИЯ 1: Ищем НОВЫЙ диалог по появлению поля tuBasis на странице
         // Форма строки открывается в отдельном диалоге, не внутри родительского
@@ -918,7 +932,7 @@ public class MainPage {
         // Ждём появления поля tuBasis глобально на странице (в новом диалоге)
         for (int attempt = 0; attempt < 30; attempt++) {
             try {
-                var tuBasisInput = $("input[name='tuBasis']");
+                var tuBasisInput = $("input[name='" + INPUT_NAME_TU_BASIS + "']");
                 if (tuBasisInput.exists() && tuBasisInput.isDisplayed()) {
                     // Нашли поле tuBasis - ищем его родительский диалог
                     formDialog = tuBasisInput.$x("./ancestor::*[@role='dialog'][1]");
@@ -926,7 +940,7 @@ public class MainPage {
                         formDialog = tuBasisInput.$x("./ancestor::*[contains(@class,'modal')][1]");
                     }
                     if (formDialog.exists() && formDialog.isDisplayed()) {
-                        System.out.println("Найден новый диалог с формой строки (по полю tuBasis)");
+                        log.debug("Найден новый диалог с формой строки (по полю tuBasis)");
                         break;
                     }
                 }
@@ -942,10 +956,10 @@ public class MainPage {
                     var allDialogs = $$x("//*[@role='dialog']");
                     for (var d : allDialogs) {
                         try {
-                            var tuBasisInDialog = d.$x(".//input[@name='tuBasis']");
+                            var tuBasisInDialog = d.$x(".//input[@name='" + INPUT_NAME_TU_BASIS + "']");
                             if (tuBasisInDialog.exists() && tuBasisInDialog.isDisplayed()) {
                                 formDialog = d;
-                                System.out.println("Найден новый диалог с формой строки (по количеству диалогов)");
+                                log.debug("Найден новый диалог с формой строки (по количеству диалогов)");
                                 break;
                             }
                         } catch (Exception ignored) {
@@ -960,13 +974,7 @@ public class MainPage {
                 // Продолжаем ожидание
             }
             
-            // Небольшая задержка перед следующей попыткой
-            try {
-                Thread.sleep(300);
-            } catch (InterruptedException ie) {
-                Thread.currentThread().interrupt();
-                break;
-            }
+            sleep(300);
         }
         
         // АЛЬТЕРНАТИВНАЯ СТРАТЕГИЯ 2: Если tuBasis не найден, ищем самый последний открытый диалог
@@ -976,10 +984,10 @@ public class MainPage {
                 if (allDialogs.size() > 0) {
                     // Берём последний диалог (самый новый)
                     formDialog = allDialogs.get(allDialogs.size() - 1);
-                    System.out.println("Используем последний открытый диалог как fallback");
+                    log.debug("Используем последний открытый диалог как fallback");
                 }
             } catch (Exception e) {
-                System.err.println("Не удалось найти диалоги: " + e.getMessage());
+                log.warn("Не удалось найти диалоги: " + e.getMessage());
             }
         }
         
@@ -997,41 +1005,37 @@ public class MainPage {
                 // Спиннеров нет - это нормально
             }
             
-            // Дополнительное ожидание загрузки формы через AJAX/React
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
+            // Ожидание загрузки формы через AJAX/React
+            sleep(1000);
             
             // Финальная проверка: поле tuBasis должно быть видимым в найденном диалоге
             try {
-                formDialog.$x(".//input[@name='tuBasis']").shouldBe(Condition.visible, Duration.ofSeconds(10));
-                System.out.println("Поле tuBasis найдено в диалоге формы строки");
+                formDialog.$x(".//input[@name='" + INPUT_NAME_TU_BASIS + "']").shouldBe(Condition.visible, TimeoutConstants.DEFAULT_WAIT);
+                log.debug("Поле tuBasis найдено в диалоге формы строки");
             } catch (Exception e) {
                 // Если tuBasis не найден, парсим для отладки
-                System.err.println("ОШИБКА: Поле tuBasis не найдено в диалоге формы строки");
+                log.warn("ОШИБКА: Поле tuBasis не найдено в диалоге формы строки");
                 try {
                     FormStructureParser.parseAndSaveForm(formDialog, "grace-period-form-dialog-no-tuBasis");
                     FormStructureParser.parseAndSaveForm($("body"), "page-grace-period-form-not-loaded");
                 } catch (Exception parseEx) {
-                    System.err.println("Ошибка при парсинге: " + parseEx.getMessage());
+                    log.warn("Ошибка при парсинге: " + parseEx.getMessage());
                 }
                 throw new AssertionError("Поле tuBasis не найдено в диалоге формы строки после клика 'Добавить'. " +
-                    "Возможно, форма не загрузилась. Структура сохранена в target/debug/ для анализа.");
+                    "Возможно, форма не загрузилась. Структура сохранена в " + DEBUG_OUTPUT_DIR + " для анализа.");
             }
         } else {
             // Если диалог не найден, парсим структуру для отладки
-            System.err.println("ОШИБКА: Диалог с формой строки не найден после клика 'Добавить'");
+            log.warn("ОШИБКА: Диалог с формой строки не найден после клика 'Добавить'");
             try {
                 FormStructureParser.parseAndSaveForm(parentDialog, "grace-period-parent-dialog-after-click");
                 FormStructureParser.parseAndSaveForm($("body"), "page-after-add-click-failed");
             } catch (Exception parseEx) {
-                System.err.println("Ошибка при парсинге: " + parseEx.getMessage());
+                log.warn("Ошибка при парсинге: " + parseEx.getMessage());
             }
             throw new AssertionError("Диалог с формой строки 'Льготный стаж' не найден после клика 'Добавить'. " +
                 "Возможно, форма не открылась или открылась в неожиданном месте. " +
-                "Структура сохранена в target/debug/ для анализа.");
+                "Структура сохранена в " + DEBUG_OUTPUT_DIR + " для анализа.");
         }
         
         return this;
@@ -1049,18 +1053,18 @@ public class MainPage {
             // Это самый надёжный способ - форма строки всегда содержит это поле
             for (int attempt = 0; attempt < 30; attempt++) {
                 try {
-                    var tuBasisInput = $("input[name='tuBasis']");
+                    var tuBasisInput = $("input[name='" + INPUT_NAME_TU_BASIS + "']");
                     if (tuBasisInput.exists() && tuBasisInput.isDisplayed()) {
                         // Нашли поле tuBasis - ищем его родительский диалог
                         var dialog = tuBasisInput.$x("./ancestor::*[@role='dialog'][1]");
                         if (dialog.exists() && dialog.isDisplayed()) {
-                            System.out.println("Найден диалог формы строки по полю tuBasis");
+                            log.debug("Найден диалог формы строки по полю tuBasis");
                             return dialog;
                         }
                         // Если не нашли по role='dialog', пробуем по классу modal
                         dialog = tuBasisInput.$x("./ancestor::*[contains(@class,'modal')][1]");
                         if (dialog.exists() && dialog.isDisplayed()) {
-                            System.out.println("Найден диалог формы строки по полю tuBasis (через класс modal)");
+                            log.debug("Найден диалог формы строки по полю tuBasis (через класс modal)");
                             return dialog;
                         }
                     }
@@ -1068,13 +1072,7 @@ public class MainPage {
                     // Продолжаем поиск
                 }
                 
-                // Небольшая задержка перед следующей попыткой
-                try {
-                    Thread.sleep(300);
-                } catch (InterruptedException ie) {
-                    Thread.currentThread().interrupt();
-                    break;
-                }
+                sleep(300);
             }
             
             // АЛЬТЕРНАТИВНАЯ СТРАТЕГИЯ 2: Ищем все открытые диалоги и проверяем наличие tuBasis в каждом
@@ -1082,9 +1080,9 @@ public class MainPage {
                 var allDialogs = $$x("//*[@role='dialog']");
                 for (var dialog : allDialogs) {
                     try {
-                        var tuBasisInDialog = dialog.$x(".//input[@name='tuBasis']");
+                        var tuBasisInDialog = dialog.$x(".//input[@name='" + INPUT_NAME_TU_BASIS + "']");
                         if (tuBasisInDialog.exists() && tuBasisInDialog.isDisplayed()) {
-                            System.out.println("Найден диалог формы строки среди открытых диалогов");
+                            log.debug("Найден диалог формы строки среди открытых диалогов");
                             return dialog;
                         }
                     } catch (Exception ignored) {
@@ -1100,7 +1098,7 @@ public class MainPage {
                 var allDialogs = $$x("//*[@role='dialog']");
                 if (allDialogs.size() > 0) {
                     var lastDialog = allDialogs.get(allDialogs.size() - 1);
-                    System.out.println("Используем последний открытый диалог как fallback");
+                    log.debug("Используем последний открытый диалог как fallback");
                     return lastDialog;
                 }
             } catch (Exception ignored) {
@@ -1112,10 +1110,10 @@ public class MainPage {
             
         } catch (Throwable e) {
             // Если не удалось найти диалог, парсим структуру страницы для отладки
-            System.err.println("========================================");
-            System.err.println("ОШИБКА: Не найден диалог формы строки 'Льготный стаж' (input[name='tuBasis'])");
-            System.err.println("Парсим структуру страницы для анализа...");
-            System.err.println("========================================");
+            log.warn("========================================");
+            log.warn("ОШИБКА: Не найден диалог формы строки 'Льготный стаж' (input[name='tuBasis'])");
+            log.warn("Парсим структуру страницы для анализа...");
+            log.warn("========================================");
             
             parsePageStructureOnError(e);
             
@@ -1123,7 +1121,7 @@ public class MainPage {
             throw new AssertionError("Не найден диалог формы строки 'Льготный стаж'. " +
                 "Элемент input[name='tuBasis'] не найден на странице. " +
                 "Возможно, форма строки не открылась после клика 'Добавить' в таблице. " +
-                "Структура страницы сохранена в target/debug/ для анализа. " +
+                "Структура страницы сохранена в " + DEBUG_OUTPUT_DIR + " для анализа. " +
                 "Оригинальная ошибка: " + e.getMessage(), e);
         }
     }
@@ -1152,7 +1150,7 @@ public class MainPage {
                     if (errorElement.exists() && errorElement.isDisplayed()) {
                         String errorText = errorElement.getText();
                         if (errorText != null && !errorText.trim().isEmpty()) {
-                            System.err.println("Найдена ошибка валидации: " + errorText);
+                            log.warn("Найдена ошибка валидации: " + errorText);
                             return errorText;
                         }
                     }
@@ -1161,7 +1159,7 @@ public class MainPage {
                 }
             }
         } catch (Exception e) {
-            System.err.println("Ошибка при проверке валидации: " + e.getMessage());
+            log.warn("Ошибка при проверке валидации: " + e.getMessage());
         }
         return null;
     }
@@ -1177,9 +1175,9 @@ public class MainPage {
         // Сначала проверяем наличие ошибок валидации
         String validationError = checkForValidationErrors();
         if (validationError != null) {
-            System.err.println("========================================");
-            System.err.println("ОБНАРУЖЕНА ОШИБКА ВАЛИДАЦИИ: " + validationError);
-            System.err.println("========================================");
+            log.warn("========================================");
+            log.warn("ОБНАРУЖЕНА ОШИБКА ВАЛИДАЦИИ: " + validationError);
+            log.warn("========================================");
         }
         
         try {
@@ -1187,30 +1185,30 @@ public class MainPage {
             var allDialogs = $$x("//*[@role='dialog'] | //*[contains(@class,'modal')] | //*[contains(@class,'dialog')] | //*[contains(@class,'MuiDialog')]");
             
             if (allDialogs.size() > 0) {
-                System.out.println("Найдено диалогов на странице: " + allDialogs.size());
+                log.debug("Найдено диалогов на странице: " + allDialogs.size());
                 for (int i = 0; i < allDialogs.size(); i++) {
                     var dialog = allDialogs.get(i);
                     try {
                         if (dialog.exists() && dialog.isDisplayed()) {
                             String dialogName = "dialog-" + (i + 1) + "-on-error";
                             FormStructureParser.parseAndSaveForm(dialog, dialogName);
-                            System.out.println("✓ Сохранена структура диалога: " + dialogName);
+                            log.debug("✓ Сохранена структура диалога: " + dialogName);
                         }
                     } catch (Exception ex) {
-                        System.err.println("✗ Ошибка при парсинге диалога " + (i + 1) + ": " + ex.getMessage());
+                        log.warn("✗ Ошибка при парсинге диалога " + (i + 1) + ": " + ex.getMessage());
                     }
                 }
             } else {
                 // Если диалогов нет, парсим всю страницу
-                System.out.println("Диалоги не найдены, парсим всю страницу...");
+                log.debug("Диалоги не найдены, парсим всю страницу...");
                 try {
                     var body = $("body");
                     if (body.exists()) {
                         FormStructureParser.parseAndSaveForm(body, "page-structure-on-error");
-                        System.out.println("✓ Сохранена структура всей страницы");
+                        log.debug("✓ Сохранена структура всей страницы");
                     }
                 } catch (Exception ex) {
-                    System.err.println("✗ Ошибка при парсинге body: " + ex.getMessage());
+                    log.warn("✗ Ошибка при парсинге body: " + ex.getMessage());
                 }
             }
             
@@ -1218,15 +1216,15 @@ public class MainPage {
             try {
                 String pageSource = getWebDriver().getPageSource();
                 FormStructureParser.saveHtmlToFile(pageSource, "page-source-on-error");
-                System.out.println("✓ Сохранён HTML страницы");
+                log.debug("✓ Сохранён HTML страницы");
             } catch (Exception ex) {
-                System.err.println("✗ Ошибка при сохранении HTML: " + ex.getMessage());
+                log.warn("✗ Ошибка при сохранении HTML: " + ex.getMessage());
             }
             
             // Пытаемся найти все input элементы на странице для анализа
             try {
                 var allInputs = $$x("//input[not(@type='hidden')]");
-                System.out.println("Найдено input элементов на странице: " + allInputs.size());
+                log.debug("Найдено input элементов на странице: " + allInputs.size());
                 if (allInputs.size() > 0 && allInputs.size() <= 50) {
                     // Если не слишком много элементов, сохраняем их список
                     StringBuilder inputsInfo = new StringBuilder();
@@ -1241,21 +1239,23 @@ public class MainPage {
                                 inputsInfo.append(String.format("  [%d] name='%s', id='%s', type='%s'\n", 
                                     i + 1, name != null ? name : "", id != null ? id : "", type != null ? type : ""));
                             }
-                        } catch (Exception ignored) {}
+                        } catch (Exception e) {
+                            log.debug("Не удалось получить атрибуты input элемента [{}]: {}", i + 1, e.getMessage());
+                        }
                     }
-                    System.out.println(inputsInfo.toString());
+                    log.debug("Inputs info: {}", inputsInfo.toString());
                 }
             } catch (Exception ex) {
-                System.err.println("✗ Ошибка при анализе input элементов: " + ex.getMessage());
+                log.warn("✗ Ошибка при анализе input элементов: {}", ex.getMessage());
             }
-            
-            System.err.println("========================================");
-            System.err.println("Все данные сохранены в target/debug/");
-            System.err.println("========================================");
-            
+
+            log.info("========================================");
+            log.info("Все данные сохранены в " + DEBUG_OUTPUT_DIR);
+            log.info("========================================");
+
         } catch (Exception parseException) {
-            System.err.println("КРИТИЧЕСКАЯ ОШИБКА при парсинге структуры страницы: " + parseException.getMessage());
-            parseException.printStackTrace();
+            log.error("КРИТИЧЕСКАЯ ОШИБКА при парсинге структуры страницы: {}", parseException.getMessage());
+            log.debug("Подробности", parseException);
         }
     }
 
@@ -1272,12 +1272,12 @@ public class MainPage {
             com.codeborne.selenide.SelenideElement dialog = null;
             try {
                 // Быстрая проверка наличия диалога по заголовку
-                var dialogByTitle = $x("//*[@role='dialog'][.//*[contains(., 'Льготный стаж') or contains(., 'ЛЬГОТНЫЙ СТАЖ')]]");
+                var dialogByTitle = $x("//*[@role='dialog'][.//*[contains(., '" + GRACE_PERIOD_DIALOG_TITLE + "') or contains(., 'ЛЬГОТНЫЙ СТАЖ')]]");
                 if (dialogByTitle.exists() && dialogByTitle.isDisplayed()) {
                     dialog = dialogByTitle;
                 } else {
                     // Если диалог не найден по заголовку, проверяем по tuBasis
-                    var inputTuBasis = $("input[name='tuBasis']");
+                    var inputTuBasis = $("input[name='" + INPUT_NAME_TU_BASIS + "']");
                     if (inputTuBasis.exists() && inputTuBasis.isDisplayed()) {
                         dialog = inputTuBasis.$x("./ancestor::*[@role='dialog'][1]");
                         if (!dialog.exists()) {
@@ -1298,14 +1298,14 @@ public class MainPage {
                     dialog.shouldBe(Condition.visible, Duration.ofSeconds(1));
                     
                     // Затем проверяем наличие tuBasis
-                    var inputTuBasis = dialog.$x(".//input[@name='tuBasis']");
+                    var inputTuBasis = dialog.$x(".//input[@name='" + INPUT_NAME_TU_BASIS + "']");
                     if (inputTuBasis.exists()) {
                         inputTuBasis.shouldBe(Condition.visible, Duration.ofSeconds(2));
                     } else {
                         // Если tuBasis не найден, но диалог открыт - это может быть нормально
                         // (возможно, форма изменилась или tuBasis скрыт)
                         // Просто логируем предупреждение и продолжаем
-                        System.out.println("Предупреждение: поле tuBasis не найдено в диалоге, но диалог открыт. " +
+                        log.debug("Предупреждение: поле tuBasis не найдено в диалоге, но диалог открыт. " +
                             "Возможно, форма изменилась после выбора значения.");
                     }
                 } catch (Exception e) {
@@ -1315,7 +1315,7 @@ public class MainPage {
                         if (dialog.exists()) {
                             dialog.shouldBe(Condition.visible, Duration.ofSeconds(1));
                             // Если диалог видим, но tuBasis не найден - это может быть нормально
-                            System.out.println("Предупреждение: поле tuBasis не найдено, но диалог открыт. " +
+                            log.debug("Предупреждение: поле tuBasis не найдено, но диалог открыт. " +
                                 "Продолжаем выполнение.");
                         } else {
                             throw new AssertionError("Диалог закрылся после выбора значения. " +
@@ -1351,10 +1351,8 @@ public class MainPage {
                 // Если нет лоадеров или они уже исчезли, это нормально - просто продолжаем
             }
             
-            // Небольшая задержка для React обновления состояния
-            Thread.sleep(300);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
+            // Ожидание React обновления состояния
+            sleep(300);
         } catch (AssertionError e) {
             // Пробрасываем AssertionError как есть
             throw e;
@@ -1379,26 +1377,22 @@ public class MainPage {
         input.click();
         clickDropdownOptionByText(optionText);
         
-        // Универсальное ожидание стабилизации после выбора значения
-        try {
-            Thread.sleep(800);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+        // Ожидание стабилизации после выбора значения
+        sleep(800);
         
         // Проверяем, что диалог остаётся открытым
         try {
             dialog = getGracePeriodFormDialog();
             dialog.shouldBe(Condition.visible, Duration.ofSeconds(2));
         } catch (Exception e) {
-            System.err.println("ОШИБКА: Диалог закрылся после выбора '" + optionText + "' в поле name='" + inputName + "'");
+            log.warn("ОШИБКА: Диалог закрылся после выбора '" + optionText + "' в поле name='" + inputName + "'");
             try {
                 parsePageStructureOnError(e);
             } catch (Exception parseEx) {
-                System.err.println("Не удалось сохранить структуру страницы: " + parseEx.getMessage());
+                log.warn("Не удалось сохранить структуру страницы: " + parseEx.getMessage());
             }
             throw new AssertionError("Диалог 'Льготный стаж' закрылся после выбора значения '" + optionText + 
-                "' в поле name='" + inputName + "'. Структура страницы сохранена в target/debug/ для анализа.", e);
+                "' в поле name='" + inputName + "'. Структура страницы сохранена в " + DEBUG_OUTPUT_DIR + " для анализа.", e);
         }
         
         return this;
@@ -1512,22 +1506,17 @@ public class MainPage {
         
         try {
             trigger.scrollIntoView(true);
-            Thread.sleep(200);
-        } catch (Exception ignored) {
-            // Игнорируем ошибки прокрутки
+            sleep(200);
+        } catch (Exception e) {
+            log.debug("scrollIntoView или sleep не выполнились: {}", e.getMessage());
         }
-        
+
         trigger.click();
         
         // Выбираем опцию из выпадающего списка
         clickDropdownOptionByText(optionText);
         
-        // Небольшая задержка для обработки событий
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+        sleep(500);
         
         return this;
     }
@@ -1542,61 +1531,56 @@ public class MainPage {
         try {
             dialog = getGracePeriodFormDialog();
             dialog.shouldBe(Condition.visible, Duration.ofSeconds(5));
-            System.out.println("Диалог 'Льготный стаж' найден перед поиском поля: " + String.join(", ", labelVariants));
+            log.debug("Диалог 'Льготный стаж' найден перед поиском поля: " + String.join(", ", labelVariants));
         } catch (Exception e) {
             // Диалог не найден - сохраняем структуру страницы для анализа
-            System.err.println("========================================");
-            System.err.println("ОШИБКА: Диалог 'Льготный стаж' закрыт или не найден перед поиском поля '" + 
+            log.warn("========================================");
+            log.warn("ОШИБКА: Диалог 'Льготный стаж' закрыт или не найден перед поиском поля '" + 
                 String.join("', '", labelVariants) + "'");
-            System.err.println("Парсим структуру страницы для анализа...");
-            System.err.println("========================================");
+            log.warn("Парсим структуру страницы для анализа...");
+            log.warn("========================================");
             
             try {
                 parsePageStructureOnError(e);
             } catch (Exception parseEx) {
-                System.err.println("Не удалось сохранить структуру страницы: " + parseEx.getMessage());
+                log.warn("Не удалось сохранить структуру страницы: " + parseEx.getMessage());
             }
             
             throw new AssertionError("Диалог 'Льготный стаж' закрыт или не найден перед поиском поля '" + 
                 String.join("', '", labelVariants) + "'. Возможно, предыдущий шаг закрыл диалог. " +
-                "Структура страницы сохранена в target/debug/ для анализа.", e);
+                "Структура страницы сохранена в " + DEBUG_OUTPUT_DIR + " для анализа.", e);
         }
         
         // Ждём стабилизации диалога после предыдущего действия (если было)
         try {
             waitForDialogStabilization();
         } catch (Exception e) {
-            System.err.println("Предупреждение: не удалось дождаться стабилизации диалога: " + e.getMessage());
+            log.warn("Предупреждение: не удалось дождаться стабилизации диалога: " + e.getMessage());
         }
         
-        // Дополнительная пауза для полной стабилизации формы после выбора предыдущего значения
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+        sleep(500);
         
         // Проверяем, что диалог всё ещё открыт после стабилизации
         try {
             dialog = getGracePeriodFormDialog();
             dialog.shouldBe(Condition.visible, Duration.ofSeconds(3));
-            System.out.println("Диалог 'Льготный стаж' остаётся открытым после стабилизации");
+            log.debug("Диалог 'Льготный стаж' остаётся открытым после стабилизации");
         } catch (Exception e) {
             // Диалог закрылся - сохраняем структуру страницы для анализа
-            System.err.println("========================================");
-            System.err.println("ОШИБКА: Диалог 'Льготный стаж' закрылся после стабилизации");
-            System.err.println("Парсим структуру страницы для анализа...");
-            System.err.println("========================================");
+            log.warn("========================================");
+            log.warn("ОШИБКА: Диалог 'Льготный стаж' закрылся после стабилизации");
+            log.warn("Парсим структуру страницы для анализа...");
+            log.warn("========================================");
             
             try {
                 parsePageStructureOnError(e);
             } catch (Exception parseEx) {
-                System.err.println("Не удалось сохранить структуру страницы: " + parseEx.getMessage());
+                log.warn("Не удалось сохранить структуру страницы: " + parseEx.getMessage());
             }
             
             throw new AssertionError("Диалог 'Льготный стаж' закрылся после выбора предыдущего значения. " +
                 "Возможно, значение в предыдущем поле вызывает закрытие диалога. " +
-                "Структура страницы сохранена в target/debug/ для анализа.", e);
+                "Структура страницы сохранена в " + DEBUG_OUTPUT_DIR + " для анализа.", e);
         }
         
         // Ждём появления поля (может появляться условно после выбора предыдущего поля)
@@ -1608,7 +1592,7 @@ public class MainPage {
                 
                 // Пробуем найти поле с ожиданием его появления
                 String escaped = label.replace("'", "''");
-                var fieldFound = dialog.$x(".//*[contains(., '" + escaped + "')]")
+                dialog.$x(".//*[contains(., '" + escaped + "')]")
                     .shouldBe(Condition.exist, Duration.ofSeconds(5));
                 
                 // ПЕРЕД выбором значения парсим структуру диалога для отладки
@@ -1616,10 +1600,10 @@ public class MainPage {
                 try {
                     FormStructureParser.parseAndSaveForm(dialog, "grace-period-before-select-" + 
                         label.replaceAll("[^a-zA-Zа-яА-Я0-9]", "-").toLowerCase());
-                    System.out.println("Структура диалога сохранена перед выбором значения '" + optionText + 
+                    log.debug("Структура диалога сохранена перед выбором значения '" + optionText + 
                         "' в поле '" + label + "'");
                 } catch (Exception parseEx) {
-                    System.err.println("Предупреждение: не удалось сохранить структуру перед выбором: " + parseEx.getMessage());
+                    log.warn("Предупреждение: не удалось сохранить структуру перед выбором: " + parseEx.getMessage());
                 }
                 
                 // Если поле найдено, выбираем значение
@@ -1633,17 +1617,17 @@ public class MainPage {
                 } catch (Exception e) {
                     // Диалог закрылся - это уже обработано в selectInGracePeriodDialogByLabel, но перепроверяем
                     // Если мы здесь, значит диалог закрылся после всех проверок
-                    System.err.println("========================================");
-                    System.err.println("ОШИБКА: Диалог закрылся после выбора значения '" + optionText + 
+                    log.warn("========================================");
+                    log.warn("ОШИБКА: Диалог закрылся после выбора значения '" + optionText + 
                         "' в поле '" + label + "' (финальная проверка)");
-                    System.err.println("Парсим структуру страницы для анализа...");
-                    System.err.println("========================================");
+                    log.warn("Парсим структуру страницы для анализа...");
+                    log.warn("========================================");
                     
                     parsePageStructureOnError(e);
                     
                     throw new AssertionError("Диалог 'Льготный стаж' закрылся после выбора значения '" + optionText + 
                         "' в поле '" + label + "'. Возможно, это значение вызывает закрытие диалога. " +
-                        "Структура страницы сохранена в target/debug/ для анализа.", e);
+                        "Структура страницы сохранена в " + DEBUG_OUTPUT_DIR + " для анализа.", e);
                 }
                 
                 return this;
@@ -1660,21 +1644,21 @@ public class MainPage {
             dialog = getGracePeriodFormDialog();
             // Если диалог найден, парсим его структуру
             String jsonPath = FormStructureParser.parseAndSaveForm(dialog, "grace-period-dialog-not-found");
-            System.out.println("Структура диалога сохранена для анализа: " + jsonPath);
+            log.debug("Структура диалога сохранена для анализа: " + jsonPath);
         } catch (Exception parseEx) {
             // Диалог не найден - сохраняем HTML всей страницы для анализа
-            System.err.println("Диалог не найден, сохраняем HTML страницы для анализа: " + parseEx.getMessage());
+            log.warn("Диалог не найден, сохраняем HTML страницы для анализа: " + parseEx.getMessage());
             try {
                 String html = $("body").getAttribute("outerHTML");
                 FormStructureParser.saveHtmlToFile(html, "grace-period-dialog-not-found-page");
-                System.out.println("HTML страницы сохранён для анализа");
+                log.debug("HTML страницы сохранён для анализа");
             } catch (Exception htmlEx) {
-                System.err.println("Не удалось сохранить HTML страницы: " + htmlEx.getMessage());
+                log.warn("Не удалось сохранить HTML страницы: " + htmlEx.getMessage());
             }
         }
         
         throw new AssertionError("Не найден селект по меткам: " + String.join(", ", labelVariants) + 
-            ". Диалог может быть закрыт или поле не существует. Структура страницы сохранена в target/debug/ для анализа.");
+            ". Диалог может быть закрыт или поле не существует. Структура страницы сохранена в " + DEBUG_OUTPUT_DIR + " для анализа.");
     }
 
     /**
@@ -1708,7 +1692,7 @@ public class MainPage {
                 "//*[@role='option'][normalize-space(text())='" + optEscaped + "']" // Точное совпадение для role='option'
         };
         
-        System.out.println("Ищем опцию '" + optionText + "' в выпадающем списке...");
+        log.debug("Ищем опцию '" + optionText + "' в выпадающем списке...");
         
         for (String xpath : xpaths) {
             try {
@@ -1718,28 +1702,23 @@ public class MainPage {
                 // Прокручиваем элемент в видимую область перед кликом
                 try {
                     el.scrollIntoView(true);
-                    Thread.sleep(100);
+                    sleep(100);
                 } catch (Exception scrollEx) {
-                    System.out.println("Предупреждение: не удалось прокрутить опцию: " + scrollEx.getMessage());
+                    log.debug("Предупреждение: не удалось прокрутить опцию: " + scrollEx.getMessage());
                 }
                 
-                System.out.println("Найдена опция '" + optionText + "', выполняем клик...");
+                log.debug("Найдена опция '" + optionText + "', выполняем клик...");
                 el.click();
                 
-                // После клика ждём небольшое время для применения изменений
-                try {
-                    Thread.sleep(300);
-                } catch (InterruptedException ie) {
-                    Thread.currentThread().interrupt();
-                }
+                sleep(300);
                 
-                System.out.println("Клик по опции '" + optionText + "' выполнен успешно");
+                log.debug("Клик по опции '" + optionText + "' выполнен успешно");
                 
                 // Проверяем, что диалог всё ещё открыт (если он был открыт)
                 // Используем более мягкую проверку - просто проверяем наличие ключевого элемента
                 try {
                     // Проверяем наличие основного поля формы (более надёжно, чем проверка всего диалога)
-                    var inputTuBasis = $("input[name='tuBasis']");
+                    var inputTuBasis = $("input[name='" + INPUT_NAME_TU_BASIS + "']");
                     inputTuBasis.shouldBe(Condition.exist, Duration.ofSeconds(3));
                 } catch (Exception dialogEx) {
                     // Если диалог закрылся, это проблема - выбрасываем исключение
@@ -1754,18 +1733,18 @@ public class MainPage {
                 throw e;
             } catch (Throwable ignored) {
                 // пробуем следующий селектор
-                System.out.println("Опция не найдена по XPath: " + xpath + ", пробуем следующий...");
+                log.debug("Опция не найдена по XPath: " + xpath + ", пробуем следующий...");
             }
         }
         
         // Если все селекторы не сработали, выводим более подробную ошибку
-        System.err.println("========================================");
-        System.err.println("ОШИБКА: Не найдена опция '" + optionText + "' в выпадающем списке");
-        System.err.println("Проверьте, что:");
-        System.err.println("1. Выпадающий список открыт");
-        System.err.println("2. Опция '" + optionText + "' существует в списке");
-        System.err.println("3. Текст опции точно совпадает (учитывайте пробелы и регистр)");
-        System.err.println("========================================");
+        log.warn("========================================");
+        log.warn("ОШИБКА: Не найдена опция '" + optionText + "' в выпадающем списке");
+        log.warn("Проверьте, что:");
+        log.warn("1. Выпадающий список открыт");
+        log.warn("2. Опция '" + optionText + "' существует в списке");
+        log.warn("3. Текст опции точно совпадает (учитывайте пробелы и регистр)");
+        log.warn("========================================");
         
         throw new AssertionError("Не найдена опция выпадающего списка: " + optionText);
     }
@@ -1929,29 +1908,24 @@ public class MainPage {
             clickDropdownOptionByText(optionText);
             
             // Быстрая проверка закрытия диалога сразу после выбора значения (не ждём долго)
-            try {
-                // Небольшая задержка для обработки клика
-                Thread.sleep(200);
-            } catch (InterruptedException ie) {
-                Thread.currentThread().interrupt();
-            }
+            sleep(200);
             
             // Быстрая проверка, не закрылся ли диалог
             try {
-                var quickCheckDialog = $x("//*[@role='dialog'][.//*[contains(., 'Льготный стаж') or contains(., 'ЛЬГОТНЫЙ СТАЖ')]]");
+                var quickCheckDialog = $x("//*[@role='dialog'][.//*[contains(., '" + GRACE_PERIOD_DIALOG_TITLE + "') or contains(., 'ЛЬГОТНЫЙ СТАЖ')]]");
                 if (!quickCheckDialog.exists() || !quickCheckDialog.isDisplayed()) {
                     // Диалог закрылся - парсим структуру страницы для анализа
-                    System.err.println("========================================");
-                    System.err.println("ОШИБКА: Диалог закрылся сразу после выбора значения '" + optionText + 
+                    log.warn("========================================");
+                    log.warn("ОШИБКА: Диалог закрылся сразу после выбора значения '" + optionText + 
                         "' в поле name='" + inputName + "'");
-                    System.err.println("Парсим структуру страницы для анализа...");
-                    System.err.println("========================================");
+                    log.warn("Парсим структуру страницы для анализа...");
+                    log.warn("========================================");
                     
                     parsePageStructureOnError(new AssertionError("Диалог закрылся после выбора значения"));
                     
                     throw new AssertionError("Диалог 'Льготный стаж' закрылся сразу после выбора значения '" + optionText + 
                         "' в поле name='" + inputName + "'. Возможно, это значение вызывает закрытие диалога. " +
-                        "Структура страницы сохранена в target/debug/ для анализа.");
+                        "Структура страницы сохранена в " + DEBUG_OUTPUT_DIR + " для анализа.");
                 }
             } catch (AssertionError e) {
                 // Пробрасываем AssertionError как есть
@@ -1965,17 +1939,17 @@ public class MainPage {
                 waitForDialogStabilization();
             } catch (AssertionError e) {
                 // Если waitForDialogStabilization обнаружил закрытие диалога, парсим структуру
-                System.err.println("========================================");
-                System.err.println("ОШИБКА: Диалог закрылся после выбора значения '" + optionText + 
+                log.warn("========================================");
+                log.warn("ОШИБКА: Диалог закрылся после выбора значения '" + optionText + 
                     "' в поле name='" + inputName + "' (в waitForDialogStabilization)");
-                System.err.println("Парсим структуру страницы для анализа...");
-                System.err.println("========================================");
+                log.warn("Парсим структуру страницы для анализа...");
+                log.warn("========================================");
                 
                 parsePageStructureOnError(e);
                 
                 throw new AssertionError("Диалог 'Льготный стаж' закрылся после выбора значения '" + optionText + 
                     "' в поле name='" + inputName + "'. Возможно, это значение вызывает закрытие диалога. " +
-                    "Структура страницы сохранена в target/debug/ для анализа.", e);
+                    "Структура страницы сохранена в " + DEBUG_OUTPUT_DIR + " для анализа.", e);
             }
             
             // Проверяем, что диалог всё ещё открыт после выбора значения
@@ -1984,17 +1958,17 @@ public class MainPage {
                 dialog.shouldBe(Condition.visible, Duration.ofSeconds(1));
             } catch (Exception e) {
                 // Диалог закрылся - парсим структуру страницы для анализа
-                System.err.println("========================================");
-                System.err.println("ОШИБКА: Диалог закрылся после стабилизации (значение '" + optionText + 
+                log.warn("========================================");
+                log.warn("ОШИБКА: Диалог закрылся после стабилизации (значение '" + optionText + 
                     "' в поле name='" + inputName + "')");
-                System.err.println("Парсим структуру страницы для анализа...");
-                System.err.println("========================================");
+                log.warn("Парсим структуру страницы для анализа...");
+                log.warn("========================================");
                 
                 parsePageStructureOnError(e);
                 
                 throw new AssertionError("Диалог 'Льготный стаж' закрылся после выбора значения '" + optionText + 
                     "' в поле name='" + inputName + "'. Возможно, это значение вызывает закрытие диалога. " +
-                    "Структура страницы сохранена в target/debug/ для анализа.", e);
+                    "Структура страницы сохранена в " + DEBUG_OUTPUT_DIR + " для анализа.", e);
             }
             return this;
         }
@@ -2009,17 +1983,17 @@ public class MainPage {
                     dialog.shouldBe(Condition.visible, Duration.ofSeconds(1));
                 } catch (Exception e) {
                     // Диалог закрылся - это уже обработано в selectInGracePeriodDialogByLabel, но перепроверяем
-                    System.err.println("========================================");
-                    System.err.println("ОШИБКА: Диалог закрылся после выбора значения '" + optionText + 
+                    log.warn("========================================");
+                    log.warn("ОШИБКА: Диалог закрылся после выбора значения '" + optionText + 
                         "' в поле '" + label + "' (финальная проверка)");
-                    System.err.println("Парсим структуру страницы для анализа...");
-                    System.err.println("========================================");
+                    log.warn("Парсим структуру страницы для анализа...");
+                    log.warn("========================================");
                     
                     parsePageStructureOnError(e);
                     
                     throw new AssertionError("Диалог 'Льготный стаж' закрылся после выбора значения '" + optionText + 
                         "' в поле '" + label + "'. Возможно, это значение вызывает закрытие диалога. " +
-                        "Структура страницы сохранена в target/debug/ для анализа.", e);
+                        "Структура страницы сохранена в " + DEBUG_OUTPUT_DIR + " для анализа.", e);
                 }
                 return this;
             } catch (AssertionError ae) {
@@ -2363,7 +2337,7 @@ public class MainPage {
     public MainPage checkProcessingStatus(String expectedResult) {
         $x("(//span[contains(@class,'MuiChip-label MuiChip-labelMedium')])[2]").shouldHave(Condition.exactText("Завершена"), Duration.ofSeconds(60));
         String actualResult = $x("(//span[contains(@class,'MuiChip-label MuiChip-labelMedium')])[2]").getText();
-        System.out.println(actualResult);
+        log.debug(actualResult);
         Assert.assertEquals(expectedResult, actualResult);
         return this;
     }
@@ -2380,7 +2354,7 @@ public class MainPage {
      */
     public MainPage checkReportStatus(String expectedResult) {
         String actualResult = $x("(//span[contains(@class,'MuiChip-label MuiChip-labelMedium')])[1]").getText();
-        System.out.println(actualResult);
+        log.debug(actualResult);
         Assert.assertEquals(expectedResult, actualResult);
         return this;
     }
@@ -2429,7 +2403,7 @@ public class MainPage {
         waitForUppStatus();
         boolean noErrors = $x("//div[@class='noDataTable']").isDisplayed();
         String uppStatus = $x("//div[@class= 'MuiChip-root MuiChip-filled MuiChip-sizeMedium MuiChip-colorDefault MuiChip-filledDefault chip_with-bg css-wk4je1']").getText();
-        System.out.println("uppStatus " + uppStatus);
+        log.debug("uppStatus " + uppStatus);
 
         Assert.assertEquals(uppStatus, "Положительный");
         Assert.assertTrue(noErrors);
@@ -2607,7 +2581,7 @@ public class MainPage {
         //ПРОВЕРКА, ОТОБРАЖАЕТСЯ ЛИ ОШИБКА
         softAssert.assertFalse(hasError);
         if (hasError) {
-            System.out.println((char) 27 + "[31mОШИБКА на вкладке   " + tableName + (char) 27 + "[37m");
+            log.debug((char) 27 + "[31mОШИБКА на вкладке   " + tableName + (char) 27 + "[37m");
             resultsTable.closeErrorAlert();
         }
 
@@ -2622,9 +2596,9 @@ public class MainPage {
         //ЛОГ
         int rowCount = resultsTable.getRowCount();
         if (!isNotEmpty) {
-            System.out.println((char) 27 + "[31mКоличество записей в таблице   " + tableName + " = " + rowCount + (char) 27 + "[37m");
+            log.debug((char) 27 + "[31mКоличество записей в таблице   " + tableName + " = " + rowCount + (char) 27 + "[37m");
         } else {
-            System.out.println((char) 27 + "[32mКоличество записей в таблице   " + tableName + " = " + rowCount + (char) 27 + "[37m");
+            log.debug((char) 27 + "[32mКоличество записей в таблице   " + tableName + " = " + rowCount + (char) 27 + "[37m");
         }
 
         return this;
@@ -2653,9 +2627,9 @@ public class MainPage {
         softAssert.assertEquals(secondName, "МИХАЙЛОВИЧ");
 
         //лог
-        System.out.println("Фамилия: " + lastName + " Имя: " + firstName + " Отчество: " + secondName);
-        System.out.println("ИНН " + inn);
-        System.out.println("Адрес " + adress);
+        log.debug("Фамилия: " + lastName + " Имя: " + firstName + " Отчество: " + secondName);
+        log.debug("ИНН " + inn);
+        log.debug("Адрес " + adress);
         return this;
     }
 
@@ -2668,8 +2642,8 @@ public class MainPage {
         softAssert.assertEquals(status, "Открыт");
         softAssert.assertEquals(state, "Актуальный");
 
-        System.out.println("Статус ИЛС: " + status);
-        System.out.println("Состояние ИЛС:  " + state);
+        log.debug("Статус ИЛС: " + status);
+        log.debug("Состояние ИЛС:  " + state);
         return this;
     }*/
 
@@ -2751,6 +2725,7 @@ public class MainPage {
         return this;
     }
 
+    @SuppressWarnings("unused") // для явного ожидания загрузки формы при необходимости
     private void waitForLoadingForm() {
         $x("//div[contains(@class, 'user-name')]").shouldBe(Condition.visible, Duration.ofSeconds(60));
     }

@@ -76,7 +76,6 @@ public class BaseTest {
      */
     @BeforeSuite
     public void initializeTestConfiguration() {
-        // Явно указываем UI стратегию для всех тестов
         TestConfiguration.initialize(TestStrategyType.UI);
     }
 
@@ -146,16 +145,12 @@ public class BaseTest {
      */
     @AfterMethod
     public void tearDownTest(org.testng.ITestResult result) {
-        // Создаем скриншот при провале теста (только для UI тестов)
         if (result.getStatus() == org.testng.ITestResult.FAILURE) {
             takeScreenshotOnFailure(result);
         }
         
-        // Выполняем действия стратегии после теста
         TestConfiguration.afterTest();
         
-        // Очищаем ThreadLocal для текущего потока после завершения теста
-        // Это важно для предотвращения утечек памяти при параллельном выполнении
         softAssertThreadLocal.remove();
         softAssert = null;
     }

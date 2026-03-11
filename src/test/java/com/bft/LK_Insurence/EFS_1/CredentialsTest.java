@@ -1,8 +1,15 @@
 package com.bft.LK_Insurence.EFS_1;
 
 import com.bft.security.CredentialManager;
-import io.qameta.allure.*;
 import io.qameta.allure.AllureId;
+import io.qameta.allure.Description;
+import io.qameta.allure.Epic;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Severity;
+import io.qameta.allure.SeverityLevel;
+import io.qameta.allure.Story;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 
@@ -15,6 +22,8 @@ import org.testng.asserts.SoftAssert;
 @Epic("Configuration")
 @Feature("Credentials Management")
 public class CredentialsTest {
+
+    private static final Logger log = LoggerFactory.getLogger(CredentialsTest.class);
 
     @Test(groups = {"config", "smoke", "credentials"}, 
           testName = "#1 Проверка загрузки credentials из переменных окружения",
@@ -31,12 +40,11 @@ public class CredentialsTest {
         String evsUsername = credentialManager.getCredential("evs.username");
         String evsPassword = credentialManager.getCredential("evs.password");
 
-        System.out.println("Debug: evs.username = '" + evsUsername + "'");
-        System.out.println("Debug: evs.password = '" + evsPassword + "'");
+        log.debug("evs.username = '{}'", evsUsername);
+        log.debug("evs.password = '***'");
 
-        // Test EVS credentials
         var evsCredentials = credentialManager.getUserCredentials("evs");
-        System.out.println("Debug: evsCredentials = " + evsCredentials);
+        log.debug("evsCredentials = {}", evsCredentials);
 
         softAssert.assertNotNull(evsCredentials, "EVS credentials should not be null");
         softAssert.assertTrue(evsCredentials.isValid(), "EVS credentials should be valid");
@@ -44,16 +52,16 @@ public class CredentialsTest {
         softAssert.assertFalse(evsCredentials.username.isEmpty(), "EVS username should not be empty");
         softAssert.assertNotNull(evsCredentials.password, "EVS password should not be null");
         softAssert.assertFalse(evsCredentials.password.isEmpty(), "EVS password should not be empty");
+        softAssert.assertNotNull(evsPassword, "evs.password credential should be loadable");
 
-        System.out.println("✓ EVS credentials loaded successfully: " + evsCredentials.username);
+        log.info("✓ EVS credentials loaded successfully: {}", evsCredentials.username);
 
-        // Test EPGU credentials
         var epguCredentials = credentialManager.getUserCredentials("epgu");
         if (epguCredentials != null && epguCredentials.isValid()) {
-            System.out.println("✓ EPGU credentials loaded successfully: " + epguCredentials.username);
+            log.info("✓ EPGU credentials loaded successfully: {}", epguCredentials.username);
         }
 
-        System.out.println("✓ All credential tests passed!");
+        log.info("✓ All credential tests passed!");
         
         softAssert.assertAll();
     }

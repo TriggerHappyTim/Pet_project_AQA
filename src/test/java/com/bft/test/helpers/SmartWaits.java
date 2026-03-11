@@ -32,6 +32,9 @@ public class SmartWaits {
 
     private static final Logger logger = LoggerFactory.getLogger(SmartWaits.class);
 
+    /** Интервал опроса (мс) в циклах ожидания (readyState, AJAX, спиннеры). */
+    private static final long POLL_INTERVAL_MS = 100;
+
     /**
      * Ожидает видимости элемента с использованием стандартного таймаута
      * 
@@ -153,9 +156,9 @@ public class SmartWaits {
                     logger.debug("Страница загружена");
                     return;
                 }
-                Thread.sleep(100); // Короткая пауза между проверками
+                Thread.sleep(POLL_INTERVAL_MS);
             }
-            
+
             throw new AssertionError(
                 AssertionHelper.formatTimeoutError("Страница", timeout.getSeconds(), "загрузка (readyState != complete)")
             );
@@ -206,10 +209,10 @@ public class SmartWaits {
                     logger.debug("AJAX запросы завершены");
                     return;
                 }
-                
-                Thread.sleep(100); // Короткая пауза между проверками
+
+                Thread.sleep(POLL_INTERVAL_MS);
             }
-            
+
             logger.warn("AJAX запросы не завершились за {} секунд", timeout.getSeconds());
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
@@ -292,10 +295,10 @@ public class SmartWaits {
                     logger.debug("Все спиннеры загрузки исчезли");
                     return;
                 }
-                
-                Thread.sleep(100); // Короткая пауза между проверками
+
+                Thread.sleep(POLL_INTERVAL_MS);
             }
-            
+
             logger.warn("Спиннеры загрузки не исчезли за {} секунд", timeout.getSeconds());
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();

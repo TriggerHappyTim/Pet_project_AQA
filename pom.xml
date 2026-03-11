@@ -10,7 +10,6 @@
 
     <properties>
         <spring-boot.version>2.6.14</spring-boot.version>
-        <org.assertj>3.24.2</org.assertj>
         <io.rest-assured>5.3.1</io.rest-assured>
         <testng.version>7.8.0</testng.version>
         <selenide.version>6.19.0</selenide.version>
@@ -18,14 +17,13 @@
         <allure.maven.version>2.12.0</allure.maven.version>
         <slf4j-simple.version>2.0.7</slf4j-simple.version>
         <aspectj.version>1.9.19</aspectj.version>
-        <jsonpath.version>2.8.0</jsonpath.version>
         <maven.compiler.plugin.version>3.11.0</maven.compiler.plugin.version>
         <maven.surifire.plugin.version>3.1.0</maven.surifire.plugin.version>
-        <lombok.version>1.18.20</lombok.version>
+        <lombok.version>1.18.28</lombok.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <java.version>11</java.version>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
+        <java.version>17</java.version>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
     </properties>
     <dependencies>
         <dependency>
@@ -79,12 +77,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.assertj</groupId>
-            <artifactId>assertj-core</artifactId>
-            <version>${org.assertj}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>${lombok.version}</version>
@@ -99,12 +91,6 @@
         <dependency>
             <groupId>com.codeborne</groupId>
             <artifactId>selenide</artifactId>
-            <version>${selenide.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.codeborne</groupId>
-            <artifactId>selenide-proxy</artifactId>
             <version>${selenide.version}</version>
             <scope>test</scope>
         </dependency>
@@ -126,11 +112,6 @@
             <version>${slf4j-simple.version}</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>com.jayway.jsonpath</groupId>
-            <artifactId>json-path</artifactId>
-            <version>${jsonpath.version}</version>
-        </dependency>
         <!-- Faker для генерации реалистичных тестовых данных -->
         <dependency>
             <groupId>com.github.javafaker</groupId>
@@ -145,13 +126,6 @@
             <version>2.10.1</version>
             <scope>test</scope>
         </dependency>
-        <!-- Jira REST Client API -->
-        <dependency>
-            <groupId>com.atlassian.jira</groupId>
-            <artifactId>jira-rest-java-client-core</artifactId>
-            <version>5.1.0</version>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
     <build>
         <plugins>
@@ -164,7 +138,7 @@
                         <path>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
-                            <version>1.18.28</version>
+                            <version>${lombok.version}</version>
                         </path>
                     </annotationProcessorPaths>
                 </configuration>
@@ -212,6 +186,16 @@
                 <groupId>io.qameta.allure</groupId>
                 <artifactId>allure-maven</artifactId>
                 <version>${allure.maven.version}</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>3.3.1</version>
+                <configuration>
+                    <configLocation>config/checkstyle/checkstyle.xml</configLocation>
+                    <propertyExpansion>config_location=${project.basedir}/config/checkstyle</propertyExpansion>
+                    <failOnViolation>false</failOnViolation>
+                </configuration>
             </plugin>
         </plugins>
     </build>

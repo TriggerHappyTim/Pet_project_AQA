@@ -1,5 +1,8 @@
 package com.bft.config;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Конфигурационные данные для тестового окружения
  * 
@@ -34,6 +37,8 @@ package com.bft.config;
  * @since 1.0
  */
 public class TestConfig {
+
+    private static final Logger log = LoggerFactory.getLogger(TestConfig.class);
 
     // Browser settings
     private String browser;
@@ -109,9 +114,7 @@ public class TestConfig {
         if (!new java.io.File(this.cryptoProPath).exists() &&
             !new java.io.File(this.cryptoProXpiPath).exists() &&
             (System.getenv("CRYPTOPRO_BASE64") == null || System.getenv("CRYPTOPRO_BASE64").isEmpty())) {
-            System.err.println("[TestConfig] Расширение КриптоПРО не найдено. " +
-                    "Задайте CRYPTOPRO_PATH, CRYPTOPRO_XPI_PATH или CRYPTOPRO_BASE64. " +
-                    "Тесты группы 'crypto' будут пропущены.");
+            log.warn("[TestConfig] Расширение КриптоПРО не найдено. Задайте CRYPTOPRO_PATH, CRYPTOPRO_XPI_PATH или CRYPTOPRO_BASE64. Тесты группы 'crypto' будут пропущены.");
         }
 
         // Environment settings

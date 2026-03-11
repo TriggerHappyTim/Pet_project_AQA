@@ -3,6 +3,8 @@ package com.bft.utils;
 import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
 import org.openqa.selenium.By;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
 
@@ -14,11 +16,13 @@ import static com.codeborne.selenide.Selenide.$;
  */
 public class CryptoProPluginVerifier {
 
+    private static final Logger log = LoggerFactory.getLogger(CryptoProPluginVerifier.class);
+
     /**
      * Проверяет все статусы плагина
      */
     public static boolean verifyAllStatuses(int timeoutSeconds) {
-        System.out.println("\n=== ВЕРИФИКАЦИЯ ПЛАГИНА КРИПТОПРО ===");
+        log.info("=== ВЕРИФИКАЦИЯ ПЛАГИНА КРИПТОПРО ===");
 
         boolean allPassed = true;
 
@@ -29,9 +33,9 @@ public class CryptoProPluginVerifier {
         allPassed &= verifyViaJavaScript();
 
         if (allPassed) {
-            System.out.println("✓ ВСЕ СТАТУСЫ: ПЛАГИН ГОТОВ К РАБОТЕ");
+            log.info("✓ ВСЕ СТАТУСЫ: ПЛАГИН ГОТОВ К РАБОТЕ");
         } else {
-            System.err.println("✗ НЕКОТОРЫЕ СТАТУСЫ: ПРОБЛЕМЫ С ПЛАГИНОМ");
+            log.warn("✗ НЕКОТОРЫЕ СТАТУСЫ: ПРОБЛЕМЫ С ПЛАГИНОМ");
         }
 
         return allPassed;
@@ -42,7 +46,7 @@ public class CryptoProPluginVerifier {
      */
     public static boolean verifyExtensionLoaded(int timeoutSeconds) {
         try {
-            System.out.print("1. Расширение: ");
+            log.info("1. Расширение: ");
 
         // Ждем загрузки элемента с умным ожиданием
         try {
@@ -55,14 +59,14 @@ public class CryptoProPluginVerifier {
                 $(By.id("ExtensionEnabledImg")).shouldBe(visible, Duration.ofSeconds(15));
             } catch (Exception e2) {
                 // Если элемент все еще не появился, логируем и продолжаем
-                System.err.println("Элемент ExtensionEnabledImg не появился после ожидания готовности страницы");
+                log.warn("Элемент ExtensionEnabledImg не появился после ожидания готовности страницы");
             }
         }
 
             // Проверяем зеленую точку
             SelenideElement greenDot = $(By.id("ExtensionEnabledImg"));
             if (!greenDot.exists()) {
-                System.err.println("Элемент ExtensionEnabledImg не найден");
+                log.warn("Элемент ExtensionEnabledImg не найден");
                 return false;
             }
 
@@ -71,7 +75,7 @@ public class CryptoProPluginVerifier {
             // Проверяем CSS класс "green"
             String classes = greenDot.getAttribute("class");
             if (classes == null || !classes.contains("green")) {
-                System.err.println("Точка не зеленая! Классы: " + classes);
+                log.warn("Точка не зеленая! Классы: " + classes);
                 return false;
             }
 
@@ -81,15 +85,15 @@ public class CryptoProPluginVerifier {
 
             String extensionText = textElement.getText().trim();
             if (!extensionText.equals("Расширение загружено")) {
-                System.err.println("Неверный текст: " + extensionText);
+                log.warn("Неверный текст: " + extensionText);
                 return false;
             }
 
-            System.out.println("✓ ЗАГРУЖЕНО (зеленая точка)");
+            log.info("✓ ЗАГРУЖЕНО (зеленая точка)");
             return true;
 
         } catch (Exception e) {
-            System.err.println("✗ ОШИБКА: " + e.getMessage());
+            log.warn("✗ ОШИБКА: " + e.getMessage());
             return false;
         }
     }
@@ -99,7 +103,7 @@ public class CryptoProPluginVerifier {
      */
     public static boolean verifyCSPPluginLoaded(int timeoutSeconds) {
         try {
-            System.out.print("2. Плагин CSP: ");
+            log.info("2. Плагин CSP: ");
 
             // Ищем элемент, содержащий текст о плагине
             SelenideElement pluginElement = $(By.xpath(
@@ -107,7 +111,7 @@ public class CryptoProPluginVerifier {
             ));
 
             if (!pluginElement.exists()) {
-                System.err.println("Элемент плагина не найден");
+                log.warn("Элемент плагина не найден");
                 return false;
             }
 
@@ -117,15 +121,15 @@ public class CryptoProPluginVerifier {
 
             // Проверяем, что не в состоянии ожидания
             if (pluginText.contains("ожидание")) {
-                System.err.println("В состоянии ожидания: " + pluginText);
+                log.warn("В состоянии ожидания: " + pluginText);
                 return false;
             }
 
-            System.out.println("✓ ЗАГРУЖЕН");
+            log.info("✓ ЗАГРУЖЕН");
             return true;
 
         } catch (Exception e) {
-            System.err.println("✗ НЕ НАЙДЕН: " + e.getMessage());
+            log.warn("✗ НЕ НАЙДЕН: " + e.getMessage());
             return false;
         }
     }
@@ -135,14 +139,14 @@ public class CryptoProPluginVerifier {
      */
     public static boolean verifyProviderReady(int timeoutSeconds) {
         try {
-            System.out.print("3. Провайдер: ");
+            log.info("3. Провайдер: ");
 
             SelenideElement providerElement = $(By.xpath(
                     "//*[contains(text(), 'Объекты плагина') or contains(text(), 'провайдер')]"
             ));
 
             if (!providerElement.exists()) {
-                System.err.println("Элемент провайдера не найден");
+                log.warn("Элемент провайдера не найден");
                 return false;
             }
 
@@ -151,15 +155,15 @@ public class CryptoProPluginVerifier {
             String providerText = providerElement.getText();
 
             if (providerText.contains("ожидание")) {
-                System.err.println("В состоянии ожидания: " + providerText);
+                log.warn("В состоянии ожидания: " + providerText);
                 return false;
             }
 
-            System.out.println("✓ ГОТОВ");
+            log.info("✓ ГОТОВ");
             return true;
 
         } catch (Exception e) {
-            System.err.println("✗ ОШИБКА: " + e.getMessage());
+            log.warn("✗ ОШИБКА: " + e.getMessage());
             return false;
         }
     }
@@ -169,7 +173,7 @@ public class CryptoProPluginVerifier {
      */
     public static boolean verifyCertificatesAvailable(int timeoutSeconds) {
         try {
-            System.out.print("4. Сертификаты: ");
+            log.info("4. Сертификаты: ");
 
             // Ищем элементы выбора сертификата
             boolean hasCertificateLabel = $(By.xpath(
@@ -185,15 +189,15 @@ public class CryptoProPluginVerifier {
             )).exists();
 
             if (hasCertificateLabel || hasCertificateSelect || hasCertificateButton) {
-                System.out.println("✓ ДОСТУПНЫ");
+                log.info("✓ ДОСТУПНЫ");
                 return true;
             } else {
-                System.err.println("✗ ЭЛЕМЕНТЫ ВЫБОРА НЕ НАЙДЕНЫ");
+                log.warn("✗ ЭЛЕМЕНТЫ ВЫБОРА НЕ НАЙДЕНЫ");
                 return false;
             }
 
         } catch (Exception e) {
-            System.err.println("✗ ОШИБКА: " + e.getMessage());
+            log.warn("✗ ОШИБКА: " + e.getMessage());
             return false;
         }
     }
@@ -203,7 +207,7 @@ public class CryptoProPluginVerifier {
      */
     public static boolean verifyViaJavaScript() {
         try {
-            System.out.print("5. JavaScript проверка: ");
+            log.info("5. JavaScript проверка: ");
 
             // Проверяем наличие объектов КриптоПРО
             boolean hasCadesPlugin = false;
@@ -222,13 +226,13 @@ public class CryptoProPluginVerifier {
                 // Игнорируем
             }
 
-            System.out.println("cadesplugin=" + hasCadesPlugin +
+            log.info("cadesplugin=" + hasCadesPlugin +
                     ", CryptoPro=" + hasCryptoProExtension);
 
             return hasCadesPlugin || hasCryptoProExtension;
 
         } catch (Exception e) {
-            System.err.println("✗ ОШИБКА JS: " + e.getMessage());
+            log.warn("✗ ОШИБКА JS: " + e.getMessage());
             return false;
         }
     }
@@ -241,9 +245,9 @@ public class CryptoProPluginVerifier {
             String timestamp = String.valueOf(System.currentTimeMillis());
             String filename = "cryptopro_status_" + testName + "_" + timestamp;
             Selenide.screenshot(filename);
-            System.out.println("Скриншот сохранен: " + filename);
+            log.info("Скриншот сохранен: " + filename);
         } catch (Exception e) {
-            System.err.println("Не удалось сделать скриншот: " + e.getMessage());
+            log.warn("Не удалось сделать скриншот: " + e.getMessage());
         }
     }
 }

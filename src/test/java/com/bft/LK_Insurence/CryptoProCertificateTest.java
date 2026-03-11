@@ -9,8 +9,14 @@ import com.bft.strategy.TestStrategyManager;
 import com.bft.strategy.ExecutionStrategyType;
 import com.bft.test.retry.Retry;
 import com.bft.test.retry.RetryAnalyzer;
-import io.qameta.allure.*;
+import io.qameta.allure.Allure;
 import io.qameta.allure.AllureId;
+import io.qameta.allure.Description;
+import io.qameta.allure.Epic;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Severity;
+import io.qameta.allure.SeverityLevel;
+import io.qameta.allure.Story;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -153,22 +159,22 @@ public class CryptoProCertificateTest extends UITestBase {
 
         Allure.step("Нажимаем кнопку 'Подписать'", () -> {
             cryptoProPage.clickSignButton();
-            System.out.println("Кнопка 'Подписать' нажата");
+            logger.info("Кнопка 'Подписать' нажата");
         });
 
         Allure.step("Ожидаем диалог выбора сертификата", () -> {
             cryptoProPage.waitForCertificateDialog();
-            System.out.println("Диалог выбора сертификата обработан");
+            logger.info("Диалог выбора сертификата обработан");
         });
 
         Allure.step("Проверяем результат подписи", () -> {
             boolean hasSignatureResult = cryptoProPage.verifySignatureResult();
 
             if (hasSignatureResult) {
-                System.out.println("✓ Подпись успешно создана");
+                logger.info("✓ Подпись успешно создана");
                 cryptoProPage.takeScreenshot("signature_success");
             } else {
-                System.err.println("⚠ Не удалось определить результат подписи");
+                logger.warn("⚠ Не удалось определить результат подписи");
                 cryptoProPage.takeScreenshot("signature_unknown");
             }
         });
@@ -202,12 +208,12 @@ public class CryptoProCertificateTest extends UITestBase {
 
         Allure.step("Проверяем заголовок страницы", () -> {
             cryptoProPage.verifyPageTitle();
-            System.out.println("✓ Заголовок страницы найден");
+            logger.info("✓ Заголовок страницы найден");
         });
 
         Allure.step("Проверяем диагностическую информацию", () -> {
             cryptoProPage.verifyDiagnosticInfo();
-            System.out.println("✓ Диагностическая информация отображается");
+            logger.info("✓ Диагностическая информация отображается");
         });
 
         Allure.step("Проверяем все статусные элементы", () -> {
@@ -224,9 +230,9 @@ public class CryptoProCertificateTest extends UITestBase {
 
             try {
                 cryptoProPage.verifyStatusElements(statusSelectors);
-                System.out.println("✓ Все статусные элементы найдены");
+                logger.info("✓ Все статусные элементы найдены");
             } catch (RuntimeException e) {
-                System.err.println("✗ " + e.getMessage());
+                logger.warn("✗ " + e.getMessage());
                 softAssert.fail(e.getMessage());
             }
         });
@@ -266,7 +272,7 @@ public class CryptoProCertificateTest extends UITestBase {
             softAssert.assertTrue(result, "CryptoPro плагин должен быть успешно проверен через стратегию");
             softAssert.assertTrue(context.getDuration() < 60000, "Валидация должна выполниться менее чем за 60 секунд");
 
-            System.out.println("✓ Стратегия валидации выполнена успешно за " + context.getDuration() + " мс");
+            logger.info("✓ Стратегия валидации выполнена успешно за " + context.getDuration() + " мс");
         });
 
         softAssert.assertAll();
@@ -300,7 +306,7 @@ public class CryptoProCertificateTest extends UITestBase {
             softAssert.assertTrue(result, "Процесс подписи должен быть успешно выполнен");
             softAssert.assertTrue(context.getDuration() < 120000, "Подпись должна выполниться менее чем за 2 минуты");
 
-            System.out.println("✓ Стратегия подписи выполнена успешно за " + context.getDuration() + " мс");
+            logger.info("✓ Стратегия подписи выполнена успешно за " + context.getDuration() + " мс");
         });
 
         softAssert.assertAll();
@@ -328,7 +334,7 @@ public class CryptoProCertificateTest extends UITestBase {
 
         Allure.step("Проверяем только зеленую точку и текст", () -> {
             cryptoProPage.verifyExtensionLoaded();
-            System.out.println("✓ Расширение КриптоПРО успешно загружено");
+            logger.info("✓ Расширение КриптоПРО успешно загружено");
         });
 
         Allure.step("Делаем скриншот", () -> {
@@ -364,7 +370,7 @@ public class CryptoProCertificateTest extends UITestBase {
                 boolean hasWaitingStatus = cryptoProPage.hasWaitingStatuses();
 
                 if (hasWaitingStatus) {
-                    System.out.println("✓ Обнаружены статусы ожидания (как и ожидалось)");
+                    logger.info("✓ Обнаружены статусы ожидания (как и ожидалось)");
                     cryptoProPage.takeScreenshot("waiting_status_detected");
                 }
 
@@ -372,11 +378,11 @@ public class CryptoProCertificateTest extends UITestBase {
                 boolean hasGreenDot = cryptoProPage.hasGreenExtensionDot();
 
                 if (!hasGreenDot) {
-                    System.out.println("✓ Зеленой точки нет (плагин не загружен)");
+                    logger.info("✓ Зеленой точки нет (плагин не загружен)");
                 }
 
             } catch (Exception e) {
-                System.err.println("Ошибка при проверке негативного сценария: " + e.getMessage());
+                logger.warn("Ошибка при проверке негативного сценария: " + e.getMessage());
             }
         });
     }

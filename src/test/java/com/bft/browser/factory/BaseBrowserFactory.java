@@ -1,6 +1,8 @@
 package com.bft.browser.factory;
 
 import org.openqa.selenium.Capabilities;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
 import java.io.File;
@@ -12,6 +14,8 @@ import java.util.Base64;
  * Базовый класс для фабрик браузеров
  */
 public abstract class BaseBrowserFactory implements BrowserConfigFactory {
+
+    protected static final Logger log = LoggerFactory.getLogger(BaseBrowserFactory.class);
 
     protected final String cryptoProPath;
     protected final String cryptoProXpiPath;
@@ -110,19 +114,9 @@ public abstract class BaseBrowserFactory implements BrowserConfigFactory {
      * Выводит предупреждение с инструкцией при отсутствии файла расширения
      */
     protected void logMissingExtensionWarning(String path, String browser) {
-        System.err.println("╔══════════════════════════════════════════════════════════════╗");
-        System.err.println("║  ВНИМАНИЕ: Расширение КриптоПРО НЕ НАЙДЕНО для " + browser);
-        System.err.println("║  Ожидаемый путь: " + (path != null ? new File(path).getAbsolutePath() : "не задан"));
-        System.err.println("║");
-        System.err.println("║  Тесты КриптоПРО будут ПРОПУЩЕНЫ.");
-        System.err.println("║");
-        System.err.println("║  Как исправить:");
-        System.err.println("║  1. Скачайте расширение 'Extension for CAdES Browser Plug-in'");
-        System.err.println("║     из Chrome Web Store (ID: pfhgbfnnjiafkhfdkmpiflachepdcjod)");
-        System.err.println("║  2. Сохраните .crx файл в: src/test/resources/");
-        System.err.println("║  3. Или задайте env: CRYPTOPRO_PATH=<путь к .crx>");
-        System.err.println("║  4. Или задайте env: CRYPTOPRO_BASE64=<base64 расширения>");
-        System.err.println("╚══════════════════════════════════════════════════════════════╝");
+        log.warn("ВНИМАНИЕ: Расширение КриптоПРО НЕ НАЙДЕНО для {}. Ожидаемый путь: {}. Тесты КриптоПРО будут ПРОПУЩЕНЫ. " +
+                "Скачайте расширение из Chrome Web Store (ID: pfhgbfnnjiafkhfdkmpiflachepdcjod) или задайте CRYPTOPRO_PATH / CRYPTOPRO_BASE64.",
+                browser, path != null ? new File(path).getAbsolutePath() : "не задан");
     }
 
     /**
@@ -153,13 +147,12 @@ public abstract class BaseBrowserFactory implements BrowserConfigFactory {
         // Сначала проверяем переменную окружения CRYPTOPRO_BASE64
         String encodedFromEnv = System.getenv("CRYPTOPRO_BASE64");
         if (encodedFromEnv != null && !encodedFromEnv.isEmpty()) {
-            System.out.println("Используется расширение из переменной окружения CRYPTOPRO_BASE64");
+            log.info("Используется расширение из переменной окружения CRYPTOPRO_BASE64");
             return encodedFromEnv;
         }
 
-        // Если переменной нет, пытаемся закодировать файл
         if (!isExtensionFileExists(extensionPath)) {
-            System.err.println("Файл расширения не найден: " + extensionPath);
+            log.warn("Файл расширения не найден: {}", extensionPath);
             return null;
         }
 
@@ -167,11 +160,10 @@ public abstract class BaseBrowserFactory implements BrowserConfigFactory {
             File extensionFile = new File(extensionPath);
             byte[] fileContent = Files.readAllBytes(extensionFile.toPath());
             String base64Encoded = Base64.getEncoder().encodeToString(fileContent);
-            System.out.println("Расширение успешно закодировано в base64: " + extensionPath);
+            log.info("Расширение успешно закодировано в base64: {}", extensionPath);
             return base64Encoded;
         } catch (IOException e) {
-            System.err.println("Ошибка при кодировании расширения в base64: " + e.getMessage());
-            e.printStackTrace();
+            log.warn("Ошибка при кодировании расширения в base64: {}", e.getMessage());
             return null;
         }
     }

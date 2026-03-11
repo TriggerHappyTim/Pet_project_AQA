@@ -2,12 +2,16 @@ package com.bft.strategy;
 
 import com.bft.gui.CryptoProDemoPage;
 import com.bft.utils.CryptoProPluginVerifier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.testng.asserts.SoftAssert;
 
 /**
  * Стратегия валидации CryptoPro плагина через UI
  */
 public class CryptoProValidationStrategy extends BaseTestExecutionStrategy<Void> {
+
+    private static final Logger log = LoggerFactory.getLogger(CryptoProValidationStrategy.class);
 
     private CryptoProDemoPage cryptoProPage;
     private final boolean checkAllStatuses;
@@ -47,7 +51,7 @@ public class CryptoProValidationStrategy extends BaseTestExecutionStrategy<Void>
             cryptoProPage.openPage("CryptoPro Demo Page");
             context.setTestData("demo_page_opened");
         } catch (Exception e) {
-            System.err.println("Ошибка при подготовке CryptoProValidationStrategy: " + e.getMessage());
+            log.warn("Ошибка при подготовке CryptoProValidationStrategy: {}", e.getMessage());
             throw new RuntimeException("Не удалось подготовить тест: " + e.getMessage(), e);
         }
     }
@@ -90,7 +94,7 @@ public class CryptoProValidationStrategy extends BaseTestExecutionStrategy<Void>
                 }
             }
         } catch (Exception e) {
-            System.err.println("Ошибка при выполнении CryptoProValidationStrategy: " + e.getMessage());
+            log.warn("Ошибка при выполнении CryptoProValidationStrategy: {}", e.getMessage());
             context.setActualResult(false);
             throw new RuntimeException("Не удалось выполнить тест: " + e.getMessage(), e);
         }
@@ -133,7 +137,7 @@ public class CryptoProValidationStrategy extends BaseTestExecutionStrategy<Void>
                     "Проверка не должна занимать более 60 секунд, фактически: " + duration + "мс");
             }
         } catch (Exception e) {
-            System.err.println("Ошибка при валидации CryptoProValidationStrategy: " + e.getMessage());
+            log.warn("Ошибка при валидации CryptoProValidationStrategy: {}", e.getMessage());
             if (softAssert != null) {
                 softAssert.fail("Ошибка валидации: " + e.getMessage());
             }
@@ -148,13 +152,10 @@ public class CryptoProValidationStrategy extends BaseTestExecutionStrategy<Void>
             try {
                 cryptoProPage.takeScreenshot("cryptopro_validation_result");
             } catch (Exception e) {
-                // Логируем ошибки при cleanup, но не прерываем выполнение
-                System.err.println("Ошибка при cleanup CryptoProValidationStrategy: " + e.getMessage());
-                e.printStackTrace();
+                log.warn("Ошибка при cleanup CryptoProValidationStrategy: {}", e.getMessage());
             }
         } else {
-            // Логируем предупреждение, если страница не была инициализирована
-            System.out.println("Предупреждение: cryptoProPage равен null при cleanup, скриншот не будет создан");
+            log.debug("cryptoProPage равен null при cleanup, скриншот не будет создан");
         }
     }
 }

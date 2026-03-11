@@ -195,11 +195,9 @@ public class AllureAnnotationProcessor implements IInvokedMethodListener {
      */
     private void attachExecutionMetadata(ITestResult testResult) {
         try {
-            // Добавление времени выполнения
             long duration = testResult.getEndMillis() - testResult.getStartMillis();
             Allure.label("execution.duration", String.valueOf(duration));
-            
-            // Правильная обработка статусов тестов, включая пропущенные (skipped)
+
             String status;
             switch (testResult.getStatus()) {
                 case ITestResult.SUCCESS:
@@ -210,20 +208,18 @@ public class AllureAnnotationProcessor implements IInvokedMethodListener {
                     break;
                 case ITestResult.SKIP:
                     status = "skipped";
-                    // Убеждаемся, что пропущенные тесты также попадают в отчет
-                    Allure.label("skip.reason", testResult.getThrowable() != null ? 
-                        testResult.getThrowable().getMessage() : "Test was skipped");
+                    Throwable skipThrowable = testResult.getThrowable();
+                    String skipReason = (skipThrowable != null && skipThrowable.getMessage() != null) 
+                        ? skipThrowable.getMessage() : "Test was skipped";
+                    Allure.label("skip.reason", skipReason);
                     break;
                 default:
                     status = "unknown";
             }
             Allure.label("execution.status", status);
 
-            // Добавление информации о методе
             Method method = testResult.getMethod().getConstructorOrMethod().getMethod();
             Allure.label("method.signature", method.toString());
-
-            // Добавление информации о классе
             Allure.label("class.name", testResult.getTestClass().getName());
 
         } catch (Exception e) {

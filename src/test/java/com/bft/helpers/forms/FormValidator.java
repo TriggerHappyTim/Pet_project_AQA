@@ -15,13 +15,13 @@ public class FormValidator extends FormElements {
     }
 
     public void verifyInsurerBlockInCreationMode() {
-        softAssert.assertTrue(isElementEnabled(orgNameField, "Наименование организации"),
+        softAssert.assertTrue(isElementEnabled(getOrgNameField(), "Наименование организации"),
                 "Поле 'Полное или сокращенное наименование' должно быть доступно в режиме создания");
-        softAssert.assertTrue(isElementEnabled(pfrRegNumberField, "Рег. номер в ПФР"),
+        softAssert.assertTrue(isElementEnabled(getPfrRegNumberField(), "Рег. номер в ПФР"),
                 "Поле 'Рег. номер в ПФР' должно быть доступно в режиме создания");
-        softAssert.assertTrue(isElementEnabled(innField, "ИНН"),
+        softAssert.assertTrue(isElementEnabled(getInnField(), "ИНН"),
                 "Поле 'ИНН' должно быть доступно в режиме создания");
-        softAssert.assertTrue(isElementEnabled(kppField, "КПП"),
+        softAssert.assertTrue(isElementEnabled(getKppField(), "КПП"),
                 "Поле 'КПП' должно быть доступно в режиме создания");
     }
 
@@ -57,7 +57,7 @@ public class FormValidator extends FormElements {
 
     public void verifyFillingDateField() {
         String currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
-        String actualDate = getElementValue(fillingDateField, "Дата заполнения");
+        String actualDate = getElementValue(getFillingDateField(), "Дата заполнения");
         softAssert.assertEquals(actualDate, currentDate, "Дата заполнения должна быть текущей");
     }
 
@@ -68,31 +68,31 @@ public class FormValidator extends FormElements {
     }
 
     public void verifyCommonInfoBlock() {
-        softAssert.assertTrue(isElementEnabled(reportPeriodSelect, "Отчетный период"),
+        softAssert.assertTrue(isElementEnabled(getReportPeriodSelect(), "Отчетный период"),
                 "Поле 'Отчетный период' должно быть доступно");
-        softAssert.assertTrue(isElementEnabled(correctionNumberField, "Номер корректировки"),
+        softAssert.assertTrue(isElementEnabled(getCorrectionNumberField(), "Номер корректировки"),
                 "Поле 'Номер корректировки' должно быть доступно");
     }
 
     public void verifyInfoTypeBlock() {
-        softAssert.assertTrue(isElementEnabled(infoTypeSelect, "Тип сведений"),
+        softAssert.assertTrue(isElementEnabled(getInfoTypeSelect(), "Тип сведений"),
                 "Поле 'Тип сведений' должно быть доступно");
     }
 
     public void verifyReadMode() {
-        softAssert.assertTrue(isElementEnabled(signAndSendButton, "Подписать и отправить"),
+        softAssert.assertTrue(isElementEnabled(getSignAndSendButton(), "Подписать и отправить"),
                 "Кнопка 'Подписать и отправить' должна быть активна в режиме чтения");
         verifyFieldsAreDisabledInReadMode();
     }
 
     public void verifyFieldsAreDisabledInReadMode() {
-        softAssert.assertFalse(isElementEnabled(orgNameField, "Наименование организации"),
+        softAssert.assertFalse(isElementEnabled(getOrgNameField(), "Наименование организации"),
                 "Поле наименования должно быть недоступно в режиме чтения");
-        softAssert.assertFalse(isElementEnabled(pfrRegNumberField, "Рег. номер в ПФР"),
+        softAssert.assertFalse(isElementEnabled(getPfrRegNumberField(), "Рег. номер в ПФР"),
                 "Поле рег. номера должно быть недоступно в режиме чтения");
-        softAssert.assertFalse(isElementEnabled(innField, "ИНН"),
+        softAssert.assertFalse(isElementEnabled(getInnField(), "ИНН"),
                 "Поле ИНН должно быть недоступно в режиме чтения");
-        softAssert.assertFalse(isElementEnabled(kppField, "КПП"),
+        softAssert.assertFalse(isElementEnabled(getKppField(), "КПП"),
                 "Поле КПП должно быть недоступно в режиме чтения");
     }
 

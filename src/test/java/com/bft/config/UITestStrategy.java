@@ -3,6 +3,8 @@ package com.bft.config;
 import com.bft.browser.factory.BrowserConfigFactory;
 import com.bft.browser.factory.BrowserFactoryManager;
 import com.codeborne.selenide.Configuration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.codeborne.selenide.WebDriverRunner;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.MutableCapabilities;
@@ -46,6 +48,8 @@ import static com.codeborne.selenide.Selenide.open;
  * @since 1.0
  */
 public class UITestStrategy extends BaseTestStrategy {
+
+    private static final Logger log = LoggerFactory.getLogger(UITestStrategy.class);
 
     /**
      * Менеджер фабрик браузеров для создания и настройки браузеров
@@ -205,13 +209,13 @@ public class UITestStrategy extends BaseTestStrategy {
         try {
             // Инициализируем browserFactoryManager если он еще не инициализирован
             if (browserFactoryManager == null) {
-                System.out.println("Инициализация BrowserFactoryManager для браузера: " + browser);
+                log.info("Инициализация BrowserFactoryManager для браузера: " + browser);
                 browserFactoryManager = new BrowserFactoryManager(cryptoProPath, cryptoProXpiPath, isRemote);
             }
             
             // Инициализируем browserFactory если он еще не инициализирован
             if (browserFactory == null) {
-                System.out.println("Создание BrowserConfigFactory для браузера: " + browser);
+                log.info("Создание BrowserConfigFactory для браузера: " + browser);
                 browserFactory = browserFactoryManager.createFactory(browser);
                 
                 if (browserFactory == null) {
@@ -219,7 +223,6 @@ public class UITestStrategy extends BaseTestStrategy {
                 }
             }
             
-            // Получаем capabilities с проверкой на null
             Capabilities capabilities = browserFactory.getCapabilities();
             if (capabilities == null) {
                 throw new IllegalStateException("BrowserConfigFactory вернул null capabilities для браузера: " + browser);
@@ -237,12 +240,12 @@ public class UITestStrategy extends BaseTestStrategy {
             // Получаем имя браузера с проверкой на null
             String browserName = browserFactory.getBrowserName();
             if (browserName == null || browserName.isEmpty()) {
-                System.err.println("Предупреждение: BrowserConfigFactory вернул пустое имя браузера, используем значение из конфигурации: " + browser);
+                log.warn("Предупреждение: BrowserConfigFactory вернул пустое имя браузера, используем значение из конфигурации: " + browser);
                 browserName = browser;
             }
             Configuration.browser = browserName;
             
-            System.out.println("Браузер настроен: " + browserName + " (запрошен: " + browser + ")");
+            log.info("Браузер настроен: " + browserName + " (запрошен: " + browser + ")");
 
             // Настройки для удаленного запуска с Selenoid (videoName работает только с Selenoid)
             // Для стандартного Selenium Grid videoName не поддерживается и вызывает ошибку
@@ -250,15 +253,15 @@ public class UITestStrategy extends BaseTestStrategy {
             if (isRemote && remoteUrl.contains("selenoid")) {
                 Configuration.browserCapabilities.setCapability("videoName",
                         browser + "_" + System.currentTimeMillis() + ".mp4");
-                System.out.println("Настроена запись видео для удаленного запуска (Selenoid)");
+                log.info("Настроена запись видео для удаленного запуска (Selenoid)");
             }
 
         } catch (IllegalStateException e) {
-            System.err.println("Ошибка состояния при настройке браузера: " + e.getMessage());
+            log.warn("Ошибка состояния при настройке браузера: " + e.getMessage());
             throw new RuntimeException("Failed to configure browser: " + browser + ". " + e.getMessage(), e);
         } catch (Exception e) {
-            System.err.println("Неожиданная ошибка при настройке браузера: " + e.getMessage());
-            e.printStackTrace();
+            log.warn("Неожиданная ошибка при настройке браузера: " + e.getMessage());
+            log.debug("Ошибка настройки браузера", e);
             throw new RuntimeException("Failed to configure browser: " + browser, e);
         }
     }
@@ -330,12 +333,12 @@ public class UITestStrategy extends BaseTestStrategy {
             int exitCode = process.waitFor();
 
             if (exitCode == 0) {
-                System.out.println("Добавлен доверенный сайт: " + url);
+                log.info("Добавлен доверенный сайт: " + url);
             } else {
-                System.err.println("Не удалось добавить доверенный сайт: " + url);
+                log.warn("Не удалось добавить доверенный сайт: " + url);
             }
         } catch (Exception e) {
-            System.err.println("Ошибка добавления сайта в доверенные: " + e.getMessage());
+            log.warn("Ошибка добавления сайта в доверенные: " + e.getMessage());
         }
     }
 }
