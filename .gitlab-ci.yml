@@ -146,7 +146,13 @@ maven test:
           echo "LK_SCOPE: ЛК Архива — запуск только тестов архива"
           TEST_LIST="${ARCHIVE_TESTS}"
           MAVEN_PROFILE=""
+          if [ "${ENVIRONMENT_OVERRIDE}" = "test" ]; then
+            EVS_UI_TYPE_OVERRIDE="EVS_TEST_LKA"
+          else
+            EVS_UI_TYPE_OVERRIDE="EVS_UAT_LKA"
+          fi
         else
+          EVS_UI_TYPE_OVERRIDE=""
           if [ "${LK_SCOPE}" = "ЛК Страхователя" ]; then
             echo "LK_SCOPE: ЛК Страхователя — исключаем тесты архива"
             EXCLUDE_GROUPS="archive"
@@ -211,6 +217,10 @@ maven test:
         if [ -n "${EXCLUDE_GROUPS}" ]; then
           MVN="${MVN} -DexcludedGroups=${EXCLUDE_GROUPS}"
         fi
+        # Для ЛК Архива подставляем evs.ui.type=LKA (переопределяет профиль uat/test)
+        if [ -n "${EVS_UI_TYPE_OVERRIDE}" ]; then
+          MVN="${MVN} -Devs.ui.type=${EVS_UI_TYPE_OVERRIDE}"
+        fi
 
         KUBE_CMD="kubectl port-forward --kubeconfig=/tmp/"${ENVIRONMENT_OVERRIDE}"-user.yaml --namespace="
       elif [ -z "${HELM_NAMESPACE}" ]
@@ -226,7 +236,13 @@ maven test:
           echo "LK_SCOPE: ЛК Архива — запуск только тестов архива"
           TEST_LIST="${ARCHIVE_TESTS}"
           MAVEN_PROFILE=""
+          if [ "${ENVIRONMENT_OVERRIDE}" = "test" ]; then
+            EVS_UI_TYPE_OVERRIDE="EVS_TEST_LKA"
+          else
+            EVS_UI_TYPE_OVERRIDE="EVS_UAT_LKA"
+          fi
         else
+          EVS_UI_TYPE_OVERRIDE=""
           if [ "${LK_SCOPE}" = "ЛК Страхователя" ]; then
             echo "LK_SCOPE: ЛК Страхователя — исключаем тесты архива"
             EXCLUDE_GROUPS="archive"
@@ -293,6 +309,10 @@ maven test:
         # Исключаем группу archive для "ЛК Страхователя"
         if [ -n "${EXCLUDE_GROUPS}" ]; then
           MVN="${MVN} -DexcludedGroups=${EXCLUDE_GROUPS}"
+        fi
+        # Для ЛК Архива подставляем evs.ui.type=LKA (переопределяет профиль uat/test)
+        if [ -n "${EVS_UI_TYPE_OVERRIDE}" ]; then
+          MVN="${MVN} -Devs.ui.type=${EVS_UI_TYPE_OVERRIDE}"
         fi
 
         KUBE_CMD="kubectl port-forward --kubeconfig=/tmp/"${ENVIRONMENT_OVERRIDE}"-user.yaml --namespace="

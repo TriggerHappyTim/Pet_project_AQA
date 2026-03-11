@@ -1,6 +1,7 @@
 package com.bft.LK_Archive;
 
 import com.bft.test.base.UITestBase;
+import com.bft.enums.UIType;
 import com.bft.enums.UITypeSelector;
 import com.bft.steps.SzvReportsSteps;
 import io.qameta.allure.AllureId;
@@ -68,7 +69,7 @@ public class ArchivesTest extends UITestBase {
     public void addIspolnitel() {
         SzvReportsSteps steps = new SzvReportsSteps();
 
-        steps.authorizeArhivEVS(UITypeSelector.getSelectedUIType());
+        steps.authorizeArhivEVS(UITypeSelector.getSelectedUIType(UIType.EVS_UAT_LKA));
         steps.addPerformer();
         steps.fillPerformer();
         steps.searchPerformer();
@@ -84,7 +85,7 @@ public class ArchivesTest extends UITestBase {
     public void processRequestInEVS() {
         SzvReportsSteps steps = new SzvReportsSteps();
 
-        steps.authorizeArhivEVS(UITypeSelector.getSelectedUIType());
+        steps.authorizeArhivEVS(UITypeSelector.getSelectedUIType(UIType.EVS_UAT_LKA));
         steps.reestrZaprosov();
         steps.searchRequest1("ЗСПО-124-000000307");
         steps.assignPerformer();
@@ -106,7 +107,7 @@ public class ArchivesTest extends UITestBase {
     public void setRegisterRequests() {
         SzvReportsSteps steps = new SzvReportsSteps();
 
-        steps.authorizeArhivEVS(UITypeSelector.getSelectedUIType());
+        steps.authorizeArhivEVS(UITypeSelector.getSelectedUIType(UIType.EVS_UAT_LKA));
         steps.reestrZaprosov();
         steps.searchRequest1("ЗСПО-124-000000307");
         steps.assignPerformer();
@@ -146,6 +147,6 @@ public class ArchivesTest extends UITestBase {
 
         // --- Выход и переход в ЕВС ---
         steps.logOut();
-        steps.authorizeArhivEVS(UITypeSelector.getSelectedUIType());
+        steps.authorizeArhivEVS(UITypeSelector.getSelectedUIType(UIType.EVS_UAT_LKA));
     }
 }

@@ -5,6 +5,8 @@ public enum UIType {
     EVS_UAT("https://front-evs-service.uat.ecp/#/"),
     EVS_TEST_LKS("https://evs-oi-portal-front.test.ecp/insurer/"),
     EVS_UAT_LKS("https://ecp-test.sfr.gov.ru/insurer/#/"),
+    EVS_TEST_LKA("https://evs-oi-portal-front.test.ecp/archive/#/"),
+    EVS_UAT_LKA("https://ecp-test.sfr.gov.ru/archive/#/"),
     RPU("https://rpu-common-bo.test.ecp/"),
     RPU_TEST("https://portal.test.ecp/rpu/#/?location=rpu"),
     RPU_UAT("https://rpu-common-bo.uat.ecp/#/"),

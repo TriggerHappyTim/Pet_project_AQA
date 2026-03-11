@@ -83,7 +83,7 @@ public class SzvReportsSteps {
             throw new RuntimeException("Archive user credentials not available. Please set evs.user2.username and evs.user2.password environment variables.");
         }
 
-        String organization = credentialManager.getCredential("evs.user2.organization", "ОРГАНИЗАЦИЯ -2036470831");
+        String organization = credentialManager.getCredential("evs.user2.organization", "ОРГАНИЗАЦИЯ -1546025669");
         logger.info("Выполняем авторизацию в ЕВС через ЕПГУ для пользователя: {}", credentials.username);
 
         new LoginPage()
