@@ -1,0 +1,55 @@
+```
+# Dependencies
+target/
+.gradle/
+
+# Compiled files
+*.class
+*.jar
+*.war
+*.ear
+*.o
+*.obj
+*.so
+*.dll
+*.exe
+
+# Build artifacts
+build/
+dist/
+out/
+
+# IDE files
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+*.swp
+*.swo
+
+# Logs
+*.log
+
+# Environment
+.env
+.env.local
+*.env.*
+
+# Coverage
+coverage/
+htmlcov/
+.coverage
+
+# Temp files
+*.tmp
+*~
+.DS_Store
+Thumbs.db
+
+# Python (if mixed project)
+__pycache__/
+*.pyc
+*.pyo
+.Python
+```
