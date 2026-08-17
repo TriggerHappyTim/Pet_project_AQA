@@ -1,5 +1,6 @@
 package com.bft.helpers;
 
+import com.bft.enums.TimeoutConstants;
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.SelenideElement;
 import org.slf4j.Logger;
@@ -7,13 +8,13 @@ import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
 
-import static com.bft.constants.TimeoutConstants.*;
+import static com.bft.enums.TimeoutConstants.*;
 
 /**
  * Типовые ожидания для UI тестов
  * 
  * Предоставляет удобные методы для наиболее часто используемых ожиданий в UI тестах.
- * Использует константы из {@link com.bft.constants.TimeoutConstants} и Selenide Conditions
+ * Использует константы из {@link TimeoutConstants} и Selenide Conditions
  * для умного ожидания элементов.
  * 
  * <p>Основные возможности:
@@ -45,7 +46,7 @@ import static com.bft.constants.TimeoutConstants.*;
  * 
  * @author QA Automation Team
  * @version 2.0
- * @see com.bft.constants.TimeoutConstants для констант таймаутов
+ * @see TimeoutConstants для констант таймаутов
  * @see com.bft.ui.core.wait.WaitStrategies для более сложных стратегий ожидания
  * @since 2.0
  */
@@ -56,7 +57,7 @@ public class StandardWaits {
     /**
      * Ожидает видимости элемента
      * 
-     * Использует стандартный таймаут из {@link com.bft.constants.TimeoutConstants#DEFAULT_WAIT}.
+     * Использует стандартный таймаут из {@link TimeoutConstants#DEFAULT_WAIT}.
      * 
      * @param element Selenide элемент для ожидания
      * @throws com.codeborne.selenide.ex.ElementShould если элемент не стал видимым за таймаут

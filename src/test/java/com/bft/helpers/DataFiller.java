@@ -1,12 +1,14 @@
 package com.bft.helpers;
 
-import com.bft.helpers.forms.FormElements;
+/*import com.bft.helpers.forms.FormElements;*/
+import com.bft.helpers.forms.FormSelectors;
+import com.bft.ui.pages.BasePage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.testng.asserts.SoftAssert;
 
-public class DataFiller extends FormElements {
+public class DataFiller extends BasePage {
 
     public DataFiller(WebDriver driver, SoftAssert softAssert) {
         super(driver, softAssert);
@@ -17,6 +19,10 @@ public class DataFiller extends FormElements {
         fillField(getPfrRegNumberField(), pfrRegNumber, "Рег. номер в ПФР");
         fillField(getInnField(), inn, "ИНН");
         fillField(getKppField(), kpp, "КПП");
+    }
+
+    private WebElement getOrgNameField() {
+        return null;
     }
 
     public void fillOrgName(String orgName) {

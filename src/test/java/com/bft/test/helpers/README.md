@@ -200,19 +200,20 @@ try {
 ##### Ожидание видимости элемента
 
 ```java
-import com.bft.test.helpers.SmartWaits;
+
+
 import static com.codeborne.selenide.Selenide.$;
 
 // С использованием стандартного таймаута (10 секунд)
-SmartWaits.waitForElementVisible($(".submit-button"), "Кнопка 'Отправить'");
+SmartWaits.waitForElementVisible($(".submit-button"),"Кнопка 'Отправить'");
 
 // С кастомным таймаутом
-import com.bft.constants.TimeoutConstants;
+
 SmartWaits.waitForElementVisible(
-    $(".submit-button"), 
-    "Кнопка 'Отправить'",
-    TimeoutConstants.LONG_WAIT  // 30 секунд
-);
+        $(".submit-button"),
+        "Кнопка 'Отправить'",
+        TimeoutConstants.LONG_WAIT  // 30 секунд
+        );
 ```
 
 ##### Ожидание исчезновения элемента
@@ -287,7 +288,7 @@ SmartWaits.waitForAnimation(TimeoutConstants.ANIMATION_LONG);  // 2 секунд
 
 #### Использование констант таймаутов
 
-Все методы используют константы из `com.bft.constants.TimeoutConstants`:
+Все методы используют константы из `com.bft.enums.TimeoutConstants`:
 
 - `DEFAULT_WAIT` - 10 секунд (стандартный таймаут)
 - `SHORT_WAIT` - 3 секунды (быстрые операции)

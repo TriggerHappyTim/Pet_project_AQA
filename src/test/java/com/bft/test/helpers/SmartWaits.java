@@ -1,6 +1,6 @@
 package com.bft.test.helpers;
 
-import com.bft.constants.TimeoutConstants;
+import com.bft.enums.TimeoutConstants;
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.SelenideElement;
 import com.codeborne.selenide.WebDriverRunner;

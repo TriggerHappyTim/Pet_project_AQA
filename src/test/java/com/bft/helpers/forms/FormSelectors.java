@@ -2,7 +2,6 @@ package com.bft.helpers.forms;
 
 /**
  * Централизованное хранилище селекторов для форм.
- * Заменяет старый TestConfig.Selectors.
  */
 public final class FormSelectors {
 

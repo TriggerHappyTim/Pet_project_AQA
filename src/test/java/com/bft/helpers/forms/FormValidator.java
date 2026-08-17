@@ -1,102 +1,134 @@
 package com.bft.helpers.forms;
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.testng.asserts.SoftAssert;
+import com.bft.security.masking.SecureLogger;
+import com.codeborne.selenide.ElementsCollection;
+import com.codeborne.selenide.SelenideElement;
+import org.slf4j.Logger;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 
-public class FormValidator extends FormElements {
+import static com.codeborne.selenide.CollectionCondition.size;
+import static com.codeborne.selenide.CollectionCondition.sizeGreaterThan;
+import static com.codeborne.selenide.Condition.*;
+import static com.codeborne.selenide.Selenide.$;
+import static com.codeborne.selenide.Selenide.$$;
 
-    public FormValidator(WebDriver driver, SoftAssert softAssert) {
-        super(driver, softAssert);
-    }
+/**
+ * Валидатор форм отчётности на базе Selenide.
+ */
+public class FormValidator {
 
+    private static final Logger logger = (Logger) SecureLogger.getLogger(FormValidator.class);
+
+    // === Селекторы (замените на актуальные ID/CSS из вашего приложения) ===
+    private static final String ORG_NAME_ID = "orgName"; // Заменить на реальный ID
+    private static final String PFR_REG_ID = "pfrRegNumber";
+    private static final String INN_ID = "inn";
+    private static final String KPP_ID = "kpp";
+    private static final String FILLING_DATE_ID = "fillingDate";
+    private static final String REPORT_PERIOD_ID = "reportPeriod";
+    private static final String CORRECTION_NUMBER_ID = "correctionNumber";
+    private static final String INFO_TYPE_ID = "infoType";
+    private static final String INSURED_PERSONS_TAB_XPATH = "//a[contains(text(), 'ЗЛ')]"; // Пример
+    private static final String ADD_PERSON_BUTTON_ID = "addPersonBtn";
+    private static final String SAVE_BUTTON_ID = "saveBtn";
+    private static final String EDIT_BUTTON_ID = "editBtn";
+    private static final String SIGN_SEND_BUTTON_ID = "signSendBtn";
+
+    // Селектор для строк таблицы застрахованных лиц
+    private static final String PERSON_ROW_SELECTOR = "table tbody tr";
+
+    /**
+     * Проверка доступности полей блока страхователя в режиме создания.
+     */
     public void verifyInsurerBlockInCreationMode() {
-        softAssert.assertTrue(isElementEnabled(getOrgNameField(), "Наименование организации"),
-                "Поле 'Полное или сокращенное наименование' должно быть доступно в режиме создания");
-        softAssert.assertTrue(isElementEnabled(getPfrRegNumberField(), "Рег. номер в ПФР"),
-                "Поле 'Рег. номер в ПФР' должно быть доступно в режиме создания");
-        softAssert.assertTrue(isElementEnabled(getInnField(), "ИНН"),
-                "Поле 'ИНН' должно быть доступно в режиме создания");
-        softAssert.assertTrue(isElementEnabled(getKppField(), "КПП"),
-                "Поле 'КПП' должно быть доступно в режиме создания");
+        logger.info("Проверка полей страхователя в режиме создания");
+
+        $(ORG_NAME_ID).shouldBe(and("доступно и видно", visible, enabled));
+        $(PFR_REG_ID).shouldBe(and("доступно и видно", visible, enabled));
+        $(INN_ID).shouldBe(and("доступно и видно", visible, enabled));
+        $(KPP_ID).shouldBe(and("доступно и видно", visible, enabled));
     }
 
+    /**
+     * Проверка данных ЗЛ в таблице.
+     */
     public void verifyInsuredPersonData(InsuredPerson expectedPerson, int index) {
-        List<WebElement> persons = getInsuredPersonsList();
+        logger.info("Проверка данных ЗЛ №{}: {} {} {}", index + 1, expectedPerson.getLastName(), expectedPerson.getFirstName(), expectedPerson.getMiddleName());
 
-        if (persons.size() > index) {
-            WebElement personRow = persons.get(index);
-            String personText = personRow.getText();
+        ElementsCollection rows = $$(PERSON_ROW_SELECTOR);
 
-            softAssert.assertTrue(personText.contains(expectedPerson.getLastName()),
-                    String.format("Фамилия '%s' должна отображаться для ЗЛ №%d",
-                            expectedPerson.getLastName(), index + 1));
+        // Проверяем, что строк больше чем индекс
+        rows.shouldHave(sizeGreaterThan(index));
 
-            softAssert.assertTrue(personText.contains(expectedPerson.getFirstName()),
-                    String.format("Имя '%s' должно отображаться для ЗЛ №%d",
-                            expectedPerson.getFirstName(), index + 1));
+        SelenideElement row = rows.get(index);
+        String text = row.getText();
 
-            softAssert.assertTrue(personText.contains(expectedPerson.getMiddleName()),
-                    String.format("Отчество '%s' должно отображаться для ЗЛ №%d",
-                            expectedPerson.getMiddleName(), index + 1));
-        } else {
-            softAssert.fail(String.format("ЗЛ с индексом %d не найден в списке", index));
+        row.shouldHave(text(expectedPerson.getLastName()));
+        row.shouldHave(text(expectedPerson.getFirstName()));
+        // Отчество может отсутствовать, поэтому проверяем мягче, если нужно
+        if (expectedPerson.getMiddleName() != null && !expectedPerson.getMiddleName().isEmpty()) {
+            row.shouldHave(text(expectedPerson.getMiddleName()));
         }
     }
 
+    /**
+     * Проверка количества ЗЛ в списке.
+     */
     public void verifyInsuredPersonsCount(int expectedCount) {
-        List<WebElement> persons = getInsuredPersonsList();
-        softAssert.assertEquals(persons.size(), expectedCount,
-                String.format("Количество застрахованных лиц должно быть %d, но найдено %d",
-                        expectedCount, persons.size()));
+        logger.info("Проверка количества ЗЛ: ожидаемое {}", expectedCount);
+        $$(PERSON_ROW_SELECTOR).shouldHave(size(expectedCount));
     }
 
+    /**
+     * Проверка даты заполнения (должна быть текущей).
+     */
     public void verifyFillingDateField() {
         String currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
-        String actualDate = getElementValue(getFillingDateField(), "Дата заполнения");
-        softAssert.assertEquals(actualDate, currentDate, "Дата заполнения должна быть текущей");
+        logger.info("Проверка даты заполнения: ожидаемая {}", currentDate);
+
+        $(FILLING_DATE_ID).shouldBe(visible).shouldHave(value(currentDate));
     }
 
+    /**
+     * Проверка полей в режиме редактирования.
+     */
     public void verifyEditModeFields() {
+        logger.info("Проверка полей в режиме редактирования");
         verifyCommonInfoBlock();
         verifyInfoTypeBlock();
         verifyInsurerBlockInCreationMode();
     }
 
+    /**
+     * Проверка блока общей информации.
+     */
     public void verifyCommonInfoBlock() {
-        softAssert.assertTrue(isElementEnabled(getReportPeriodSelect(), "Отчетный период"),
-                "Поле 'Отчетный период' должно быть доступно");
-        softAssert.assertTrue(isElementEnabled(getCorrectionNumberField(), "Номер корректировки"),
-                "Поле 'Номер корректировки' должно быть доступно");
+        $(REPORT_PERIOD_ID).shouldBe(and("доступно", visible, enabled));
+        $(CORRECTION_NUMBER_ID).shouldBe(and("доступно", visible, enabled));
     }
 
+    /**
+     * Проверка блока типа сведений.
+     */
     public void verifyInfoTypeBlock() {
-        softAssert.assertTrue(isElementEnabled(getInfoTypeSelect(), "Тип сведений"),
-                "Поле 'Тип сведений' должно быть доступно");
+        $(INFO_TYPE_ID).shouldBe(and("доступно", visible, enabled));
     }
 
+    /**
+     * Проверка режима чтения (поля заблокированы, кнопка активна).
+     */
     public void verifyReadMode() {
-        softAssert.assertTrue(isElementEnabled(getSignAndSendButton(), "Подписать и отправить"),
-                "Кнопка 'Подписать и отправить' должна быть активна в режиме чтения");
-        verifyFieldsAreDisabledInReadMode();
-    }
+        logger.info("Проверка режима чтения");
 
-    public void verifyFieldsAreDisabledInReadMode() {
-        softAssert.assertFalse(isElementEnabled(getOrgNameField(), "Наименование организации"),
-                "Поле наименования должно быть недоступно в режиме чтения");
-        softAssert.assertFalse(isElementEnabled(getPfrRegNumberField(), "Рег. номер в ПФР"),
-                "Поле рег. номера должно быть недоступно в режиме чтения");
-        softAssert.assertFalse(isElementEnabled(getInnField(), "ИНН"),
-                "Поле ИНН должно быть недоступно в режиме чтения");
-        softAssert.assertFalse(isElementEnabled(getKppField(), "КПП"),
-                "Поле КПП должно быть недоступно в режиме чтения");
-    }
+        // Кнопка должна быть активна
+        $(SIGN_SEND_BUTTON_ID).shouldBe(and("активна", visible, enabled));
 
-    private List<WebElement> getInsuredPersonsList() {
-        return driver.findElements(By.cssSelector("table tbody tr"));
+        // Поля должны быть видимы, но НЕ активны (disabled/readonly)
+        $(ORG_NAME_ID).shouldBe(visible).shouldNotBe(enabled);
+        $(PFR_REG_ID).shouldBe(visible).shouldNotBe(enabled);
+        $(INN_ID).shouldBe(visible).shouldNotBe(enabled);
+        $(KPP_ID).shouldBe(visible).shouldNotBe(enabled);
     }
 }

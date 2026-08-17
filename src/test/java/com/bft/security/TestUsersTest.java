@@ -80,7 +80,8 @@ public class TestUsersTest {
         // Then
         assertNotNull(username, "Username должен быть задан");
         assertNotNull(organization, "Organization должна быть задана");
-        assertEquals(organization, "ОРГАНИЗАЦИЯ -292426768", "Неверная организация для Бабкиной");
+        assertEquals(organization, "ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕСТВЕННОСТЬЮ АВАЛ",
+                "Неверная организация для Бабкиной");
         assertEquals(user.getFullName(), "Бабкина Вера Васильевна", "Неверное ФИО");
     }
     

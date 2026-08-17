@@ -3,48 +3,34 @@ package com.bft.config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+
 /**
- * Конфигурационные данные для тестового окружения
- * 
- * Инкапсулирует все настройки, необходимые для выполнения тестов:
- * - Настройки браузера (тип, версия, headless режим)
- * - Пути к расширениям КриптоПРО
- * - Параметры окружения (dev, test, uat, prod)
- * - Настройки удаленного запуска (Selenium Grid, VNC, Video)
- * 
- * <p>Конфигурация загружается из системных свойств и переменных окружения
- * с приоритетом: системные свойства > переменные окружения > значения по умолчанию.
- * 
- * <p>Пример использования:
- * <pre>{@code
- * // Создание конфигурации с настройками по умолчанию
- * TestConfig config = new TestConfig();
- * 
- * // Программная настройка через fluent API
- * TestConfig customConfig = new TestConfig()
- *     .setBrowser("chrome")
- *     .setHeadless(true)
- *     .setEnvironment("uat");
- * 
- * // Использование в TestConfiguration
- * TestConfiguration.initialize(customConfig);
- * }</pre>
- * 
- * @author QA Automation Team
- * @version 2.0
- * @see TestConfiguration для инициализации с использованием TestConfig
- * @see TestContext для хранения конфигурации в контексте тестов
- * @since 1.0
+ * Конфигурационные данные для тестового окружения.
+ * Инкапсулирует все настройки, необходимые для выполнения тестов.
+ *
+ * <p>Приоритет загрузки настроек:
+ * 1. Системные свойства ({@code -Dproperty=value})
+ * 2. Переменные окружения
+ * 3. Значения по умолчанию
  */
 public class TestConfig {
 
     private static final Logger log = LoggerFactory.getLogger(TestConfig.class);
+
+    // Допустимые значения для окружения и браузеров
+    private static final List<String> VALID_ENVIRONMENTS = Arrays.asList("dev", "test", "uat", "prod", "int");
+    private static final List<String> VALID_BROWSERS = Arrays.asList("chrome", "firefox", "yandex", "edge");
 
     // Browser settings
     private String browser;
     private String browserVersion;
     private boolean headless;
     private boolean remote;
+    private String remoteUrl;
 
     // Paths
     private String cryptoProPath;
@@ -55,256 +41,191 @@ public class TestConfig {
     private String testSuite;
 
     // Remote settings
-    private String remoteUrl;
     private boolean enableVNC;
     private boolean enableVideo;
 
     /**
-     * Создает новую конфигурацию с настройками по умолчанию
-     * 
+     * Создает новую конфигурацию с настройками по умолчанию.
      * Загружает значения из системных свойств и переменных окружения.
-     * Если значение не найдено, используются значения по умолчанию:
-     * - Браузер: "chrome"
-     * - Headless: false
-     * - Окружение: "dev"
-     * - Test Suite: "smoke"
-     * 
-     * <p>Поддерживаемые системные свойства:
-     * <ul>
-     *   <li>selenide.browser - тип браузера</li>
-     *   <li>selenide.browserVersion - версия браузера</li>
-     *   <li>selenide.headless - режим headless (true/false)</li>
-     *   <li>selenide.remote - URL удаленного Selenium сервера</li>
-     *   <li>environment - окружение (dev, test, uat, prod)</li>
-     *   <li>suiteXmlFileName - название тестового suite</li>
-     * </ul>
-     * 
-     * <p>Поддерживаемые переменные окружения:
-     * <ul>
-     *   <li>BROWSER - тип браузера</li>
-     *   <li>BROWSER_VERSION - версия браузера</li>
-     *   <li>HEADLESS - режим headless</li>
-     *   <li>SELENIDE_REMOTE - URL удаленного сервера</li>
-     *   <li>ENVIRONMENT - окружение</li>
-     *   <li>TEST_SUITE - название suite</li>
-     *   <li>CRYPTOPRO_PATH - путь к расширению КриптоПРО</li>
-     *   <li>ENABLE_VNC - включить VNC для удаленного запуска</li>
-     *   <li>ENABLE_VIDEO - включить запись видео</li>
-     * </ul>
      */
     public TestConfig() {
-        // Default values from system properties and environment variables
-        this.browser = System.getProperty("selenide.browser",
-                System.getenv().getOrDefault("BROWSER", "chrome"));
-        this.browserVersion = System.getProperty("selenide.browserVersion",
-                System.getenv().getOrDefault("BROWSER_VERSION", null));
-        this.headless = Boolean.parseBoolean(System.getProperty("selenide.headless",
-                System.getenv().getOrDefault("HEADLESS", "false")));
-        // Only consider remote if there's an actual remote URL configured
-        String remoteUrl = System.getProperty("selenide.remote",
-                System.getenv().getOrDefault("SELENIDE_REMOTE", null));
-        this.remote = remoteUrl != null && !remoteUrl.trim().isEmpty();
+        // --- Browser Settings ---
+        this.browser = getSystemOrEnvProperty("selenide.browser", "BROWSER", "chrome");
+        this.browserVersion = getSystemOrEnvProperty("selenide.browserVersion", "BROWSER_VERSION", null);
+        this.headless = Boolean.parseBoolean(
+                getSystemOrEnvProperty("selenide.headless", "HEADLESS", "false")
+        );
 
-        // CryptoPro paths
-        this.cryptoProPath = System.getenv().getOrDefault("CRYPTOPRO_PATH",
-                "src/test/resources/CryptoPro Chrome 1.2.13.0.crx");
-        this.cryptoProXpiPath = System.getenv().getOrDefault("CRYPTOPRO_XPI_PATH",
-                "src/test/resources/cryptopro.ru.xpi");
+        String rUrl = getSystemOrEnvProperty("selenide.remote", "SELENIDE_REMOTE", null);
+        this.remote = rUrl != null && !rUrl.trim().isEmpty();
+        this.remoteUrl = rUrl;
 
-        if (!new java.io.File(this.cryptoProPath).exists() &&
-            !new java.io.File(this.cryptoProXpiPath).exists() &&
-            (System.getenv("CRYPTOPRO_BASE64") == null || System.getenv("CRYPTOPRO_BASE64").isEmpty())) {
-            log.warn("[TestConfig] Расширение КриптоПРО не найдено. Задайте CRYPTOPRO_PATH, CRYPTOPRO_XPI_PATH или CRYPTOPRO_BASE64. Тесты группы 'crypto' будут пропущены.");
+        // --- CryptoPro Paths ---
+        // Пути по умолчанию, если не заданы
+        String defaultCrx = "src/test/resources/CryptoPro Chrome 1.2.13.0.crx";
+        String defaultXpi = "src/test/resources/cryptopro.ru.xpi";
+
+        this.cryptoProPath = getSystemOrEnvProperty(null, "CRYPTOPRO_PATH", defaultCrx);
+        this.cryptoProXpiPath = getSystemOrEnvProperty(null, "CRYPTOPRO_XPI_PATH", defaultXpi);
+
+        // --- Environment ---
+        String env = getSystemOrEnvProperty("environment", "ENVIRONMENT", "dev");
+        if (!VALID_ENVIRONMENTS.contains(env.toLowerCase())) {
+            log.warn("Неизвестное окружение '{}'. Используется 'dev'. Допустимые: {}", env, VALID_ENVIRONMENTS);
+            this.environment = "dev";
+        } else {
+            this.environment = env;
         }
 
-        // Environment settings
-        this.environment = System.getProperty("environment",
-                System.getenv().getOrDefault("ENVIRONMENT", "dev"));
-        this.testSuite = System.getProperty("suiteXmlFileName",
-                System.getenv().getOrDefault("TEST_SUITE", "smoke"));
+        this.testSuite = getSystemOrEnvProperty("suiteXmlFileName", "TEST_SUITE", "smoke");
 
-        // Remote settings
-        this.remoteUrl = System.getProperty("selenide.remote",
-                System.getenv().getOrDefault("SELENIDE_REMOTE", null));
-        this.enableVNC = Boolean.parseBoolean(System.getenv().getOrDefault("ENABLE_VNC", "true"));
-        this.enableVideo = Boolean.parseBoolean(System.getenv().getOrDefault("ENABLE_VIDEO", "false"));
+        // --- Remote Settings ---
+        this.enableVNC = Boolean.parseBoolean(
+                getSystemOrEnvProperty(null, "ENABLE_VNC", "true")
+        );
+        this.enableVideo = Boolean.parseBoolean(
+                getSystemOrEnvProperty(null, "ENABLE_VIDEO", "false")
+        );
+
+        // --- Validation & Logging ---
+        validateAndLog();
     }
 
-    // Getters
-    
     /**
-     * Возвращает тип браузера для тестов
-     * 
-     * @return название браузера (например, "chrome", "firefox", "yandex")
+     * Вспомогательный метод для получения свойства: System Property -> Env Variable -> Default.
      */
+    private String getSystemOrEnvProperty(String sysPropKey, String envVarKey, String defaultValue) {
+        String value = null;
+        if (sysPropKey != null) {
+            value = System.getProperty(sysPropKey);
+        }
+        if (value == null || value.isEmpty()) {
+            value = System.getenv(envVarKey);
+        }
+        return (value != null && !value.isEmpty()) ? value : defaultValue;
+    }
+
+    /**
+     * Валидация критических настроек и логирование конфигурации.
+     */
+    private void validateAndLog() {
+        if (!VALID_BROWSERS.contains(browser.toLowerCase())) {
+            log.warn("Неподдерживаемый браузер '{}'. Будет использован как есть, но возможны ошибки.", browser);
+        }
+
+        // Проверка наличия расширения только если не задан BASE64
+        String base64Extension = System.getenv("CRYPTOPRO_BASE64");
+        if (base64Extension == null || base64Extension.isEmpty()) {
+            boolean crxExists = new File(cryptoProPath).exists();
+            boolean xpiExists = new File(cryptoProXpiPath).exists();
+
+            if (!crxExists && !xpiExists) {
+                log.warn("Файлы расширений КриптоПРО не найдены ни по пути CRX ({}), ни по пути XPI ({}). " +
+                        "Убедитесь, что путь верен, или задайте переменную CRYPTOPRO_BASE64.", cryptoProPath, cryptoProXpiPath);
+            } else {
+                log.debug("Расширение КриптоПРО найдено: CRX={}, XPI={}", crxExists, xpiExists);
+            }
+        } else {
+            log.info("Обнаружена переменная CRYPTOPRO_BASE64 (длина: {} симв.). Проверка файлов расширения пропускается.", base64Extension.length());
+        }
+
+        log.info("Конфигурация тестов инициализирована: Browser={}, Env={}, Remote={}", browser, environment, remote);
+        if (remote) {
+            log.info("Remote URL: {}", remoteUrl);
+        }
+    }
+
+    // ================= Getters =================
+
     public String getBrowser() { return browser; }
-    
-    /**
-     * Возвращает версию браузера
-     * 
-     * @return версия браузера или null если не указана
-     */
     public String getBrowserVersion() { return browserVersion; }
-    
-    /**
-     * Проверяет, включен ли headless режим
-     * 
-     * @return true если браузер запускается в headless режиме, false в противном случае
-     */
     public boolean isHeadless() { return headless; }
-    
-    /**
-     * Проверяет, используется ли удаленный Selenium сервер
-     * 
-     * @return true если указан URL удаленного сервера, false для локального запуска
-     */
     public boolean isRemote() { return remote; }
-    
-    /**
-     * Возвращает путь к расширению КриптоПРО для Chrome
-     * 
-     * @return абсолютный или относительный путь к .crx файлу
-     */
-    public String getCryptoProPath() { return cryptoProPath; }
-    
-    /**
-     * Возвращает путь к расширению КриптоПРО для Firefox
-     * 
-     * @return абсолютный или относительный путь к .xpi файлу
-     */
-    public String getCryptoProXpiPath() { return cryptoProXpiPath; }
-    
-    /**
-     * Возвращает название окружения
-     * 
-     * @return окружение (dev, test, uat, prod)
-     */
-    public String getEnvironment() { return environment; }
-    
-    /**
-     * Возвращает название тестового suite
-     * 
-     * @return название suite (smoke, regression, sanity и т.д.)
-     */
-    public String getTestSuite() { return testSuite; }
-    
-    /**
-     * Возвращает URL удаленного Selenium сервера
-     * 
-     * @return URL сервера или null если используется локальный запуск
-     */
     public String getRemoteUrl() { return remoteUrl; }
-    
-    /**
-     * Проверяет, включен ли VNC для удаленного запуска
-     * 
-     * @return true если VNC включен, false в противном случае
-     */
+    public String getCryptoProPath() { return cryptoProPath; }
+    public String getCryptoProXpiPath() { return cryptoProXpiPath; }
+    public String getEnvironment() { return environment; }
+    public String getTestSuite() { return testSuite; }
     public boolean isEnableVNC() { return enableVNC; }
-    
-    /**
-     * Проверяет, включена ли запись видео для удаленного запуска
-     * 
-     * @return true если запись видео включена, false в противном случае
-     */
     public boolean isEnableVideo() { return enableVideo; }
 
-    // Setters for programmatic configuration
-    
-    /**
-     * Устанавливает тип браузера для тестов
-     * 
-     * @param browser название браузера (chrome, firefox, yandex и т.д.)
-     * @return текущий экземпляр TestConfig для цепочки вызовов (fluent API)
-     */
+    // ================= Setters (Fluent API) =================
+
     public TestConfig setBrowser(String browser) {
-        this.browser = browser;
+        this.browser = Objects.requireNonNull(browser, "Browser cannot be null");
         return this;
     }
 
-    /**
-     * Устанавливает версию браузера
-     * 
-     * @param browserVersion версия браузера (например, "120", "latest")
-     * @return текущий экземпляр TestConfig для цепочки вызовов (fluent API)
-     */
     public TestConfig setBrowserVersion(String browserVersion) {
         this.browserVersion = browserVersion;
         return this;
     }
 
-    /**
-     * Устанавливает headless режим
-     * 
-     * @param headless true для запуска браузера без GUI, false для обычного режима
-     * @return текущий экземпляр TestConfig для цепочки вызовов (fluent API)
-     */
     public TestConfig setHeadless(boolean headless) {
         this.headless = headless;
         return this;
     }
 
-    /**
-     * Устанавливает использование удаленного Selenium сервера
-     * 
-     * @param remote true для использования удаленного сервера, false для локального запуска
-     * @return текущий экземпляр TestConfig для цепочки вызовов (fluent API)
-     */
     public TestConfig setRemote(boolean remote) {
         this.remote = remote;
+        if (!remote) {
+            this.remoteUrl = null;
+        }
         return this;
     }
 
-    /**
-     * Устанавливает путь к расширению КриптоПРО для Chrome
-     * 
-     * @param cryptoProPath абсолютный или относительный путь к .crx файлу
-     * @return текущий экземпляр TestConfig для цепочки вызовов (fluent API)
-     */
+    public TestConfig setRemoteUrl(String remoteUrl) {
+        this.remoteUrl = remoteUrl;
+        this.remote = (remoteUrl != null && !remoteUrl.trim().isEmpty());
+        return this;
+    }
+
     public TestConfig setCryptoProPath(String cryptoProPath) {
         this.cryptoProPath = cryptoProPath;
         return this;
     }
 
-    /**
-     * Устанавливает окружение для тестов
-     * 
-     * @param environment название окружения (dev, test, uat, prod)
-     * @return текущий экземпляр TestConfig для цепочки вызовов (fluent API)
-     */
-    public TestConfig setEnvironment(String environment) {
-        this.environment = environment;
+    public TestConfig setCryptoProXpiPath(String cryptoProXpiPath) {
+        this.cryptoProXpiPath = cryptoProXpiPath;
         return this;
     }
 
-    /**
-     * Устанавливает название тестового suite
-     * 
-     * @param testSuite название suite (smoke, regression, sanity и т.д.)
-     * @return текущий экземпляр TestConfig для цепочки вызовов (fluent API)
-     */
+    public TestConfig setEnvironment(String environment) {
+        if (environment != null && !VALID_ENVIRONMENTS.contains(environment.toLowerCase())) {
+            log.warn("Попытка установить недопустимое окружение: {}. Будет использовано 'dev'.", environment);
+            this.environment = "dev";
+        } else {
+            this.environment = environment;
+        }
+        return this;
+    }
+
     public TestConfig setTestSuite(String testSuite) {
         this.testSuite = testSuite;
         return this;
     }
 
-    /**
-     * Возвращает строковое представление конфигурации
-     * 
-     * Используется для логирования и отладки. Включает основные параметры:
-     * браузер, версию, режим headless, удаленный запуск, окружение и suite.
-     * 
-     * @return строковое представление конфигурации
-     */
+    public TestConfig setEnableVNC(boolean enableVNC) {
+        this.enableVNC = enableVNC;
+        return this;
+    }
+
+    public TestConfig setEnableVideo(boolean enableVideo) {
+        this.enableVideo = enableVideo;
+        return this;
+    }
+
     @Override
     public String toString() {
         return "TestConfig{" +
                 "browser='" + browser + '\'' +
-                ", browserVersion='" + browserVersion + '\'' +
+                ", version='" + browserVersion + '\'' +
                 ", headless=" + headless +
                 ", remote=" + remote +
-                ", environment='" + environment + '\'' +
-                ", testSuite='" + testSuite + '\'' +
+                ", env='" + environment + '\'' +
+                ", suite='" + testSuite + '\'' +
+                ", vnc=" + enableVNC +
+                ", video=" + enableVideo +
                 '}';
     }
 }

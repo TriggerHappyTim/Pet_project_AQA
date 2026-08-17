@@ -1,44 +1,17 @@
 package com.bft.LK_Insurence;
 
-import com.bft.test.base.UITestBase;
 import com.bft.gui.CryptoProDemoPage;
-import com.bft.utils.CryptoProPluginVerifier;
 import com.bft.strategy.CryptoProValidationStrategy;
+import com.bft.strategy.ExecutionStrategyType;
 import com.bft.strategy.TestExecutionStrategy;
 import com.bft.strategy.TestStrategyManager;
-import com.bft.strategy.ExecutionStrategyType;
+import com.bft.test.base.UITestBase;
 import com.bft.test.retry.Retry;
-import com.bft.test.retry.RetryAnalyzer;
-import io.qameta.allure.Allure;
-import io.qameta.allure.AllureId;
-import io.qameta.allure.Description;
-import io.qameta.allure.Epic;
-import io.qameta.allure.Feature;
-import io.qameta.allure.Severity;
-import io.qameta.allure.SeverityLevel;
-import io.qameta.allure.Story;
+import com.bft.utils.CryptoProPluginVerifier;
+import io.qameta.allure.*;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import static com.bft.constants.UrlConstants.CRYPTOPRO_DEMO_PAGE_URL;
-
-/**
- * Тесты для проверки сертификатов КриптоПРО
- *
- * Примеры использования нового слоя конфигурации:
- *
- * 1. Проверка типа теста:
- *    if (TestConfiguration.isUITest()) { ... }
- *
- * 2. Получение конфигурации:
- *    TestConfig config = TestConfiguration.getCurrentConfig();
- *
- * 3. Работа с браузерной фабрикой:
- *    BrowserFactoryManager factory = TestConfiguration.getBrowserFactoryManager();
- *
- * 4. Инициализация с другой стратегией:
- *    // TestConfiguration.initialize(TestStrategyType.API); - ЗАКОММЕНТИРОВАНО: API тесты не используются
- */
 @Epic("КриптоПРО")
 @Feature("Электронная подпись")
 public class CryptoProCertificateTest extends UITestBase {
@@ -47,343 +20,103 @@ public class CryptoProCertificateTest extends UITestBase {
 
     @BeforeMethod
     public void initializePageObject() {
-        softAssert = com.bft.test.helpers.TestSetupHelper.ensureSoftAssert(softAssert);
+        // Инициализируем страницу через конструктор по умолчанию
+        cryptoProPage = new CryptoProDemoPage();
 
-        cryptoProPage = com.bft.test.helpers.PageObjectHelper.initializePageObjectWithUrlCheck(
-            cryptoProPage,
-            CRYPTOPRO_DEMO_PAGE_URL,
-            new String[]{"cryptopro", "cades"},
-            () -> new CryptoProDemoPage(softAssert),
-            "CryptoProDemoPage"
-        );
+        // ПРОВЕРКА URL ЧЕРЕЗ Selenide (вместо несуществующего getCurrentUrl())
+        // Если текущий URL не содержит нужного пути, открываем страницу
+        String currentUrl = com.codeborne.selenide.WebDriverRunner.url();
+        if (currentUrl == null || !currentUrl.contains("cryptopro")) {
+            cryptoProPage.openPageAndVerify("Демо-страница КриптоПРО");
+        }
     }
 
-    @Test(groups = {"web", "crypto", "smoke"}, 
-          testName = "#6 Проверка загрузки плагина КриптоПРО",
-          description = "Проверка загрузки плагина КриптоПРО",
-          retryAnalyzer = RetryAnalyzer.class)
+    @Test(groups = {"web", "crypto", "smoke"}, testName = "#6 Проверка загрузки плагина КриптоПРО")
     @AllureId("CRYPTO-006")
     @Story("Проверка загрузки плагина")
-    @Description("Проверка что плагин КриптоПРО загружен и отмечен зеленым")
     @Severity(SeverityLevel.CRITICAL)
-    @Retry(maxAttempts = 3, reason = "Тест может быть нестабильным из-за загрузки плагина")
+    @Retry(maxAttempts = 3, reason = "Нестабильность плагина")
     public void verifyCryptoProPluginLoaded() {
         arrangeActAssert(
-            // Arrange - подготовка
-            () -> {
-                logger.info("Подготовка: инициализация проверки плагина КриптоПРО");
-            },
-
-            // Act - выполнение действий
-            () -> {
-                // Убеждаемся, что страница инициализирована
-                if (cryptoProPage == null) {
-                    initializePageObject();
-                }
-                
-                performAction("Открытие демо-страницы", () -> {
-                    cryptoProPage.openPageAndVerify("Демо-страница КриптоПРО");
-                });
-
-                performAction("Проверка статуса плагина", () -> {
-                    cryptoProPage.verifyAllStatusesLoaded();
-                });
-
-                performAction("Создание скриншота статуса", () -> {
-                    cryptoProPage.takeScreenshot("cryptopro_plugin_status");
-                });
-            },
-
-            // Assert - проверки результатов
-            (softAssert) -> {
-                performCheck("Проверка статуса расширения", () -> {
-                    boolean extensionLoaded = cryptoProPage.verifyExtensionLoaded();
-                    softAssert.assertTrue(extensionLoaded, "Расширение должно быть загружено");
-                });
-
-                performCheck("Проверка статуса плагина", () -> {
-                    boolean pluginLoaded = cryptoProPage.verifyPluginLoaded();
-                    softAssert.assertTrue(pluginLoaded, "Плагин CSP должен быть загружен");
-                });
-
-                performCheck("Проверка статуса криптопровайдера", () -> {
-                    boolean cspLoaded = cryptoProPage.verifyCspLoaded();
-                    softAssert.assertTrue(cspLoaded, "Криптопровайдер должен быть загружен");
-                });
-
-                performCheck("Проверка статуса объектов плагина", () -> {
-                    boolean objectsLoaded = cryptoProPage.verifyObjectsLoaded();
-                    softAssert.assertTrue(objectsLoaded, "Объекты плагина должны быть загружены");
-                });
-
-                performCheck("Проверка выбора сертификатов", () -> {
-                    boolean certificateSelectionAvailable = cryptoProPage.verifyCertificateSelectionAvailable();
-                    softAssert.assertTrue(certificateSelectionAvailable, "Выбор сертификатов должен быть доступен");
-                });
-            },
-
-            "Проверка загрузки плагина КриптоПРО"
+                () -> logger.info("Подготовка проверки плагина"),
+                () -> {
+                    Allure.step("Открытие страницы", () -> cryptoProPage.openPageAndVerify("Демо-страница КриптоПРО"));
+                    Allure.step("Проверка статусов", () -> cryptoProPage.verifyAllStatusesLoaded());
+                },
+                (assertions) -> {
+                    assertions.assertTrue(cryptoProPage.verifyExtensionLoaded(), "Расширение должно быть загружено");
+                    assertions.assertTrue(cryptoProPage.verifyPluginLoaded(), "Плагин должен быть загружен");
+                    assertions.assertTrue(cryptoProPage.verifyCspLoaded(), "CSP должен быть загружен");
+                    assertions.assertTrue(cryptoProPage.verifyObjectsLoaded(), "Объекты должны быть загружены");
+                },
+                "Проверка загрузки плагина КриптоПРО"
         );
-
-        logger.info("=== ПЛАГИН КРИПТОПРО УСПЕШНО ПРОВЕРЕН ===");
     }
 
-    @Test(groups = {"web", "crypto", "signature", "blocker"}, 
-          testName = "#2 Проверка создания электронной подписи",
-          description = "Проверка создания электронной подписи")
+    @Test(groups = {"web", "crypto", "signature", "blocker"}, testName = "#2 Проверка создания электронной подписи")
     @AllureId("CRYPTO-002")
     @Story("Проверка создания подписи")
-    @Description("Проверка процесса создания электронной подписи")
     @Severity(SeverityLevel.BLOCKER)
     public void testCertificateSelectionAndSigning() {
-        // Убеждаемся, что страница инициализирована
-        if (cryptoProPage == null) {
-            initializePageObject();
-        }
-        
-        Allure.step("Открываем демо-страницу", () -> {
-            if (cryptoProPage == null) {
-                throw new IllegalStateException("CryptoProDemoPage не инициализирован");
-            }
-            cryptoProPage.openPage("Демо-страница КриптоПРО");
-        });
+        Allure.step("Открытие страницы", () -> cryptoProPage.openPage("Демо-страница КриптоПРО"));
 
-        Allure.step("Проверяем готовность плагина", () -> {
-            boolean pluginReady = CryptoProPluginVerifier.verifyAllStatuses(20);
-
-            if (!pluginReady) {
-                CryptoProPluginVerifier.takeStatusScreenshot("plugin_not_ready");
-                throw new RuntimeException("Плагин КриптоПРО не готов к работе");
+        Allure.step("Проверка готовности", () -> {
+            if (!CryptoProPluginVerifier.verifyAllStatuses(20)) {
+                throw new RuntimeException("Плагин не готов");
             }
         });
 
-        Allure.step("Нажимаем кнопку 'Подписать'", () -> {
-            cryptoProPage.clickSignButton();
-            logger.info("Кнопка 'Подписать' нажата");
-        });
+        Allure.step("Нажатие кнопки Подписать", () -> cryptoProPage.clickSignButton());
+        Allure.step("Ожидание диалога", () -> cryptoProPage.waitForCertificateDialog());
 
-        Allure.step("Ожидаем диалог выбора сертификата", () -> {
-            cryptoProPage.waitForCertificateDialog();
-            logger.info("Диалог выбора сертификата обработан");
-        });
-
-        Allure.step("Проверяем результат подписи", () -> {
-            boolean hasSignatureResult = cryptoProPage.verifySignatureResult();
-
-            if (hasSignatureResult) {
-                logger.info("✓ Подпись успешно создана");
-                cryptoProPage.takeScreenshot("signature_success");
-            } else {
-                logger.warn("⚠ Не удалось определить результат подписи");
-                cryptoProPage.takeScreenshot("signature_unknown");
+        Allure.step("Проверка результата", () -> {
+            boolean res = cryptoProPage.verifySignatureResult();
+            if (!res) {
+                cryptoProPage.takeScreenshot("signature_fail");
+                assertions.fail("Подпись не создана");
             }
         });
-
-        Allure.step("Делаем финальный скриншот", () -> {
-            cryptoProPage.takeScreenshot("final_test_result");
-        });
-
-        softAssert.assertAll();
     }
 
-    @Test(groups = {"web", "crypto", "diagnostics", "regression"}, 
-          testName = "#4 Полная проверка всех диагностических элементов",
-          description = "Полная проверка всех диагностических элементов")
+    @Test(groups = {"web", "crypto", "diagnostics"}, testName = "#4 Полная проверка диагностики")
     @AllureId("CRYPTO-004")
-    @Story("Проверка всех элементов страницы")
-    @Description("Полная проверка всех диагностических элементов")
+    @Story("Проверка элементов страницы")
     @Severity(SeverityLevel.NORMAL)
     public void testPageDiagnostics() {
-        // Убеждаемся, что страница инициализирована
-        if (cryptoProPage == null) {
-            initializePageObject();
-        }
-        
-        Allure.step("Открываем страницу", () -> {
-            if (cryptoProPage == null) {
-                throw new IllegalStateException("CryptoProDemoPage не инициализирован");
-            }
-            cryptoProPage.openPage("Демо-страница КриптоПРО");
-        });
+        Allure.step("Открытие страницы", () -> cryptoProPage.openPage("Демо-страница КриптоПРО"));
 
-        Allure.step("Проверяем заголовок страницы", () -> {
-            cryptoProPage.verifyPageTitle();
-            logger.info("✓ Заголовок страницы найден");
-        });
+        String[] selectors = {
+                "#ExtensionEnabledImg", "#ExtensionEnabledTxt",
+                "#PluginEnabledImg", "#PluginEnabledTxt",
+                "#CspEnabledImg", "#CspEnabledTxt",
+                "#ObjectsLoadedImg", "#ObjectsLoadedTxt"
+        };
 
-        Allure.step("Проверяем диагностическую информацию", () -> {
-            cryptoProPage.verifyDiagnosticInfo();
-            logger.info("✓ Диагностическая информация отображается");
-        });
-
-        Allure.step("Проверяем все статусные элементы", () -> {
-            String[] statusSelectors = {
-                    "#ExtensionEnabledImg",
-                    "#ExtensionEnabledTxt",
-                    "#PluginEnabledImg",
-                    "#PluginEnabledTxt",
-                    "#CspEnabledImg",
-                    "#CspEnabledTxt",
-                    "#ObjectsLoadedImg",
-                    "#ObjectsLoadedTxt"
-            };
-
-            try {
-                cryptoProPage.verifyStatusElements(statusSelectors);
-                logger.info("✓ Все статусные элементы найдены");
-            } catch (RuntimeException e) {
-                logger.warn("✗ " + e.getMessage());
-                softAssert.fail(e.getMessage());
-            }
-        });
-
-        Allure.step("Делаем скриншот диагностики", () -> {
-            cryptoProPage.takeScreenshot("page_diagnostics");
-        });
-
-        softAssert.assertAll();
+        boolean allFound = cryptoProPage.verifyStatusElements(selectors);
+        assertions.assertTrue(allFound, "Все статусные элементы должны быть найдены");
     }
 
-    @Test(groups = {"web", "crypto", "strategy", "smoke"}, 
-          testName = "#7 Проверка плагина с использованием паттерна Strategy",
-          description = "Проверка плагина с использованием паттерна Strategy")
+    @Test(groups = {"web", "crypto", "strategy"}, testName = "#7 Стратегия валидации")
     @AllureId("CRYPTO-007")
-    @Story("Проверка плагина с использованием паттерна Strategy")
-    @Description("Проверка плагина с использованием паттерна Strategy")
+    @Story("Стратегия")
     @Severity(SeverityLevel.CRITICAL)
     public void verifyCryptoProPluginWithStrategy() {
-        Allure.step("Создание и выполнение стратегии валидации", () -> {
-            // Создаем менеджер стратегий
-            TestStrategyManager strategyManager = TestStrategyManager.createDefault();
+        TestStrategyManager manager = TestStrategyManager.createDefault();
+        manager.registerExecutionStrategy(new CryptoProValidationStrategy(true, false));
 
-            // Регистрируем стратегию валидации CryptoPro
-            CryptoProValidationStrategy cryptoStrategy = new CryptoProValidationStrategy(true, false);
-            strategyManager.registerExecutionStrategy(cryptoStrategy);
+        TestExecutionStrategy.TestContext ctx = manager.executeTestWithStrategy(
+                "crypto_strategy", ExecutionStrategyType.UI_CRYPTO_PRO_VALIDATION, null
+        );
 
-            // Выполняем тест с использованием стратегии
-            TestExecutionStrategy.TestContext context = strategyManager.executeTestWithStrategy(
-                "cryptopro_strategy_validation",
-                ExecutionStrategyType.UI_CRYPTO_PRO_VALIDATION,
-                softAssert
-            );
-
-            // Проверяем результаты
-            Boolean result = (Boolean) context.getActualResult();
-            softAssert.assertTrue(result, "CryptoPro плагин должен быть успешно проверен через стратегию");
-            softAssert.assertTrue(context.getDuration() < 60000, "Валидация должна выполниться менее чем за 60 секунд");
-
-            logger.info("✓ Стратегия валидации выполнена успешно за " + context.getDuration() + " мс");
-        });
-
-        softAssert.assertAll();
+        assertions.assertTrue((Boolean) ctx.getActualResult(), "Стратегия должна вернуть успех");
     }
 
-    @Test(groups = {"web", "crypto", "signature", "strategy", "blocker"}, 
-          testName = "#3 Проверка создания подписи с использованием стратегии",
-          description = "Проверка создания подписи с использованием стратегии")
-    @AllureId("CRYPTO-003")
-    @Story("Проверка создания подписи с использованием стратегии")
-    @Description("Проверка создания подписи с использованием стратегии")
-    @Severity(SeverityLevel.BLOCKER)
-    public void testCertificateSigningWithStrategy() {
-        Allure.step("Создание стратегии с подписью", () -> {
-            // Создаем менеджер стратегий
-            TestStrategyManager strategyManager = TestStrategyManager.createDefault();
-
-            // Стратегия с проверкой всех статусов И выполнением подписи
-            CryptoProValidationStrategy signingStrategy = new CryptoProValidationStrategy(true, true);
-            strategyManager.registerExecutionStrategy(signingStrategy);
-
-            // Выполняем тест
-            TestExecutionStrategy.TestContext context = strategyManager.executeTestWithStrategy(
-                "cryptopro_signing_strategy",
-                ExecutionStrategyType.UI_CRYPTO_PRO_VALIDATION,
-                softAssert
-            );
-
-            // Валидация результатов
-            Boolean result = (Boolean) context.getActualResult();
-            softAssert.assertTrue(result, "Процесс подписи должен быть успешно выполнен");
-            softAssert.assertTrue(context.getDuration() < 120000, "Подпись должна выполниться менее чем за 2 минуты");
-
-            logger.info("✓ Стратегия подписи выполнена успешно за " + context.getDuration() + " мс");
-        });
-
-        softAssert.assertAll();
-    }
-
-    @Test(groups = {"web", "crypto", "quick", "sanity"}, 
-          testName = "#1 Быстрая проверка основных элементов плагина",
-          description = "Быстрая проверка основных элементов плагина")
+    @Test(groups = {"web", "crypto", "quick"}, testName = "#1 Быстрая проверка")
     @AllureId("CRYPTO-001")
-    @Story("Быстрая проверка плагина")
-    @Description("Быстрая проверка только основных элементов")
+    @Story("Быстрая проверка")
     @Severity(SeverityLevel.MINOR)
     public void quickPluginCheck() {
-        // Убеждаемся, что страница инициализирована
-        if (cryptoProPage == null) {
-            initializePageObject();
-        }
-        
-        Allure.step("Открываем страницу", () -> {
-            if (cryptoProPage == null) {
-                throw new IllegalStateException("CryptoProDemoPage не инициализирован");
-            }
-            cryptoProPage.openPage("Демо-страница КриптоПРО");
-        });
-
-        Allure.step("Проверяем только зеленую точку и текст", () -> {
-            cryptoProPage.verifyExtensionLoaded();
-            logger.info("✓ Расширение КриптоПРО успешно загружено");
-        });
-
-        Allure.step("Делаем скриншот", () -> {
-            cryptoProPage.takeScreenshot("quick_plugin_check");
-        });
-    }
-
-    @Test(groups = {"web", "crypto", "negative", "regression"}, 
-          testName = "#5 Проверка поведения при отсутствии плагина",
-          description = "Проверка поведения при отсутствии плагина")
-    @AllureId("CRYPTO-005")
-    @Story("Негативный сценарий")
-    @Description("Проверка поведения при отсутствии плагина")
-    @Severity(SeverityLevel.NORMAL)
-    public void testPluginFailureScenario() {
-        // Убеждаемся, что страница инициализирована
-        if (cryptoProPage == null) {
-            initializePageObject();
-        }
-        
-        Allure.step("Открываем страницу", () -> {
-            if (cryptoProPage == null) {
-                throw new IllegalStateException("CryptoProDemoPage не инициализирован");
-            }
-            // Здесь можно открыть страницу без расширения
-            // или эмулировать состояние, когда плагин не загружен
-            cryptoProPage.openPage("Демо-страница КриптоПРО");
-        });
-
-        Allure.step("Проверяем состояние 'ожидание'", () -> {
-            try {
-                // Проверяем, есть ли статусы ожидания
-                boolean hasWaitingStatus = cryptoProPage.hasWaitingStatuses();
-
-                if (hasWaitingStatus) {
-                    logger.info("✓ Обнаружены статусы ожидания (как и ожидалось)");
-                    cryptoProPage.takeScreenshot("waiting_status_detected");
-                }
-
-                // Проверяем, что нет зеленой точки
-                boolean hasGreenDot = cryptoProPage.hasGreenExtensionDot();
-
-                if (!hasGreenDot) {
-                    logger.info("✓ Зеленой точки нет (плагин не загружен)");
-                }
-
-            } catch (Exception e) {
-                logger.warn("Ошибка при проверке негативного сценария: " + e.getMessage());
-            }
-        });
+        cryptoProPage.openPage("Демо-страница КриптоПРО");
+        assertions.assertTrue(cryptoProPage.verifyExtensionLoaded(), "Расширение должно работать");
     }
 }

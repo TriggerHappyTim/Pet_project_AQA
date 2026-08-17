@@ -20,11 +20,14 @@
         <maven.compiler.plugin.version>3.11.0</maven.compiler.plugin.version>
         <maven.surifire.plugin.version>3.1.0</maven.surifire.plugin.version>
         <lombok.version>1.18.28</lombok.version>
+        <!-- Версия WebDriverManager для автоматического управления драйверами -->
+        <webdrivermanager.version>5.6.3</webdrivermanager.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>11</java.version>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
     </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -56,62 +59,67 @@
             <version>2.3.0</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/javax.activation/activation -->
         <dependency>
             <groupId>javax.activation</groupId>
             <artifactId>activation</artifactId>
             <version>1.1</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/org.glassfish.jaxb/jaxb-runtime -->
         <dependency>
             <groupId>org.glassfish.jaxb</groupId>
             <artifactId>jaxb-runtime</artifactId>
             <version>2.3.0</version>
-
         </dependency>
+
         <dependency>
             <groupId>io.rest-assured</groupId>
             <artifactId>rest-assured</artifactId>
             <version>${io.rest-assured}</version>
             <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>${lombok.version}</version>
             <scope>provided</scope>
         </dependency>
+
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
             <version>${testng.version}</version>
             <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>com.codeborne</groupId>
             <artifactId>selenide</artifactId>
             <version>${selenide.version}</version>
             <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>io.qameta.allure</groupId>
             <artifactId>allure-selenide</artifactId>
             <version>${allure.version}</version>
             <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>io.qameta.allure</groupId>
             <artifactId>allure-testng</artifactId>
             <version>${allure.version}</version>
             <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
             <version>${slf4j-simple.version}</version>
             <scope>test</scope>
         </dependency>
+
         <!-- Faker для генерации реалистичных тестовых данных -->
         <dependency>
             <groupId>com.github.javafaker</groupId>
@@ -119,6 +127,7 @@
             <version>1.0.2</version>
             <scope>test</scope>
         </dependency>
+
         <!-- Gson для работы с JSON -->
         <dependency>
             <groupId>com.google.code.gson</groupId>
@@ -126,6 +135,7 @@
             <version>2.10.1</version>
             <scope>test</scope>
         </dependency>
+
         <!-- Jackson для сериализации в JSON в TestLogger и AllureIntegration -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
@@ -133,7 +143,17 @@
             <version>2.15.3</version>
             <scope>test</scope>
         </dependency>
+
+        <!-- === ДОБАВЛЕНО: WebDriverManager для авто-обновления драйверов === -->
+        <dependency>
+            <groupId>io.github.bonigarcia</groupId>
+            <artifactId>webdrivermanager</artifactId>
+            <version>${webdrivermanager.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- =============================================================== -->
     </dependencies>
+
     <build>
         <plugins>
             <plugin>
@@ -156,12 +176,7 @@
                 <version>${maven.surifire.plugin.version}</version>
                 <configuration>
                     <testFailureIgnore>true</testFailureIgnore>
-                    <!-- suiteXmlFiles НЕ используется по умолчанию для работы фильтрации по группам -->
-                    <!-- suiteXmlFiles будет использован только если указан параметр -Dsuite в командной строке -->
-                    <!-- Listeners добавляются через аннотацию @Listeners в BaseTest -->
                     <useSystemClassLoader>false</useSystemClassLoader>
-                    <!-- Сохраняем порядок выполнения тестов для правильного отображения в Allure -->
-                    <!--<preserveOrder>true</preserveOrder>-->
                     <argLine>
                         -javaagent:"${settings.localRepository}/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar"
                     </argLine>
@@ -169,6 +184,11 @@
                         <property>
                             <name>allure.results.directory</name>
                             <value>${project.build.directory}/allure-results</value>
+                        </property>
+                        <!-- Принудительно включаем резолвер драйверов Bonigarcia -->
+                        <property>
+                            <name>wdm.useMirror</name>
+                            <value>true</value>
                         </property>
                     </systemProperties>
                 </configuration>
@@ -183,10 +203,6 @@
                         <artifactId>aspectjweaver</artifactId>
                         <version>${aspectj.version}</version>
                     </dependency>
-                    <!--<dependency>
-                        <groupId>org.seleniumhq.selenium</groupId>
-                        <artifactId>selenium-firefox-driver</artifactId>
-                    </dependency>-->
                 </dependencies>
             </plugin>
             <plugin>
@@ -206,6 +222,7 @@
             </plugin>
         </plugins>
     </build>
+
     <profiles>
         <!-- Test execution profiles by TestNG groups -->
         <profile>
@@ -407,7 +424,6 @@
             <id>browser_chrome_local</id>
             <properties>
                 <selenide.browser>chrome</selenide.browser>
-                <!-- selenide.remote не указывается - используется локальный браузер -->
             </properties>
             <build>
                 <plugins>
@@ -428,7 +444,6 @@
             <id>browser_firefox_local</id>
             <properties>
                 <selenide.browser>firefox</selenide.browser>
-                <!-- selenide.remote не указывается - используется локальный браузер -->
             </properties>
             <build>
                 <plugins>
@@ -445,7 +460,7 @@
             </build>
         </profile>
 
-        <!-- Environment profiles: задают evs/rpu/uos.ui.type для UITypeSelector (локально и GitLab CI) -->
+        <!-- Environment profiles: задают evs/rpu/uos.ui.type для UITypeSelector -->
         <profile>
             <id>test</id>
             <properties>
@@ -534,9 +549,9 @@
                     </plugin>
                 </plugins>
             </build>
-
         </profile>
     </profiles>
+
     <repositories>
         <repository>
             <id>gitlab-ps</id>

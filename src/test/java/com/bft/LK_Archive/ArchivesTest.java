@@ -72,7 +72,7 @@ public class ArchivesTest extends UITestBase {
         steps.authorizeArhivEVS(UITypeSelector.getSelectedUIType(UIType.EVS_UAT_LKA));
         steps.addPerformer();
         steps.fillPerformer();
-        steps.searchPerformer();
+        steps.searchPerformer("Котов Олег Олегович");
     }
 
     @Test(groups = {"web", "archive", "evs", "regression"},

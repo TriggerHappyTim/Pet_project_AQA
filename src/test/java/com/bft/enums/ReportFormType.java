@@ -1,9 +1,11 @@
 package com.bft.enums;
 
+import java.util.Arrays;
+
 /**
  * Тип отчёта для выбора в UI (название формы в интерфейсе).
  *
- * <p>Используется в сценариях выбора типа отчёта (например {@link com.bft.steps.SzvReportsSteps#selectReportType}).
+ * <p>Используется в сценариях выбора типа отчёта.
  * Пути к XML-файлам задаются отдельно — см. {@link ReportXmlResource}.
  *
  * @see ReportXmlResource
@@ -32,5 +34,22 @@ public enum ReportFormType {
      */
     public String getDisplayName() {
         return displayName;
+    }
+
+    /**
+     * Находит тип отчёта по его отображаемому имени в UI.
+     * Регистронезависимое сравнение.
+     *
+     * @param name имя, отображаемое в интерфейсе
+     * @return соответствующий enum или null, если не найдено
+     */
+    public static ReportFormType fromDisplayName(String name) {
+        if (name == null) {
+            return null;
+        }
+        return Arrays.stream(values())
+                .filter(type -> type.displayName.equalsIgnoreCase(name))
+                .findFirst()
+                .orElse(null);
     }
 }

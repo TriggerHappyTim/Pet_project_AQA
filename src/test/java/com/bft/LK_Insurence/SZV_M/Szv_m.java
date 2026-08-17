@@ -35,7 +35,7 @@ public class Szv_m extends UITestBase {
 
         SzvReportsSteps steps = new SzvReportsSteps();
 
-        steps.authorizeEVS(UITypeSelector.getSelectedUIType(UIType.EVS_TEST_LKS));
+        steps.authorizeEVS(UITypeSelector.getSelectedUIType(UIType.EVS_UAT_LKS));
         steps.addReports(); //Добавление отчета
         steps.selectReportType(ReportFormType.SZVM); //Выбор отчета
         steps.addNewReport(); //Создание нового отчета

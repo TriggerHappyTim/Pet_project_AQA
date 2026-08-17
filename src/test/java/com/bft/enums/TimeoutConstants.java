@@ -1,4 +1,4 @@
-package com.bft.constants;
+package com.bft.enums;
 
 import java.time.Duration;
 
@@ -11,7 +11,7 @@ import java.time.Duration;
  * 
  * <p>Пример использования:
  * <pre>{@code
- * import static com.bft.constants.TimeoutConstants.*;
+ * import static com.bft.enums.TimeoutConstants.*;
  * 
  * // Вместо:
  * element.shouldBe(visible, Duration.ofSeconds(10));

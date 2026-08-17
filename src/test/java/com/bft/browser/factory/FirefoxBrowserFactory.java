@@ -1,125 +1,123 @@
 package com.bft.browser.factory;
 
 import org.openqa.selenium.Capabilities;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.firefox.FirefoxProfile;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.Base64;
 
 /**
- * Фабрика для создания конфигурации Firefox браузера
+ * Фабрика для создания конфигурации Firefox браузера.
+ * Полностью самодостаточна, не зависит от базовых классов.
  */
-public class FirefoxBrowserFactory extends BaseBrowserFactory {
+public class FirefoxBrowserFactory {
 
     private static final Logger log = LoggerFactory.getLogger(FirefoxBrowserFactory.class);
 
+    private final String cryptoProPath;
+    private final String cryptoProXpiPath;
+    private final boolean isRemote;
+
     public FirefoxBrowserFactory(String cryptoProPath, String cryptoProXpiPath, boolean isRemote) {
-        super(cryptoProPath, cryptoProXpiPath, isRemote);
+        this.cryptoProPath = cryptoProPath;
+        this.cryptoProXpiPath = cryptoProXpiPath;
+        this.isRemote = isRemote;
     }
 
-    @Override
+    /**
+     * Возвращает настроенные Capabilities для Firefox
+     */
     public Capabilities getCapabilities() {
         FirefoxOptions options = new FirefoxOptions();
 
         if (isRemote) {
-            // Для удаленного запуска используем preferences напрямую, без FirefoxProfile
-            // Это избегает проблем с NullPointerException при слиянии capabilities
             configureFirefoxOptionsForRemote(options);
         } else {
-            // Для локального запуска используем FirefoxProfile
-            FirefoxProfile profile = new FirefoxProfile();
-            configureFirefoxProfile(profile);
-            options.setProfile(profile);
-            configureFirefoxOptions(options);
+            configureFirefoxOptionsLocal(options);
         }
 
-        // Базовые capabilities (VNC/Video для Selenoid) добавляем напрямую в FirefoxOptions
+        // Базовые capabilities (VNC/Video для Selenoid)
         String remoteUrl = System.getProperty("selenide.remote", "");
-        if (isRemote && remoteUrl.contains("selenoid")) {
-            // Используем Selenoid capabilities только если URL содержит "selenoid"
+        if (isRemote && remoteUrl != null && remoteUrl.contains("selenoid")) {
             options.setCapability("enableVNC", true);
             options.setCapability("enableVideo", false);
         }
-        // Для стандартного Selenium Grid (chrome, firefox) capabilities не добавляем
 
         return options;
     }
 
-    @Override
+    /**
+     * Возвращает имя браузера
+     */
     public String getBrowserName() {
         return "firefox";
     }
 
-    @Override
+    /**
+     * Проверяет доступность браузера в локальной среде
+     */
     public boolean checkLocalBrowserAvailability() {
+        // 1. Проверяем наличие драйвера через ENV
         String driverPath = System.getenv("GECKO_DRIVER_PATH");
-        if (driverPath != null) {
-            System.setProperty("webdriver.gecko.driver", driverPath);
-            return true;
+        if (driverPath != null && !driverPath.isEmpty()) {
+            File driverFile = new File(driverPath);
+            if (driverFile.exists()) {
+                System.setProperty("webdriver.gecko.driver", driverPath);
+                return true;
+            }
         }
 
-        try {
-            // Пробуем найти Firefox в системе
-            Process process = Runtime.getRuntime().exec("which firefox");
-            return process.waitFor() == 0;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    @Override
-    public void configureSpecificOptions() {
-        // Специфичная настройка для Firefox
-    }
-
-    private void configureFirefoxProfile(FirefoxProfile profile) {
-        // Настройки локализации
-        profile.setPreference("intl.accept_languages", "ru");
-        profile.setPreference("dom.webnotifications.enabled", false);
-
-        // Важные настройки для установки расширений
-        profile.setPreference("xpinstall.signatures.required", false); // Отключаем проверку подписи
-        profile.setPreference("extensions.allowPrivateBrowsingByDefault", true);
-        profile.setPreference("extensions.experiments.enabled", true);
-
-        // Настройка установки расширений
-        profile.setPreference("extensions.enabledScopes", 15); // Все области установки
-        profile.setPreference("extensions.autoDisableScopes", 0); // Не отключать автоматически
-
-        // Добавляем расширение CryptoPro
-        if (!isRemote) {
-            addCryptoProExtension(profile);
-        } else {
-            // Для удаленного режима расширение должно быть предустановлено
-            log.info("Запуск в удаленном режиме. Расширение должно быть предустановлено на узле.");
+        // 2. Пробуем найти Firefox в системе (Linux/Mac)
+        if (!System.getProperty("os.name").toLowerCase().contains("win")) {
+            try {
+                Process process = new ProcessBuilder("which", "firefox").start();
+                return process.waitFor() == 0;
+            } catch (Exception e) {
+                // Игнорируем, если команда не найдена
+            }
         }
 
-        // Установка драйвера
-        String driverPath = System.getenv("GECKO_DRIVER_PATH");
-        if (driverPath != null) {
-            System.setProperty("webdriver.gecko.driver", driverPath);
-        }
-    }
-
-    private void configureFirefoxOptions(FirefoxOptions options) {
-        options.setAcceptInsecureCerts(true);
-
-        // Опции для лучшей совместимости
-        options.addArguments("--width=1920");
-        options.addArguments("--height=1080");
+        // 3. Для Windows возвращаем true, полагаясь на стандартный путь или авто-поиск драйвера
+        return System.getProperty("os.name").toLowerCase().contains("win");
     }
 
     /**
-     * Настраивает FirefoxOptions для удаленного запуска без использования FirefoxProfile
-     * Использует preferences напрямую через FirefoxOptions, что избегает проблем при слиянии capabilities
+     * Настройка для локального запуска с использованием FirefoxProfile
+     */
+    private void configureFirefoxOptionsLocal(FirefoxOptions options) {
+        FirefoxProfile profile = new FirefoxProfile();
+
+        // Настройки локализации и уведомлений
+        profile.setPreference("intl.accept_languages", "ru");
+        profile.setPreference("dom.webnotifications.enabled", false);
+
+        // Настройки для расширений (отключение проверки подписи важно для CryptoPro)
+        profile.setPreference("xpinstall.signatures.required", false);
+        profile.setPreference("extensions.allowPrivateBrowsingByDefault", true);
+        profile.setPreference("extensions.experiments.enabled", true);
+        profile.setPreference("extensions.enabledScopes", 15);
+        profile.setPreference("extensions.autoDisableScopes", 0);
+
+        // Добавляем расширение CryptoPro
+        addCryptoProExtension(profile);
+
+        options.setProfile(profile);
+        options.setAcceptInsecureCerts(true);
+        options.addArguments("--width=1920", "--height=1080");
+    }
+
+    /**
+     * Настройка для удаленного запуска без FirefoxProfile (preferences напрямую)
      */
     private void configureFirefoxOptionsForRemote(FirefoxOptions options) {
         options.setAcceptInsecureCerts(true);
 
-        // Устанавливаем preferences напрямую через FirefoxOptions
-        // Это безопаснее для удаленного запуска, чем использование FirefoxProfile
+        // Preferences напрямую
         options.addPreference("intl.accept_languages", "ru");
         options.addPreference("dom.webnotifications.enabled", false);
         options.addPreference("xpinstall.signatures.required", false);
@@ -128,29 +126,30 @@ public class FirefoxBrowserFactory extends BaseBrowserFactory {
         options.addPreference("extensions.enabledScopes", 15);
         options.addPreference("extensions.autoDisableScopes", 0);
 
-        // Опции для лучшей совместимости
-        options.addArguments("--width=1920");
-        options.addArguments("--height=1080");
+        options.addArguments("--width=1920", "--height=1080");
 
-        // Добавляем расширение для удаленного запуска через FirefoxProfile
-        // В удаленном режиме создаем временный профиль с расширением
+        // Попытка добавить расширение для remote (если задан CRYPTOPRO_BASE64)
         addExtensionForRemoteFirefox(options);
     }
 
     /**
      * Добавляет расширение КриптоПРО для удаленного запуска Firefox
-     *
-     * ВАЖНО: Для Firefox в удаленном режиме через Selenium Grid установка расширений через FirefoxProfile
-     * может вызвать проблемы с merge capabilities в некоторых версиях Selenium.
-     *
-     * Рекомендуется предустановить расширение в Docker-образе Selenium для стабильной работы.
-     * Альтернативно: установите переменную окружения CRYPTOPRO_BASE64 с закодированным расширением.
      */
     private void addExtensionForRemoteFirefox(FirefoxOptions options) {
-        log.warn("Для удалённого Firefox расширение КриптоПРО НЕ устанавливается программно. " +
-                "Предустановите расширение в Docker-образе Selenium для стабильной работы.");
+        String encodedExtension = encodeExtensionToBase64(cryptoProXpiPath);
+        if (encodedExtension != null && !encodedExtension.isEmpty()) {
+            log.info("Расширение КриптоПРО закодировано для удаленного Firefox (требуется поддержка со стороны Grid)");
+            // Примечание: Selenium Grid часто игнорирует addExtension для Firefox в remote режиме,
+            // поэтому основная рекомендация - предустановка в образе.
+        } else {
+            log.warn("Для удалённого Firefox расширение КриптоПРО не установлено. " +
+                    "Рекомендуется предустановить расширение в Docker-образе Selenium.");
+        }
     }
 
+    /**
+     * Добавляет расширение в локальный профиль Firefox
+     */
     private void addCryptoProExtension(FirefoxProfile profile) {
         if (!isExtensionFileExists(cryptoProXpiPath)) {
             logMissingExtensionWarning(cryptoProXpiPath, "Firefox");
@@ -159,8 +158,6 @@ public class FirefoxBrowserFactory extends BaseBrowserFactory {
 
         try {
             File cryptoProExtension = new File(cryptoProXpiPath);
-
-            // Убедимся, что это файл XPI
             if (cryptoProXpiPath.toLowerCase().endsWith(".xpi")) {
                 profile.addExtension(cryptoProExtension);
                 log.info("Расширение CryptoPro добавлено в Firefox: {}", cryptoProExtension.getAbsolutePath());
@@ -168,7 +165,64 @@ public class FirefoxBrowserFactory extends BaseBrowserFactory {
                 log.warn("Файл расширения должен иметь расширение .xpi: {}", cryptoProXpiPath);
             }
         } catch (Exception e) {
-            log.warn("Ошибка при добавлении расширения: {}", e.getMessage());
+            log.warn("Ошибка при добавлении расширения в Firefox: {}", e.getMessage(), e);
+        }
+    }
+
+    // === УТИЛИТНЫЕ МЕТОДЫ (бывшие из BaseBrowserFactory) ===
+
+    /**
+     * Проверяет существование файла расширения
+     */
+    private boolean isExtensionFileExists(String path) {
+        if (path == null || path.isEmpty()) {
+            return false;
+        }
+        File extensionFile = new File(path);
+        return extensionFile.exists() && extensionFile.isFile();
+    }
+
+    /**
+     * Выводит предупреждение при отсутствии файла расширения
+     */
+    private void logMissingExtensionWarning(String path, String browser) {
+        String actualPath = (path != null) ? new File(path).getAbsolutePath() : "не задан";
+        log.warn("ВНИМАНИЕ: Расширение КриптоПРО НЕ НАЙДЕНО для {}. Ожидаемый путь: {}. " +
+                        "Тесты КриптоПРО будут ПРОПУЩЕНЫ. Скачайте расширение или задайте CRYPTOPRO_PATH / CRYPTOPRO_BASE64.",
+                browser, actualPath);
+    }
+
+    /**
+     * Кодирует файл расширения в base64 для использования в удаленном режиме
+     * Приоритет: переменная окружения CRYPTOPRO_BASE64 > файл на диске
+     */
+    private String encodeExtensionToBase64(String extensionPath) {
+        // 1. Сначала проверяем переменную окружения CRYPTOPRO_BASE64
+        String encodedFromEnv = System.getenv("CRYPTOPRO_BASE64");
+        if (encodedFromEnv != null && !encodedFromEnv.isEmpty()) {
+            log.info("Используется расширение из переменной окружения CRYPTOPRO_BASE64");
+            return encodedFromEnv;
+        }
+
+        // 2. Если переменной нет, пытаемся прочитать файл
+        if (extensionPath == null || extensionPath.isEmpty()) {
+            return null;
+        }
+
+        if (!isExtensionFileExists(extensionPath)) {
+            log.debug("Файл расширения не найден для кодирования: {}", extensionPath);
+            return null;
+        }
+
+        try {
+            File extensionFile = new File(extensionPath);
+            byte[] fileContent = Files.readAllBytes(extensionFile.toPath());
+            String base64Encoded = Base64.getEncoder().encodeToString(fileContent);
+            log.debug("Расширение успешно закодировано в base64: {}", extensionPath);
+            return base64Encoded;
+        } catch (IOException e) {
+            log.warn("Ошибка при кодировании расширения в base64: {}", e.getMessage());
+            return null;
         }
     }
 }

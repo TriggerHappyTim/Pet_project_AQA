@@ -1,64 +1,130 @@
 package com.bft.helpers.forms;
 
-import com.bft.helpers.DataFiller;
-import com.bft.helpers.TestConfig;
-import org.openqa.selenium.WebDriver;
-import org.testng.asserts.SoftAssert;
+import com.bft.enums.TimeoutConstants;
+import com.codeborne.selenide.Condition;
+import com.codeborne.selenide.ElementsCollection;
+import com.codeborne.selenide.SelenideElement;
+import org.openqa.selenium.By;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import static com.codeborne.selenide.CollectionCondition.size;
+import static com.codeborne.selenide.Condition.enabled;
+import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Selenide.$;
+import static com.codeborne.selenide.Selenide.$$;
+
+/**
+ * Фасад для работы с формами отчетов.
+ * Инкапсулирует логику заполнения, сохранения и валидации.
+ * Рефакторинг: переход на Selenide, удаление зависимостей от WebDriver/SoftAssert.
+ */
 public class FormFacade {
-    private WebDriver driver;
-    private SoftAssert softAssert;
-    private DataFiller dataFiller;
-    private FormValidator validator;
 
-    public FormFacade(WebDriver driver, SoftAssert softAssert) {
-        this.driver = driver;
-        this.softAssert = softAssert;
-        this.dataFiller = new DataFiller(driver, softAssert);
-        this.validator = new FormValidator(driver, softAssert);
+    private static final Logger logger = LoggerFactory.getLogger(FormFacade.class);
+
+    // === Селекторы (можно вынести в отдельный класс FormSelectors) ===
+    private static final String SAVE_BTN_XPATH = "//button[contains(@class, 'save') or contains(text(), 'Сохранить')]";
+    private static final String EDIT_BTN_XPATH = "//button[contains(@class, 'edit') or contains(text(), 'Редактировать')]";
+    private static final String TABLE_ROWS_XPATH = "//tbody[contains(@class, 'n2o-table-tbody')]//tr";
+
+    /**
+     * Заполняет данные страхователя и общие данные формы.
+     */
+    public FormFacade fillCommonReportData(String orgName, String regNumber, String inn, String kpp,
+                                           String reportPeriod, String correctionNumber, String infoType) {
+        logger.info("Заполнение данных страхователя и общих полей");
+
+        // Пример заполнения (селекторы нужно адаптировать под реальную верстку)
+        $("input[id*='orgName'], input[name*='orgName']").shouldBe(visible, TimeoutConstants.DEFAULT_WAIT).setValue(orgName);
+        $("input[id*='regNumber'], input[name*='regNumber']").setValue(regNumber);
+        $("input[id*='inn'], input[name*='inn']").setValue(inn);
+        $("input[id*='kpp'], input[name*='kpp']").setValue(kpp);
+
+        $("input[id*='fillingDate']").setValue(reportPeriod); // Или использовать календарь
+        $("select[id*='correctionNumber']").selectOption(correctionNumber);
+        $("select[id*='infoType']").selectOption(infoType);
+
+        logger.info("Данные страхователя заполнены");
+        return this;
     }
 
-    public void createFullSZVMForm() {
-        dataFiller.fillInsurerData(
-                TestConfig.ORG_NAME,
-                TestConfig.PFR_REG_NUMBER,
-                TestConfig.INN,
-                TestConfig.KPP
-        );
+    /**
+     * Добавляет застрахованное лицо и проверяет его появление в таблице.
+     * Возвращает сам объект фасада для цепочки вызовов.
+     */
+    public FormFacade addInsuredPersonAndVerify(String lastName, String firstName, String middleName,
+                                                String snils, String inn, int expectedIndex) {
+        logger.info("Добавление застрахованного лица: {} {} {}", lastName, firstName, middleName);
 
-        dataFiller.fillCommonData(
-                TestConfig.REPORT_PERIOD,
-                TestConfig.CORRECTION_NUMBER
-        );
+        // 1. Нажать "Добавить"
+        $(By.xpath("//button[contains(text(), 'Добавить') or contains(@class, 'add')]"))
+                .shouldBe(enabled, TimeoutConstants.DEFAULT_WAIT).click();
 
-        dataFiller.selectInfoType(TestConfig.INFO_TYPE);
+        // 2. Заполнить модальное окно (селекторы примерные)
+        $("input[id*='lastName']").setValue(lastName);
+        $("input[id*='firstName']").setValue(firstName);
+        $("input[id*='middleName']").setValue(middleName);
+        $("input[id*='snils']").setValue(snils);
+        $("input[id*='innPerson']").setValue(inn);
 
-        validator.verifyInsurerBlockInCreationMode();
-        validator.verifyFillingDateField();
+        // 3. Сохранить в модальном окне
+        $(By.xpath("//button[contains(@class, 'modal-save') or contains(text(), 'Сохранить')]"))
+                .shouldBe(enabled, TimeoutConstants.DEFAULT_WAIT).click();
+
+        // 4. Проверка появления в таблице
+        ElementsCollection rows = $$(By.xpath(TABLE_ROWS_XPATH));
+        rows.shouldHave(size(expectedIndex), TimeoutConstants.LONG_WAIT);
+
+        logger.info("Застрахованное лицо добавлено, всего записей в таблице: {}", expectedIndex);
+        return this;
     }
 
-    public InsuredPerson addInsuredPersonAndVerify(String lastName, String firstName, String middleName,
-                                                              String snils, String inn, int expectedIndex) {
-        InsuredPerson person = dataFiller.addInsuredPerson(lastName, firstName, middleName, snils, inn);
-        validator.verifyInsuredPersonData(person, expectedIndex);
-        return person;
+    /**
+     * Сохраняет форму и проверяет переход в режим чтения.
+     */
+    public FormFacade saveFormAndVerifyReadMode() {
+        logger.info("Сохранение формы и проверка режима чтения");
+
+        SelenideElement saveBtn = $(By.xpath(SAVE_BTN_XPATH));
+        saveBtn.shouldBe(enabled, TimeoutConstants.DEFAULT_WAIT).scrollTo().click();
+
+        // Ожидание исчезновения кнопки сохранения или появления сообщения об успехе
+        try {
+            saveBtn.should(Condition.disappear, TimeoutConstants.LONG_WAIT);
+        } catch (Exception e) {
+            logger.debug("Кнопка 'Сохранить' не исчезла, проверяем наличие сообщения об успехе...");
+        }
+
+        // Проверка, что кнопка "Редактировать" появилась (признак режима чтения)
+        $(By.xpath(EDIT_BTN_XPATH)).shouldBe(visible, TimeoutConstants.DEFAULT_WAIT);
+
+        logger.info("Форма сохранена, режим чтения подтвержден");
+        return this;
     }
 
-    public void saveFormAndVerifyReadMode() {
-        dataFiller.saveForm();
-        validator.verifyReadMode();
+    /**
+     * Переводит форму в режим редактирования.
+     */
+    public FormFacade editFormAndVerify() {
+        logger.info("Переход в режим редактирования");
+
+        $(By.xpath(EDIT_BTN_XPATH)).shouldBe(enabled, TimeoutConstants.DEFAULT_WAIT).click();
+
+        // Проверка, что поля стали доступны для ввода
+        $("input[id*='orgName']").shouldBe(enabled, TimeoutConstants.DEFAULT_WAIT);
+
+        logger.info("Режим редактирования активирован");
+        return this;
     }
 
-    public void editFormAndVerify() {
-        dataFiller.editForm();
-        validator.verifyEditModeFields();
-    }
-
-    public DataFiller getDataFiller() {
-        return dataFiller;
-    }
-
-    public FormValidator getValidator() {
-        return validator;
+    /**
+     * Проверяет количество записей в таблице.
+     */
+    public FormFacade verifyTableSize(int expectedSize) {
+        logger.info("Проверка количества записей в таблице: ожидаем {}", expectedSize);
+        ElementsCollection rows = $$(By.xpath(TABLE_ROWS_XPATH));
+        rows.shouldHave(size(expectedSize), TimeoutConstants.DEFAULT_WAIT);
+        return this;
     }
 }

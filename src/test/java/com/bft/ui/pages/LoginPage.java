@@ -1,5 +1,6 @@
 package com.bft.ui.pages;
 
+import com.bft.enums.TimeoutConstants;
 import com.bft.security.masking.SecureLogger;
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.Selenide;
@@ -118,7 +119,7 @@ public class LoginPage {
         // или появиться страница выбора карточки, или пользователь уже авторизован
         try {
             // Используем умное ожидание через SmartWaits
-            com.bft.test.helpers.SmartWaits.waitForPageLoad(com.bft.constants.TimeoutConstants.EPGU_AUTH_WAIT);
+            com.bft.test.helpers.SmartWaits.waitForPageLoad(TimeoutConstants.EPGU_AUTH_WAIT);
             
             // Дополнительная проверка: ожидаем либо исчезновения формы авторизации,
             // либо появления страницы выбора карточки, либо успешной авторизации
@@ -182,7 +183,7 @@ public class LoginPage {
         
         // Шаг 1: Ожидаем завершения авторизации и появления страницы выбора карточки
         // Используем умное ожидание через SmartWaits
-        com.bft.test.helpers.SmartWaits.waitForPageLoad(com.bft.constants.TimeoutConstants.EPGU_AUTH_WAIT);
+        com.bft.test.helpers.SmartWaits.waitForPageLoad(TimeoutConstants.EPGU_AUTH_WAIT);
         
         // Шаг 2: Ожидаем появления страницы выбора карточки "Войти как"
         // Это происходит ПОСЛЕ ввода логина и пароля, но ДО выбора организации
@@ -308,7 +309,7 @@ public class LoginPage {
         
         try {
             // Ожидаем загрузки страницы после выбора карточки
-            com.bft.test.helpers.SmartWaits.waitForPageLoad(com.bft.constants.TimeoutConstants.PAGE_LOAD_WAIT);
+            com.bft.test.helpers.SmartWaits.waitForPageLoad(TimeoutConstants.PAGE_LOAD_WAIT);
             
             // Ожидаем появления элемента user-name с несколькими стратегиями
             boolean userElementFound = false;

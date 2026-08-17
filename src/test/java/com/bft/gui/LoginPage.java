@@ -1,280 +1,229 @@
 package com.bft.gui;
 
-import com.bft.security.masking.SecureLogger;
-import com.codeborne.selenide.Condition;
-import com.codeborne.selenide.Selenide;
+import com.bft.enums.TimeoutConstants;
 import com.bft.enums.UIType;
-import java.time.Duration;
+import com.bft.security.masking.SecureLogger;
+import com.codeborne.selenide.ElementsCollection;
+import com.codeborne.selenide.Selenide;
+import com.codeborne.selenide.SelenideElement;
+import com.codeborne.selenide.WebDriverRunner;
+import org.openqa.selenium.By;
 
-import static com.codeborne.selenide.Selenide.$;
-import static com.codeborne.selenide.Selenide.$x;
+import java.util.List;
+import java.util.stream.Collectors;
 
+import static com.codeborne.selenide.Condition.*;
+import static com.codeborne.selenide.Selenide.*;
 
+/**
+ * Страница авторизации.
+ * Рефакторинг: устойчивые локаторы, декомпозиция логики ЕПГУ, надежные ожидания.
+ */
 public class LoginPage {
 
     private final SecureLogger logger = SecureLogger.getLogger(getClass());
 
+    // === Локаторы (вынесены в константы для удобства поддержки) ===
+    private static final String LOGIN_INPUT_XPATH = "//div[contains(@class, 'loginControl')]//input[@class='loginInput'][1]";
+    private static final String PASSWORD_INPUT_XPATH = "//div[contains(@class, 'loginControl')]//input[@class='loginInput'][2]";
+    private static final String LOGIN_BUTTON_XPATH = "//button[contains(@class, 'loginButton') or contains(@class, 'is-primary')]";
+    private static final String USER_NAME_BLOCK_XPATH = "//div[contains(@class, 'user-name')]";
+    private static final String LOGOUT_BUTTON_XPATH = "//button[contains(@class, 'logout')]";
+    private static final String EP_GU_LINK_XPATH = "//a[contains(@href, '/esia') or contains(text(), 'ЕПГУ')]";
+    private static final String CARD_SELECT_XPATH = "//*[@class='selectUserCardName']";
+    private static final String ALERT_CLOSE_XPATH = "//i[contains(@class, 'ps-icon-x') and contains(@class, 'ps-alert-close')]";
+
+    /**
+     * Открывает страницу авторизации по типу окружения.
+     */
     public LoginPage open(UIType uiType) {
-
+        logger.info("Открытие страницы авторизации: {}", uiType);
         Selenide.open(uiType.value);
+        waitForPageStability();
         return this;
     }
 
+    /**
+     * Открывает страницу авторизации по прямому URL (для совместимости).
+     */
+    public LoginPage open(String url) {
+        logger.info("Открытие страницы авторизации по URL: {}", url);
+        Selenide.open(url);
+        waitForPageStability();
+        return this;
+    }
+
+    /**
+     * Стандартная авторизация (Логин/Пароль).
+     */
     public LoginPage authorize(String login, String password) {
-        logger.info("Выполняем авторизацию пользователя: {}", login);
+        logger.info("Выполнение стандартной авторизации для пользователя: {}", login);
 
-        /*$x(String.format("//*[@id= '%s')", login)).setValue(login);*/
-        /*$("input.loginInput#login").setValue(login);*/
-        $x("//div[@class = 'field loginControl']//input[@class = 'loginInput']").setValue(login);
-        /*$("input.loginInput#pass").setValue(password);*/
-        $x("//div[@class = 'field loginControl']//input[@class = 'loginInput secondInput']").setValue(password);
-        /*$("button.loginButton").click();*/
-        $x("//button[contains(@class,'button is-')]").click();
-        waitForLoading();
+        $(By.xpath(LOGIN_INPUT_XPATH)).shouldBe(visible, TimeoutConstants.DEFAULT_WAIT).setValue(login);
+        $(By.xpath(PASSWORD_INPUT_XPATH)).shouldBe(visible, TimeoutConstants.DEFAULT_WAIT).setValue(password);
+        $(By.xpath(LOGIN_BUTTON_XPATH)).shouldBe(enabled, TimeoutConstants.DEFAULT_WAIT).click();
+
+        waitForUserLoaded();
+        logger.info("Авторизация успешна");
         return this;
     }
 
+    /**
+     * Авторизация через ЕПГУ (Госуслуги).
+     * Разбита на этапы: клик -> ввод данных -> выбор карточки.
+     */
     public LoginPage authorizeEPGU(String login, String password) {
-        logger.info("Выполняем авторизацию через ЕПГУ для пользователя: {}", login);
+        logger.info("Начало авторизации через ЕПГУ для: {}", login);
 
-        $x("//a[starts-with(@href,'/esia')]").click();
-        $("input#login").shouldBe(Condition.enabled,Duration.ofSeconds(70));
-        $("input#login").setValue(login);
-        $("input#password").setValue(password);
-        $x("//button[contains(text(), 'Войти')]").shouldBe(Condition.enabled,Duration.ofSeconds(70)).click();
-        
-        // Ожидаем завершения авторизации - форма ЕПГУ должна исчезнуть
-        // или появиться страница выбора карточки, или пользователь уже авторизован
-        try {
-            // Используем умное ожидание через SmartWaits
-            com.bft.test.helpers.SmartWaits.waitForPageLoad(com.bft.constants.TimeoutConstants.EPGU_AUTH_WAIT);
-            
-            // Дополнительная проверка: ожидаем либо исчезновения формы авторизации,
-            // либо появления страницы выбора карточки, либо успешной авторизации
-            com.codeborne.selenide.Selenide.Wait().until(webDriver -> {
-                // Проверяем, что форма авторизации исчезла
-                boolean loginFormGone = webDriver.findElements(org.openqa.selenium.By.id("login")).isEmpty() ||
-                    !webDriver.findElement(org.openqa.selenium.By.id("login")).isDisplayed();
-                
-                // Проверяем появление страницы выбора карточки
-                boolean cardSelectionPageAppeared = !webDriver.findElements(
-                    org.openqa.selenium.By.xpath("//*[@class = 'selectUserCardName']")).isEmpty();
-                
-                // Проверяем успешную авторизацию (если карточка одна, выбор может быть пропущен)
-                boolean userLoggedIn = !webDriver.findElements(
-                    org.openqa.selenium.By.xpath("//div[contains(@class, 'user-name')]")).isEmpty();
-                
-                return loginFormGone && (cardSelectionPageAppeared || userLoggedIn);
-            });
-            
-            logger.debug("Авторизация через ЕПГУ завершена");
-        } catch (Exception e) {
-            logger.warn("Ожидание завершения авторизации прервано: {}", e.getMessage());
-            // Продолжаем выполнение - возможно, авторизация уже завершена
-            // Метод selectUserCardEPGU сам проверит состояние страницы
+        // 1. Клик по кнопке ЕПГУ
+        $(By.xpath(EP_GU_LINK_XPATH)).shouldBe(visible, TimeoutConstants.LONG_WAIT).click();
+
+        // 2. Ввод данных на стороне Госуслуг
+        SelenideElement loginField = $("#login");
+        SelenideElement passField = $("#password");
+        SelenideElement submitBtn = $x("//button[contains(text(), 'Войти')]");
+
+        loginField.shouldBe(visible, TimeoutConstants.EPGU_AUTH_WAIT).setValue(login);
+        passField.shouldBe(visible, TimeoutConstants.DEFAULT_WAIT).setValue(password);
+        submitBtn.shouldBe(enabled, TimeoutConstants.DEFAULT_WAIT).click();
+
+        // 3. Ожидание редиректа и выбора карточки
+        waitForEsguRedirect();
+
+        // Если появилась страница выбора карточки — выбираем её
+        if ($$(By.xpath(CARD_SELECT_XPATH)).size() > 0) {
+            logger.info("Обнаружен выбор карточки, переходим к селекции...");
+            selectUserCardFromList(login);
+        } else {
+            logger.info("Выбор карточки не требуется (одна карта или авто-вход)");
         }
-        
+
+        waitForUserLoaded();
+        logger.info("Авторизация через ЕПГУ завершена успешно");
         return this;
     }
 
-    public LoginPage selectUserCardEPGU(String usercard) {
-        // Используем улучшенную логику из com.bft.ui.pages.LoginPage
-        // для надежности и обработки проблем с кодировкой
-        logger.info("Выбор карточки пользователя: {}", usercard);
-        
-        // Ожидаем завершения авторизации и появления страницы выбора карточки
-        com.bft.test.helpers.SmartWaits.waitForPageLoad(com.bft.constants.TimeoutConstants.EPGU_AUTH_WAIT);
-        
-        // Ожидаем появления страницы выбора карточки "Войти как"
-        // Это происходит ПОСЛЕ ввода логина и пароля, но ДО выбора организации
-        logger.debug("Ожидаем появления страницы выбора карточки...");
-        try {
-            $x("//*[@class = 'selectUserCardName']").shouldBe(Condition.exist, Duration.ofSeconds(60));
-            logger.debug("Страница выбора карточки загружена");
-        } catch (Exception e) {
-            // Проверяем, может быть пользователь уже авторизован (если карточка одна)
-            try {
-                $x("//div[contains(@class, 'user-name')]").shouldBe(Condition.visible, Duration.ofSeconds(5));
-                logger.info("Пользователь уже авторизован, выбор карточки не требуется");
-                return this;
-            } catch (Exception e2) {
-                logger.error("Страница выбора карточки не появилась и пользователь не авторизован");
-                throw new RuntimeException(
-                    com.bft.test.helpers.AssertionHelper.formatPageStateError(
-                        "Страница выбора карточки",
-                        "должна быть загружена после авторизации",
-                        "не загружена. Возможно, авторизация не прошла успешно"
-                    ), e
-                );
-            }
-        }
-        
-        // Ищем карточку с несколькими стратегиями
-        String normalizedCard = usercard.trim();
-        // Извлекаем номер организации (последние цифры после пробела или дефиса)
-        String orgNumber = normalizedCard.replaceAll(".*?(-?\\d+)$", "$1");
-        logger.debug("Ищем карточку: '{}', номер организации: '{}'", normalizedCard, orgNumber);
-        
-        boolean cardFound = false;
-        
-        // Стратегия 1: Поиск по номеру организации (самый надежный способ)
-        // Используем contains() для поиска по номеру, так как он уникален
-        try {
-            logger.debug("Стратегия 1: Поиск по номеру организации '{}'", orgNumber);
-            $x("//*[@class = 'selectUserCardName' and contains(text(), '" + orgNumber + "')]")
-                .shouldBe(Condition.visible, Duration.ofSeconds(10))
-                .click();
-            cardFound = true;
-            logger.info("Карточка найдена по номеру организации: {}", orgNumber);
-        } catch (Exception e) {
-            logger.debug("Поиск по номеру организации не удался: {}", e.getMessage());
-        }
-        
-        // Стратегия 2: Перебор всех карточек и поиск по номеру или части текста
-        if (!cardFound) {
-            try {
-                logger.debug("Стратегия 2: Перебор всех карточек");
-                com.codeborne.selenide.ElementsCollection cards = com.codeborne.selenide.Selenide.$$x("//*[@class = 'selectUserCardName']");
-                logger.debug("Найдено карточек на странице: {}", cards.size());
-                
-                for (com.codeborne.selenide.SelenideElement card : cards) {
-                    String cardText = card.getText().trim();
-                    logger.debug("Проверяем карточку: '{}'", cardText);
-                    
-                    // Проверяем совпадение по номеру организации (самый надежный способ)
-                    if (cardText.contains(orgNumber)) {
-                        logger.info("Найдена карточка по номеру: '{}'", cardText);
-                        card.shouldBe(Condition.visible).click();
-                        cardFound = true;
-                        break;
-                    }
-                    
-                    // Дополнительная проверка: частичное совпадение текста (на случай проблем с кодировкой)
-                    if (normalizedCard.toLowerCase().contains(cardText.toLowerCase()) ||
-                        cardText.toLowerCase().contains(normalizedCard.toLowerCase())) {
-                        logger.info("Найдена карточка по частичному совпадению: '{}'", cardText);
-                        card.shouldBe(Condition.visible).click();
-                        cardFound = true;
-                        break;
-                    }
-                }
-            } catch (Exception e) {
-                logger.error("Ошибка при переборе карточек: {}", e.getMessage());
-            }
-        }
-        
-        // Стратегия 3: Точное совпадение (последняя попытка, может не сработать из-за проблем с кодировкой)
-        if (!cardFound) {
-            try {
-                logger.debug("Стратегия 3: Точное совпадение текста");
-                // Используем concat() для правильной обработки UTF-8 в XPath
-                String escapedCard = normalizedCard.replace("'", "''"); // Экранируем одинарные кавычки
-                $x("//*[@class = 'selectUserCardName' and normalize-space(text()) = '" + escapedCard + "']")
-                    .shouldBe(Condition.visible, Duration.ofSeconds(10))
-                    .click();
-                cardFound = true;
-                logger.info("Карточка найдена по точному совпадению");
-            } catch (Exception e) {
-                logger.debug("Точное совпадение не найдено: {}", e.getMessage());
-            }
-        }
-        
-        if (!cardFound) {
-            throw new RuntimeException("Карточка пользователя '" + normalizedCard + "' не найдена");
-        }
-        
-        // Ожидаем завершения выбора карточки
-        // После клика по карточке страница может перезагрузиться, поэтому:
-        // 1. Сначала ждем загрузки страницы
-        // 2. Затем ждем появления элемента user-name
-        logger.debug("Карточка выбрана, ожидаем завершения авторизации...");
-        
-        try {
-            // Ожидаем загрузки страницы после выбора карточки
-            com.bft.test.helpers.SmartWaits.waitForPageLoad(com.bft.constants.TimeoutConstants.PAGE_LOAD_WAIT);
-            
-            // Ожидаем появления элемента user-name с несколькими стратегиями
-            boolean userElementFound = false;
-            
-            // Стратегия 1: Стандартный селектор user-name (Selenide при таймауте бросает AssertionError — ловим Throwable)
-            try {
-                $x("//div[contains(@class, 'user-name')]").shouldBe(Condition.visible, Duration.ofSeconds(30));
-                userElementFound = true;
-                logger.debug("Элемент user-name найден по стандартному селектору");
-            } catch (Throwable e) {
-                logger.debug("Стандартный селектор user-name не сработал: {}", e.getMessage());
-            }
-            
-            // Стратегия 2: Альтернативные селекторы
-            if (!userElementFound) {
-                try {
-                    $x("//div[contains(@class, 'user')]").shouldBe(Condition.visible, Duration.ofSeconds(10));
-                    userElementFound = true;
-                    logger.debug("Элемент найден по альтернативному селектору");
-                } catch (Throwable e) {
-                    logger.debug("Альтернативный селектор не сработал: {}", e.getMessage());
-                }
-            }
-            
-            // Стратегия 3: Проверка по URL - если мы на главной странице, значит авторизованы
-            if (!userElementFound) {
-                try {
-                    String currentUrl = com.codeborne.selenide.WebDriverRunner.getWebDriver().getCurrentUrl();
-                    logger.debug("Текущий URL: {}", currentUrl);
-                    
-                    // Если URL содержит признаки авторизованной страницы (не страница логина)
-                    if (!currentUrl.contains("/login") && !currentUrl.contains("/esia") && 
-                        !currentUrl.contains("auth") && currentUrl.contains("evs")) {
-                        logger.info("Авторизация завершена (определено по URL)");
-                        userElementFound = true;
-                    }
-                } catch (Exception e) {
-                    logger.warn("Не удалось проверить URL: {}", e.getMessage());
-                }
-            }
-            
-            if (!userElementFound) {
-                // Получаем текущий URL и HTML для отладки
-                String currentUrl = com.codeborne.selenide.WebDriverRunner.getWebDriver().getCurrentUrl();
-                String pageSource = com.codeborne.selenide.WebDriverRunner.getWebDriver().getPageSource();
-                logger.error("Элемент user-name не найден. URL: {}", currentUrl);
-                logger.error("Размер страницы: {} символов", pageSource.length());
-                
-                throw new RuntimeException(
-                    com.bft.test.helpers.AssertionHelper.formatPageStateError(
-                        "Элемент авторизации",
-                        "должен появиться после выбора карточки",
-                        "не найден. URL: " + currentUrl
-                    )
-                );
-            }
-            
-            logger.info("Авторизация успешно завершена после выбора карточки");
-        } catch (RuntimeException e) {
-            // Пробрасываем RuntimeException дальше
-            throw e;
-        } catch (Exception e) {
-            logger.error("Ошибка при ожидании завершения авторизации: {}", e.getMessage());
-            throw new RuntimeException("Не удалось дождаться завершения авторизации после выбора карточки", e);
-        }
-        
+    /**
+     * Явный выбор карточки (если метод авторизации не вызвал его автоматически).
+     */
+    public LoginPage selectUserCardEPGU(String userCard) {
+        logger.info("Ручной выбор карточки: {}", userCard);
+        waitForEsguRedirect();
+        selectUserCardFromList(userCard);
+        waitForUserLoaded();
         return this;
     }
 
-    private void waitForLoading() {
-        $x("//div[contains(@class, 'user-name')]").shouldBe(Condition.visible, Duration.ofSeconds(60));
-    }
-
+    /**
+     * Выход из системы.
+     */
     public LoginPage logOut() {
-        if (
-                $x("//div[@class= 'ps-alert-top']").isDisplayed())
-        {$x("//i[@class= 'ps-icon-x ps-alert-close']").click();}
+        logger.info("Выполнение выхода из системы");
 
-        // если сообщение об ошибке запроса сервера,закрыть ее
-        $x("//div[contains(@class, 'user-name')]").click();
-        $x("//button[contains(@class, 'logout')]").click();
-        $x("//div[contains(text(), 'Войдите в систему')]").shouldBe(Condition.visible, Duration.ofSeconds(60));
+        try {
+            // Закрыть алерт если есть
+            if ($(By.xpath(ALERT_CLOSE_XPATH)).exists()) {
+                $(By.xpath(ALERT_CLOSE_XPATH)).click();
+            }
 
+            // Меню пользователя -> Выход
+            $(By.xpath(USER_NAME_BLOCK_XPATH)).shouldBe(visible, TimeoutConstants.DEFAULT_WAIT).click();
+            $(By.xpath(LOGOUT_BUTTON_XPATH)).shouldBe(visible, TimeoutConstants.DEFAULT_WAIT).click();
+
+            // Ожидание экрана логина
+            $(By.xpath(LOGIN_INPUT_XPATH)).shouldBe(visible, TimeoutConstants.LONG_WAIT);
+            logger.info("Выход выполнен успешно");
+        } catch (Exception e) {
+            logger.warn("При выходе произошла ошибка (возможно сессия уже истекла): {}", e.getMessage());
+        }
         return this;
+    }
+
+    // === Приватные методы помощи (Helpers) ===
+
+    /**
+     * Ожидание стабильности страницы после открытия.
+     */
+    private void waitForPageStability() {
+        $(By.xpath(LOGIN_INPUT_XPATH)).shouldBe(exist, TimeoutConstants.PAGE_LOAD_WAIT);
+    }
+
+    /**
+     * Ожидание завершения редиректа от ЕПГУ.
+     */
+    private void waitForEsguRedirect() {
+        logger.debug("Ожидание завершения редиректа ЕПГУ...");
+        Wait().until(driver -> {
+            String url = WebDriverRunner.url();
+            boolean isRedirectFinished = !url.contains("/esia") && !url.contains("auth.");
+            boolean isCardSelectionVisible = $$(By.xpath(CARD_SELECT_XPATH)).size() > 0;
+            boolean isUserLoggedIn = $(By.xpath(USER_NAME_BLOCK_XPATH)).exists();
+
+            return isRedirectFinished || isCardSelectionVisible || isUserLoggedIn;
+        });
+    }
+
+    /**
+     * Логика выбора карточки из списка с несколькими стратегиями поиска.
+     */
+    private void selectUserCardFromList(String userCard) {
+        String normalizedCard = userCard.trim();
+        // Извлекаем номер организации (последние цифры)
+        String orgNumber = normalizedCard.replaceAll(".*?(-?\\d+)$", "$1");
+
+        logger.debug("Поиск карточки. Полный текст: '{}', Номер_org: '{}'", normalizedCard, orgNumber);
+
+        ElementsCollection cards = $$(By.xpath(CARD_SELECT_XPATH));
+        if (cards.isEmpty()) {
+            throw new RuntimeException("Список карточек пуст. Авторизация невозможна.");
+        }
+
+        boolean found = false;
+        for (SelenideElement card : cards) {
+            String text = card.getText().trim();
+
+            // Стратегия 1: По номеру организации (самая надежная)
+            if (text.contains(orgNumber)) {
+                logger.info("Карточка найдена по номеру организации: {}", text);
+                card.scrollTo().shouldBe(visible).click();
+                found = true;
+                break;
+            }
+
+            // Стратегия 2: Частичное совпадение текста
+            if (text.toLowerCase().contains(normalizedCard.toLowerCase())) {
+                logger.info("Карточка найдена по тексту: {}", text);
+                card.scrollTo().shouldBe(visible).click();
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) {
+            // Собираем список доступных карточек для лога ошибки (используем Collectors для Java 11)
+            List<String> availableCards = cards.stream()
+                    .map(SelenideElement::getText)
+                    .collect(Collectors.toList());
+
+            logger.error("Доступные карточки: {}", availableCards);
+            throw new RuntimeException("Карточка пользователя '" + normalizedCard + "' не найдена в списке. Доступны: " + availableCards);
+        }
+
+        // Небольшая пауза для отработки клика
+        Selenide.sleep(500);
+    }
+
+    /**
+     * Универсальное ожидание появления блока с именем пользователя.
+     */
+    private void waitForUserLoaded() {
+        logger.debug("Ожидание появления имени пользователя...");
+        try {
+            $(By.xpath(USER_NAME_BLOCK_XPATH)).shouldBe(visible, TimeoutConstants.LONG_WAIT);
+        } catch (Exception e) {
+            String currentUrl = WebDriverRunner.url();
+            logger.error("Не удалось дождаться авторизации. Текущий URL: {}", currentUrl);
+            throw new RuntimeException("Авторизация не удалась: элемент user-name не появился.", e);
+        }
     }
 }

@@ -1,24 +1,24 @@
 package com.bft.steps;
 
+import com.bft.enums.ReportFormType;
+import com.bft.enums.ReportXmlResource;
+import com.bft.enums.UIType;
+import com.bft.enums.UITypeSelector;
+import com.bft.gui.LoginPage;
 import com.bft.helpers.TestConfig;
 import com.bft.security.CredentialManager;
 import com.bft.security.TestUsers;
 import com.bft.security.masking.SecureLogger;
+import com.bft.ui.component.GracePeriodDialogComponent;
+import com.bft.ui.pages.MainPage;
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.Selenide;
-import com.bft.enums.ReportFormType;
-import com.bft.enums.ReportXmlResource;
-import com.bft.enums.UIType;
-import com.bft.gui.LoginPage;
-import com.bft.ui.pages.MainPage;
 import io.qameta.allure.Step;
 import org.springframework.stereotype.Component;
 
-import static com.bft.constants.TimeoutConstants.*;
-
+import static com.bft.enums.TimeoutConstants.*;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$x;
-import com.bft.enums.UITypeSelector;
 
 /**
  * Steps класс для работы с отчетами СЗВ в системе EVS
@@ -145,13 +145,12 @@ public class SzvReportsSteps {
      * 
      * @param performerName ФИО исполнителя для поиска (например, "Котов Олег Олегович")
      */
-    @Step("Поиск исполнителя")
-    public void searchPerformer(){
+    @Step("Поиск исполнителя по имени: {performerName}")
+    public void searchPerformer(String performerName) { // Убедитесь, что параметр есть
         new MainPage()
-                .clickInputLabel("Исполнитель в архивной организации","Котов Олег Олегович")
+                .clickInputLabel("Исполнитель в архивной организации", performerName) // Используем параметр
                 .clickMainButton("Применить");
     }
-
     /**
      * Выполняет поиск запроса по сохраненному номеру и открывает карточку
      * 
@@ -833,6 +832,7 @@ public class SzvReportsSteps {
         new MainPage()
                 .openTab("ЛК Страхователя")
                 .openTab("Отчеты")
+                .openTab("Список отчетов")
                 .waitTableToLoad()
                 .clickButton("Добавить отчет");
     }
@@ -915,11 +915,11 @@ public class SzvReportsSteps {
     public void addGeneralInfoISH() {
         new MainPage()
                 .clickMuiInputSpan("Календарный год", "2007")
-                .inputFieldPerson("headSurname", TestConfig.InsuredPerson.LAST_NAME_1)
-                .inputFieldPerson("headName", TestConfig.InsuredPerson.FIRST_NAME_1)
-                .inputFieldPerson("headMiddlename", TestConfig.InsuredPerson.MIDDLE_NAME_1)
-                .clickSpanId("headPosition", TestConfig.InsuredPerson.JOB)
-                .clickMuiInputBase("insuredPersonsCount", "1");
+                .inputFieldPerson("directorLastName-label", TestConfig.InsuredPerson.LAST_NAME_1)
+                .inputFieldPerson("directorFirstName-label", TestConfig.InsuredPerson.FIRST_NAME_1)
+                .inputFieldPerson("directorMiddleName-label", TestConfig.InsuredPerson.MIDDLE_NAME_1)
+                .clickSpanId("pgs-help-label", TestConfig.InsuredPerson.JOB)
+                .clickMuiInputBase("personCount-label", "1");
         fillBasisSectionISH();
     }
 
@@ -1148,32 +1148,51 @@ public class SzvReportsSteps {
 
     /**
      * Добавляет сведения о стаже застрахованного лица.
-     * <p>Заполняет форму: Тип сведений (Исходная), Отчетный период (2023), период стажа 01.01.2025–01.12.2025
-     * и обязательные поля формы периода (код территориальных условий, коэффициент, класс условий труда и др.).
-     * <p>Соответствует сценарию Playwright: 3-я «Добавить» → Тип/Период → 5-я «Добавить» (форма периода) →
-     * Начало/Конец периода → остальные поля → Escape → 6-я «Добавить» (подтвердить период).
+     * Использует новый компонент GracePeriodDialogComponent для надежной работы с формой.
      */
     @Step(value = "Добавление СТАЖ")
-    public void addSTAJ(){
-        new MainPage()
+    public void addSTAJ() {
+        MainPage mainPage = new MainPage();
+
+        mainPage
                 .clickBtnSecondary3("Добавить")
-                .muiSpanValue("Тип сведений","option-0")   // Исходная
-                .muiSpanValue("Отчетный период","option-0") // 2023
-                .clickBtnSecondary5("Добавить")            // Открыть форму периода стажа
-                .inputDatePeriodStaj("01.01.2025", "01.12.2025")
-                .clickAddInGracePeriodTable()              // «Добавить» в таблице Льготный стаж (появляется форма строки)
-                .selectInGracePeriodFormByName("tuBasis", "МКС")           // Код территориальных условий
-                .inputInGracePeriodCoefficientAndBidShare("0.78", "0.65")   // Коэффициент и Доля ставки (по метке или по порядку полей)
-                .selectInGracePeriodFormByNameOrLabel("isGroundCode", new String[]{"Основание", "Код основания"}, "ПОЛЕ")
-                .selectInGracePeriodDialogByLabelFirstMatch(new String[]{"Код дополнительных сведений", "Дополнительные сведения", "дополнительных", "сведений", "Код дополнительных"}, "ДЕКРЕТ")
-                .selectInGracePeriodDialogByLabelFirstMatch(new String[]{"Код особых условий труда", "Особые условия труда"}, "-2")
-                .selectInGracePeriodDialogByLabelFirstMatch(new String[]{"Код позиции списка", "Позиция списка"}, "11105000")
-                .selectInGracePeriodFormByNameOrLabel("vlForDnpCode", new String[]{"Код для ВЛ ДНП", "ВЛ для ДНП"}, "-СП")
-                .inputInGracePeriodFormByNameOrLabel("vlForDnpBidShare", new String[]{"Доля для ВЛ ДНП", "Доля ставки"}, "0.52")
-                .inputInGracePeriodDialogByLabelFirstMatch(new String[]{"Номер рабочего места", "Рабочее место"}, "54")
-                .selectInGracePeriodDialogByLabelFirstMatch(new String[]{"Класс условий труда", "Класс условий"}, "3.1")
-                .clickSaveInGracePeriodFormDialog()       // Сохранить строку в форме «Льготный стаж» (не Escape!)
-                .clickBtnSecondary6("Добавить");         // Подтвердить добавление периода
+                .muiSpanValue("Тип сведений", "option-0")   // Исходная
+                .muiSpanValue("Отчетный период", "option-0") // 2023
+                .clickBtnSecondary5("Добавить");            // Открыть форму периода стажа
+
+        // === Начало работы с компонентом диалога ===
+        GracePeriodDialogComponent graceDialog = new GracePeriodDialogComponent();
+
+        graceDialog.fillPeriodDates("01.01.2025", "01.12.2025")
+                .clickAddInTable()              // «Добавить» в таблице (открывает форму строки)
+                .selectInFormByName("tuBasis", "МКС")           // Код территориальных условий
+                .fillCoefficientAndBidShare("0.78", "0.65")     // Коэффициент и Доля ставки
+
+                .selectByFieldOrLabel("isGroundCode", new String[]{"Основание", "Код основания"}, "ПОЛЕ")
+                .selectByLabelVariants(new String[]{"Код дополнительных сведений", "Дополнительные сведения", "дополнительных", "сведений", "Код дополнительных"}, "ДЕКРЕТ")
+                .selectByLabelVariants(new String[]{"Код особых условий труда", "Особые условия труда"}, "-2")
+                .selectByLabelVariants(new String[]{"Код позиции списка", "Позиция списка"}, "11105000")
+
+                .inputByFieldOrLabel("vlForDnpCode", new String[]{"Код для ВЛ ДНП", "ВЛ для ДНП"}, "-СП")
+                .inputByFieldOrLabel("vlForDnpBidShare", new String[]{"Доля для ВЛ ДНП", "Доля ставки"}, "0.52")
+                .inputByLabelVariants(new String[]{"Номер рабочего места", "Рабочее место"}, "54")
+                .selectByLabelVariants(new String[]{"Класс условий труда", "Класс условий"}, "3.1")
+
+                .clickSaveInForm();             // Сохранить строку
+
+        // === Возвращаем управление в MainPage для финального действия ===
+        // После сохранения форма строки закрывается, остается родительский диалог.
+        // Кнопка "Добавить" (подтверждение периода) находится в нем.
+        // Нам нужно найти её. Так как graceDialog ссылается на старый элемент (который мог перерисоваться),
+        // лучше создать новый экземпляр или найти кнопку глобально.
+
+        new GracePeriodDialogComponent()
+                .clickAddInTable(); // Используем тот же метод для кнопки подтверждения в родителе, если логика совпадает,
+        // либо явно кликаем кнопку ниже.
+
+        // Явный клик по кнопке подтверждения периода (6-я кнопка "Добавить" в исходном коде)
+        // Так как мы уже в контексте родителя, можно сделать так:
+        mainPage.clickBtnSecondary6("Добавить");
     }
 
     /**
