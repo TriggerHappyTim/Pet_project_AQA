@@ -2,13 +2,13 @@
 
 [![Java](https://img.shields.io/badge/Java-11-orange)](https://openjdk.java.net/)
 [![Maven](https://img.shields.io/badge/Maven-3.6%2B-blue)](https://maven.apache.org/)
-[![Selenide](https://img.shields.io/badge/Selenide-6.19.0-green)](https://selenide.org/)
+[![Playwright](https://img.shields.io/badge/Playwright-1.49.0-green)](https://playwright.dev/java/)
 [![TestNG](https://img.shields.io/badge/TestNG-7.8.0-red)](https://testng.org/)
 [![Allure](https://img.shields.io/badge/Allure-2.22.2-purple)](https://docs.qameta.io/allure/)
 
 ## 📋 Описание
 
-**EVS Testing Framework** — фреймворк для автоматизированного UI-тестирования системы ЕВС (Единая Вычислительная Система). Построен на Java 11 + TestNG + Selenide + Allure. Поддерживает два ЛК: **ЛК Страхователя** и **ЛК Архивной организации**.
+**EVS Testing Framework** — фреймворк для автоматизированного UI-тестирования системы ЕВС (Единая Вычислительная Система). Построен на Java 11 + TestNG + Playwright + Allure. Поддерживает два ЛК: **ЛК Страхователя** и **ЛК Архивной организации**.
 
 ### 🎯 Основные возможности
 
@@ -43,7 +43,7 @@
 │                    (Configuration, Security)               │
 ├─────────────────────────────────────────────────────────────┤
 │                    Внешние инструменты                      │
-│                    (Selenide, TestNG, Allure)              │
+│                    (Playwright, TestNG, Allure)              │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -512,11 +512,10 @@ mvn clean install -U
 
 #### Браузер не запускается
 ```bash
-# Проверить WebDriver
-mvn exec:java -Dexec.mainClass="io.github.bonigarcia.wdm.WebDriverManager"
+# Install Playwright browsers
+mvn exec:java -e -Dexec.mainClass=com.microsoft.playwright.CLI -Dexec.args="install"
 
-# Локальный запуск
-System.setProperty("webdriver.chrome.driver", "/path/to/chromedriver");
+# Playwright needs no chromedriver - it drives the browser directly
 ```
 
 #### Allure отчет пустой
@@ -534,7 +533,7 @@ mvn allure:report -Dallure.results.directory=allure-results
 |-----------|--------|------------|
 | Java | 11 | Язык |
 | TestNG | 7.8.0 | Тестовый фреймворк |
-| Selenide | 6.19.0 | UI-автоматизация |
+| Playwright | 1.49.0 | UI-автоматизация |
 | Allure | 2.22.2 | Отчетность |
 | Spring Boot | 2.6.14 | Базовый фреймворк |
 | Lombok | 1.18.20 | Сокращение boilerplate |

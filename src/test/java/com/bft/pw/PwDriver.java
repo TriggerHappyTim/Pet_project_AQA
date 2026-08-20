@@ -2,7 +2,9 @@ package com.bft.pw;
 
 import com.bft.pw.logging.PwLogs;
 import com.microsoft.playwright.Page;
+import com.microsoft.playwright.options.LoadState;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,14 +62,21 @@ public class PwDriver {
                 mapped[i] = args[i];
             }
         }
-        if (mapped.length == 0) {
-            return page.evaluate(script);
-        }
-        return page.evaluate(script, mapped);
+        return PwSession.evaluate(page, script, mapped);
     }
 
     public PwTargetLocator switchTo() {
         return new PwTargetLocator();
+    }
+
+    /**
+     * Ожидает завершения загрузки страницы через нативный Playwright-механизм.
+     * Заменяет Selenium-поллинг {@code document.readyState}, который во время
+     * навигации завершается ошибкой "Execution context was destroyed".
+     */
+    public void waitForLoad(Duration timeout) {
+        page.waitForLoadState(LoadState.LOAD,
+                new Page.WaitForLoadStateOptions().setTimeout(timeout.toMillis()));
     }
 
     public PwNavigation navigate() {

@@ -185,7 +185,7 @@ public class PwElement implements SelenideElement {
             return false;
         }
         try {
-            Object res = page().evaluate("document.activeElement === arguments[0]", handle);
+            Object res = PwSession.evaluate(page(), "document.activeElement === arguments[0]", handle);
             return Boolean.TRUE.equals(res);
         } catch (Exception e) {
             return false;
@@ -607,10 +607,7 @@ public class PwElement implements SelenideElement {
                 mapped[i] = args[i];
             }
         }
-        if (mapped.length == 0) {
-            return page().evaluate(script);
-        }
-        return page().evaluate(script, mapped);
+        return PwSession.evaluate(page(), script, mapped);
     }
 
     // ================= Внутренние объекты =================

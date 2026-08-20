@@ -229,10 +229,29 @@ public final class PwSession {
                 mapped[i] = args[i];
             }
         }
-        if (mapped.length == 0) {
-            return page().evaluate(script);
+        return evaluate(page(), script, mapped);
+    }
+
+    /**
+     * Выполняет Selenium-стилевой скрипт (с {@code return} и {@code arguments[N]}) через Playwright.
+     * Playwright Java трактует строку, начинающуюся не с {@code function}, как выражение,
+     * поэтому скрипт оборачивается в тело функции, а аргументы передаются единым JS-массивом.
+     */
+    static Object evaluate(Page page, String script, Object... mapped) {
+        String body = script;
+        for (int i = 0; i < mapped.length; i++) {
+            body = body.replace("arguments[" + i + "]", "__pwArg" + i);
         }
-        return page().evaluate(script, mapped);
+        StringBuilder sb = new StringBuilder("function() { ");
+        for (int i = 0; i < mapped.length; i++) {
+            sb.append("var __pwArg").append(i)
+                    .append(" = arguments[0] != null ? arguments[0][").append(i).append("] : null; ");
+        }
+        sb.append(body).append("\n}");
+        if (mapped.length == 0) {
+            return page.evaluate(sb.toString());
+        }
+        return page.evaluate(sb.toString(), Arrays.asList(mapped));
     }
 
     public static void confirm() {

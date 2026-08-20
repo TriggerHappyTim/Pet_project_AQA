@@ -202,7 +202,7 @@ try {
 ```java
 
 
-import static com.codeborne.selenide.Selenide.$;
+import static com.bft.pw.Selenide.$;
 
 // С использованием стандартного таймаута (10 секунд)
 SmartWaits.waitForElementVisible($(".submit-button"),"Кнопка 'Отправить'");
@@ -318,11 +318,11 @@ softAssert.assertTrue(
 );
 ```
 
-### Использование с Selenide
+### Использование с Selenide-совместимым API (адаптер com.bft.pw)
 
 ```java
 import com.bft.test.helpers.SmartWaits;
-import static com.codeborne.selenide.Selenide.$;
+import static com.bft.pw.Selenide.$;
 
 // Вместо:
 $(".button").shouldBe(Condition.visible, Duration.ofSeconds(50));

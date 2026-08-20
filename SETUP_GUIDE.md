@@ -216,7 +216,7 @@ mvn dependency:tree
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <!-- Версии зависимостей -->
-        <selenide.version>7.0.2</selenide.version>
+        <playwright.version>1.49.0</playwright.version>
         <testng.version>7.8.0</testng.version>
         <allure.version>2.24.0</allure.version>
         <slf4j.version>2.0.9</slf4j.version>
@@ -224,11 +224,11 @@ mvn dependency:tree
     </properties>
 
     <dependencies>
-        <!-- Selenide -->
+        <!-- Playwright -->
         <dependency>
-            <groupId>com.codeborne</groupId>
-            <artifactId>selenide</artifactId>
-            <version>${selenide.version}</version>
+            <groupId>com.microsoft.playwright</groupId>
+            <artifactId>playwright</artifactId>
+            <version>${playwright.version}</version>
         </dependency>
 
         <!-- TestNG -->
@@ -347,8 +347,7 @@ mvn dependency:tree
         <appender-ref ref="ALLURE"/>
     </logger>
 
-    <logger name="com.codeborne.selenide" level="INFO"/>
-    <logger name="org.openqa.selenium" level="WARN"/>
+    <logger name="com.bft.pw" level="INFO"/>
 
     <root level="INFO">
         <appender-ref ref="STDOUT"/>
@@ -838,23 +837,22 @@ mvn clean install
 #### 2. Браузер не запускается
 
 ```bash
-# Проверить WebDriver
-mvn exec:java -Dexec.mainClass="io.github.bonigarcia.wdm.WebDriverManager"
+# Установить браузеры Playwright (скачиваются при первом запуске автоматически)
+mvn exec:java -e -Dexec.mainClass=com.microsoft.playwright.CLI -Dexec.args="install"
 
 # Проверить версию браузера
 google-chrome --version
 
-# Запустить в headless режиме
+# Запустить в headless режиме (поддерживается совместимое свойство selenide.headless)
 System.setProperty("selenide.headless", "true");
 ```
 
 #### 3. Таймауты соединения
 
 ```java
-// Увеличить таймауты
-Configuration.timeout = 10000;        // 10 секунд
-Configuration.pageLoadTimeout = 30000; // 30 секунд
-Configuration.browserSize = "1920x1080";
+// Увеличить таймауты (адаптер com.bft.pw)
+com.bft.pw.Configuration.timeout = java.time.Duration.ofSeconds(10);
+com.bft.pw.Configuration.pollingInterval = java.time.Duration.ofMillis(100);
 ```
 
 #### 4. Проблемы с Allure
@@ -883,14 +881,12 @@ mvn test
 ### Debug режим
 
 ```bash
-# Включить отладку Selenide
-System.setProperty("selenide.reports", "target/screenshots");
-Configuration.reportsFolder = "target/screenshots";
-Configuration.savePageSource = false;
-Configuration.screenshots = true;
+# Отладка (адаптер com.bft.pw)
+# Скриншоты при ошибках сохраняются автоматически в build/reports/screenshots
+com.bft.pw.Selenide.screenshot("debug");
 
-# Логи WebDriver
-System.setProperty("webdriver.chrome.verboseLogging", "true");
+# Показать окно браузера (по умолчанию headless=false)
+mvn test -Dselenide.headless=false
 ```
 
 ## 📞 Поддержка

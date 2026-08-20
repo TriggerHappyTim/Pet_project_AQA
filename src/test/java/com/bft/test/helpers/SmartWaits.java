@@ -146,23 +146,8 @@ public class SmartWaits {
         logger.debug("Ожидание загрузки страницы (таймаут: {}s)", timeout.getSeconds());
         try {
             PwDriver driver = WebDriverRunner.getWebDriver();
-
-            long startTime = System.currentTimeMillis();
-            while (System.currentTimeMillis() - startTime < timeout.toMillis()) {
-                String readyState = (String) driver.executeScript("return document.readyState");
-                if ("complete".equals(readyState)) {
-                    logger.debug("Страница загружена");
-                    return;
-                }
-                Thread.sleep(POLL_INTERVAL_MS);
-            }
-
-            throw new AssertionError(
-                AssertionHelper.formatTimeoutError("Страница", timeout.getSeconds(), "загрузка (readyState != complete)")
-            );
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new AssertionError("Ожидание загрузки страницы прервано", e);
+            driver.waitForLoad(timeout);
+            logger.debug("Страница загружена");
         } catch (Exception e) {
             logger.error("Ошибка при ожидании загрузки страницы: {}", e.getMessage());
             throw new AssertionError("Не удалось дождаться загрузки страницы", e);
