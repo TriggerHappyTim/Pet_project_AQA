@@ -1,8 +1,8 @@
 package com.bft.helpers;
 
 import com.bft.enums.TimeoutConstants;
-import com.codeborne.selenide.Condition;
-import com.codeborne.selenide.SelenideElement;
+import com.bft.pw.Condition;
+import com.bft.pw.SelenideElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,7 +60,7 @@ public class StandardWaits {
      * Использует стандартный таймаут из {@link TimeoutConstants#DEFAULT_WAIT}.
      * 
      * @param element Selenide элемент для ожидания
-     * @throws com.codeborne.selenide.ex.ElementShould если элемент не стал видимым за таймаут
+     * @throws com.bft.pw.ex.ElementShould если элемент не стал видимым за таймаут
      */
     public static void waitForVisible(SelenideElement element) {
         waitForVisible(element, DEFAULT_WAIT);
@@ -71,7 +71,7 @@ public class StandardWaits {
      * 
      * @param element Selenide элемент для ожидания
      * @param timeout максимальное время ожидания
-     * @throws com.codeborne.selenide.ex.ElementShould если элемент не стал видимым за таймаут
+     * @throws com.bft.pw.ex.ElementShould если элемент не стал видимым за таймаут
      */
     public static void waitForVisible(SelenideElement element, Duration timeout) {
         logger.debug("Ожидание видимости элемента с таймаутом: {}", timeout);
@@ -85,7 +85,7 @@ public class StandardWaits {
      * Использует стандартный таймаут.
      * 
      * @param element Selenide элемент для ожидания
-     * @throws com.codeborne.selenide.ex.ElementShould если элемент не стал кликабельным за таймаут
+     * @throws com.bft.pw.ex.ElementShould если элемент не стал кликабельным за таймаут
      */
     public static void waitForClickable(SelenideElement element) {
         waitForClickable(element, DEFAULT_WAIT);
@@ -96,7 +96,7 @@ public class StandardWaits {
      * 
      * @param element Selenide элемент для ожидания
      * @param timeout максимальное время ожидания
-     * @throws com.codeborne.selenide.ex.ElementShould если элемент не стал кликабельным за таймаут
+     * @throws com.bft.pw.ex.ElementShould если элемент не стал кликабельным за таймаут
      */
     public static void waitForClickable(SelenideElement element, Duration timeout) {
         logger.debug("Ожидание кликабельности элемента с таймаутом: {}", timeout);
@@ -110,7 +110,7 @@ public class StandardWaits {
      * Использует стандартный таймаут.
      * 
      * @param element Selenide элемент для ожидания исчезновения
-     * @throws com.codeborne.selenide.ex.ElementShould если элемент не исчез за таймаут
+     * @throws com.bft.pw.ex.ElementShould если элемент не исчез за таймаут
      */
     public static void waitForDisappear(SelenideElement element) {
         waitForDisappear(element, DEFAULT_WAIT);
@@ -121,7 +121,7 @@ public class StandardWaits {
      * 
      * @param element Selenide элемент для ожидания исчезновения
      * @param timeout максимальное время ожидания
-     * @throws com.codeborne.selenide.ex.ElementShould если элемент не исчез за таймаут
+     * @throws com.bft.pw.ex.ElementShould если элемент не исчез за таймаут
      */
     public static void waitForDisappear(SelenideElement element, Duration timeout) {
         logger.debug("Ожидание исчезновения элемента с таймаутом: {}", timeout);
@@ -134,7 +134,7 @@ public class StandardWaits {
      * Ищет элементы с классами, содержащими "loading", "spinner", "loader"
      * и ожидает их исчезновения. Использует короткий таймаут для быстрых операций.
      * 
-     * @throws com.codeborne.selenide.ex.ElementShould если спиннеры не исчезли за таймаут
+     * @throws com.bft.pw.ex.ElementShould если спиннеры не исчезли за таймаут
      */
     public static void waitForSpinnerToDisappear() {
         waitForSpinnerToDisappear(SHORT_WAIT);
@@ -144,13 +144,13 @@ public class StandardWaits {
      * Ожидает исчезновения спиннеров загрузки с кастомным таймаутом
      * 
      * @param timeout максимальное время ожидания
-     * @throws com.codeborne.selenide.ex.ElementShould если спиннеры не исчезли за таймаут
+     * @throws com.bft.pw.ex.ElementShould если спиннеры не исчезли за таймаут
      */
     public static void waitForSpinnerToDisappear(Duration timeout) {
         logger.debug("Ожидание исчезновения спиннеров загрузки с таймаутом: {}", timeout);
         
         try {
-            com.codeborne.selenide.Selenide.$x("//div[contains(@class, 'loading') or contains(@class, 'spinner') or contains(@class, 'loader')]")
+            com.bft.pw.Selenide.$x("//div[contains(@class, 'loading') or contains(@class, 'spinner') or contains(@class, 'loader')]")
                     .shouldBe(Condition.disappear, timeout);
         } catch (Exception e) {
             // Если спиннеры не найдены, это нормально - возможно их нет на странице
@@ -180,7 +180,7 @@ public class StandardWaits {
         logger.debug("Ожидание загрузки страницы с таймаутом: {}", timeout);
         
         // Ожидаем готовности страницы через JavaScript
-        com.codeborne.selenide.Selenide.executeJavaScript(
+        com.bft.pw.Selenide.executeJavaScript(
             "return document.readyState === 'complete'"
         );
         
@@ -195,7 +195,7 @@ public class StandardWaits {
      * Использует таймаут для модальных окон.
      * 
      * @return найденный элемент модального окна
-     * @throws com.codeborne.selenide.ex.ElementShould если модальное окно не появилось за таймаут
+     * @throws com.bft.pw.ex.ElementShould если модальное окно не появилось за таймаут
      */
     public static SelenideElement waitForModal() {
         return waitForModal(MODAL_WAIT);
@@ -206,12 +206,12 @@ public class StandardWaits {
      * 
      * @param timeout максимальное время ожидания
      * @return найденный элемент модального окна
-     * @throws com.codeborne.selenide.ex.ElementShould если модальное окно не появилось за таймаут
+     * @throws com.bft.pw.ex.ElementShould если модальное окно не появилось за таймаут
      */
     public static SelenideElement waitForModal(Duration timeout) {
         logger.debug("Ожидание появления модального окна с таймаутом: {}", timeout);
         
-        SelenideElement modal = com.codeborne.selenide.Selenide.$x(
+        SelenideElement modal = com.bft.pw.Selenide.$x(
             "//div[contains(@class, 'modal') or @role='dialog']"
         );
         modal.shouldBe(Condition.visible, timeout);
@@ -223,7 +223,7 @@ public class StandardWaits {
      * 
      * Использует таймаут для модальных окон.
      * 
-     * @throws com.codeborne.selenide.ex.ElementShould если модальное окно не исчезло за таймаут
+     * @throws com.bft.pw.ex.ElementShould если модальное окно не исчезло за таймаут
      */
     public static void waitForModalToDisappear() {
         waitForModalToDisappear(MODAL_WAIT);
@@ -233,13 +233,13 @@ public class StandardWaits {
      * Ожидает исчезновения модального окна с кастомным таймаутом
      * 
      * @param timeout максимальное время ожидания
-     * @throws com.codeborne.selenide.ex.ElementShould если модальное окно не исчезло за таймаут
+     * @throws com.bft.pw.ex.ElementShould если модальное окно не исчезло за таймаут
      */
     public static void waitForModalToDisappear(Duration timeout) {
         logger.debug("Ожидание исчезновения модального окна с таймаутом: {}", timeout);
         
         try {
-            com.codeborne.selenide.Selenide.$x(
+            com.bft.pw.Selenide.$x(
                 "//div[contains(@class, 'modal') or @role='dialog']"
             ).shouldBe(Condition.disappear, timeout);
         } catch (Exception e) {
@@ -284,7 +284,7 @@ public class StandardWaits {
      * 
      * @param element элемент для проверки текста
      * @param expectedText ожидаемый текст
-     * @throws com.codeborne.selenide.ex.ElementShould если текст не появился за таймаут
+     * @throws com.bft.pw.ex.ElementShould если текст не появился за таймаут
      */
     public static void waitForText(SelenideElement element, String expectedText) {
         waitForText(element, expectedText, DEFAULT_WAIT);
@@ -296,7 +296,7 @@ public class StandardWaits {
      * @param element элемент для проверки текста
      * @param expectedText ожидаемый текст
      * @param timeout максимальное время ожидания
-     * @throws com.codeborne.selenide.ex.ElementShould если текст не появился за таймаут
+     * @throws com.bft.pw.ex.ElementShould если текст не появился за таймаут
      */
     public static void waitForText(SelenideElement element, String expectedText, Duration timeout) {
         logger.debug("Ожидание появления текста '{}' в элементе с таймаутом: {}", expectedText, timeout);
@@ -326,13 +326,13 @@ public class StandardWaits {
         
         try {
             // Проверяем через jQuery, если доступен
-            Boolean ajaxComplete = com.codeborne.selenide.Selenide.executeJavaScript(
+            Boolean ajaxComplete = (Boolean) com.bft.pw.Selenide.executeJavaScript(
                 "return typeof jQuery !== 'undefined' ? jQuery.active === 0 : true"
             );
             
             if (!ajaxComplete) {
                 // Ждем завершения AJAX запросов
-                com.codeborne.selenide.Selenide.executeJavaScript(
+                com.bft.pw.Selenide.executeJavaScript(
                     "return new Promise(function(resolve) { " +
                     "if (typeof jQuery !== 'undefined' && jQuery.active > 0) { " +
                     "var checkInterval = setInterval(function() { " +

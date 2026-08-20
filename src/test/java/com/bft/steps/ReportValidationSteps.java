@@ -2,8 +2,8 @@ package com.bft.steps;
 
 import com.bft.enums.TabType;
 import com.bft.ui.component.TableComponent;
-import com.codeborne.selenide.Condition;
-import com.codeborne.selenide.ElementsCollection;
+import com.bft.pw.Condition;
+import com.bft.pw.ElementsCollection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.Assert;
@@ -11,7 +11,7 @@ import org.testng.asserts.SoftAssert;
 
 import java.time.Duration;
 
-import static com.codeborne.selenide.Selenide.*;
+import static com.bft.pw.Selenide.*;
 
 /**
  * Класс шагов для валидации отчетов и данных.

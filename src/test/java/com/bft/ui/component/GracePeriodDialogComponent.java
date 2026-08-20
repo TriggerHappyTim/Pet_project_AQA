@@ -3,15 +3,15 @@ package com.bft.ui.component;
 import com.bft.enums.TimeoutConstants;
 import com.bft.ui.core.ClickHelper;
 import com.bft.utils.DebugUtils;
-import com.codeborne.selenide.Condition;
-import com.codeborne.selenide.SelenideElement;
+import com.bft.pw.Condition;
+import com.bft.pw.SelenideElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
 
-import static com.codeborne.selenide.Selenide.*;
-import static com.codeborne.selenide.Selenide.$$x;
+import static com.bft.pw.Selenide.*;
+import static com.bft.pw.Selenide.$$x;
 
 /**
  * Компонент для работы с диалогом формы "Льготный стаж".
@@ -314,8 +314,8 @@ public class GracePeriodDialogComponent {
      */
     private void closeAutocompleteDropdown() {
         try {
-            com.codeborne.selenide.Selenide.actions()
-                    .sendKeys(org.openqa.selenium.Keys.ESCAPE)
+            com.bft.pw.Selenide.actions()
+                    .sendKeys(com.bft.pw.Keys.ESCAPE)
                     .pause(150)
                     .perform();
         } catch (Exception ignored) {

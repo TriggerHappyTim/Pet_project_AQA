@@ -1,7 +1,7 @@
 package com.bft.ui.component;
 
 import com.bft.ui.core.element.ElementFactory;
-import org.openqa.selenium.By;
+import com.bft.pw.By;
 
 /**
  * Компонент для работы с кнопками различных типов в интерфейсе EVS
@@ -79,7 +79,7 @@ public class ButtonComponent extends BaseComponent {
      * Логирует действие для отладки.
      * 
      * @return текущий экземпляр ButtonComponent для цепочки вызовов (fluent API)
-     * @throws com.codeborne.selenide.ex.ElementShould если кнопка не стала кликабельной
+     * @throws com.bft.pw.ex.ElementShould если кнопка не стала кликабельной
      */
     public ButtonComponent click() {
         logger.info("Кликаем по кнопке: {}", componentName);

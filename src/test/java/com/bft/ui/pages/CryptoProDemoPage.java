@@ -4,21 +4,21 @@ import com.bft.ui.core.BasePage;
 import com.bft.ui.core.element.ElementFactory;
 import com.bft.ui.core.element.SmartElement;
 import com.bft.ui.core.wait.WaitStrategies;
-import com.codeborne.selenide.ElementsCollection;
-import com.codeborne.selenide.Selenide;
-import com.codeborne.selenide.SelenideElement;
+import com.bft.pw.ElementsCollection;
+import com.bft.pw.Selenide;
+import com.bft.pw.SelenideElement;
 import io.qameta.allure.Step;
-import org.openqa.selenium.By;
+import com.bft.pw.By;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static com.bft.enums.TimeoutConstants.CRYPTO_PLUGIN_WAIT;
 import static com.bft.enums.TimeoutConstants.SHORT_WAIT;
 import static com.bft.enums.UrlConstants.CRYPTOPRO_DEMO_PAGE_URL;
-import static com.codeborne.selenide.Condition.disappear;
-import static com.codeborne.selenide.Condition.text;
-import static com.codeborne.selenide.Selenide.$;
-import static com.codeborne.selenide.Selenide.$$;
+import static com.bft.pw.Condition.disappear;
+import static com.bft.pw.Condition.text;
+import static com.bft.pw.Selenide.$;
+import static com.bft.pw.Selenide.$$;
 
 /**
  * Улучшенный Page Object для демо-страницы КриптоПРО.

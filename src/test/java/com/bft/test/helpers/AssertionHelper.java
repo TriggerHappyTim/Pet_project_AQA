@@ -1,7 +1,7 @@
 package com.bft.test.helpers;
 
-import com.codeborne.selenide.WebDriverRunner;
-import org.openqa.selenium.WebDriver;
+import com.bft.pw.WebDriverRunner;
+import com.bft.pw.PwDriver;
 
 /**
  * Вспомогательный класс для улучшения сообщений об ошибках в тестах
@@ -55,7 +55,7 @@ public class AssertionHelper {
      */
     public static String formatElementError(String elementName, String expectedState) {
         try {
-            WebDriver driver = WebDriverRunner.getWebDriver();
+            PwDriver driver = WebDriverRunner.getWebDriver();
             String currentUrl = driver != null ? driver.getCurrentUrl() : null;
             return formatElementError(elementName, expectedState, null, currentUrl);
         } catch (Exception e) {
@@ -90,7 +90,7 @@ public class AssertionHelper {
      */
     public static String formatPageStateError(String pageName, String expectedState, String actualState) {
         try {
-            WebDriver driver = WebDriverRunner.getWebDriver();
+            PwDriver driver = WebDriverRunner.getWebDriver();
             String currentUrl = driver != null ? driver.getCurrentUrl() : null;
             return String.format(
                 "Страница '%s' должна быть в состоянии '%s', но фактически '%s'. URL: %s",
@@ -150,7 +150,7 @@ public class AssertionHelper {
         }
         
         try {
-            WebDriver driver = WebDriverRunner.getWebDriver();
+            PwDriver driver = WebDriverRunner.getWebDriver();
             if (driver != null) {
                 String currentUrl = driver.getCurrentUrl();
                 message.append(String.format(". Текущая страница: %s", currentUrl));
@@ -203,7 +203,7 @@ public class AssertionHelper {
      */
     private static String getCurrentUrlSafely() {
         try {
-            WebDriver driver = WebDriverRunner.getWebDriver();
+            PwDriver driver = WebDriverRunner.getWebDriver();
             return driver != null ? driver.getCurrentUrl() : null;
         } catch (Exception e) {
             return null;

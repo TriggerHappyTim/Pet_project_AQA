@@ -3,15 +3,15 @@ package com.bft.ui.pages;
 import com.bft.enums.ReportFormType;
 import com.bft.ui.component.*;
 import com.bft.ui.core.ClickHelper;
-import com.codeborne.selenide.Condition;
-import com.codeborne.selenide.SelenideElement;
+import com.bft.pw.Condition;
+import com.bft.pw.SelenideElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.asserts.SoftAssert;
 
 import java.time.Duration;
 
-import static com.codeborne.selenide.Selenide.*;
+import static com.bft.pw.Selenide.*;
 /**
  * Page Object для главной страницы системы EVS
  * 

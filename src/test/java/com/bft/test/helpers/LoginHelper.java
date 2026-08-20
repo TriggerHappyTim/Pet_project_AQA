@@ -4,7 +4,7 @@ import com.bft.enums.UIType;
 import com.bft.enums.UITypeSelector;
 import com.bft.security.CredentialManager;
 import com.bft.ui.pages.LoginPage;
-import com.codeborne.selenide.Selenide;
+import com.bft.pw.Selenide;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -127,7 +127,7 @@ public class LoginHelper {
      */
     public static boolean isUserLoggedIn() {
         try {
-            return com.codeborne.selenide.Selenide.$x("//div[contains(@class, 'user-name')]")
+            return com.bft.pw.Selenide.$x("//div[contains(@class, 'user-name')]")
                 .isDisplayed();
         } catch (Exception e) {
             logger.debug("Пользователь не авторизован: {}", e.getMessage());
@@ -144,7 +144,7 @@ public class LoginHelper {
         logger.info("Выход из системы");
         try {
             // Попытка выхода через кнопку выхода
-            com.codeborne.selenide.Selenide.$x("//a[contains(text(), 'Выход')]")
+            com.bft.pw.Selenide.$x("//a[contains(text(), 'Выход')]")
                 .click();
             
             // Ожидание завершения выхода

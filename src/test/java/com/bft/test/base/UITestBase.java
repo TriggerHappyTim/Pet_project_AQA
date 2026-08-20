@@ -2,17 +2,14 @@ package com.bft.test.base;
 
 import com.bft.config.TestConfig;
 import com.bft.config.UITestStrategy;
-import com.codeborne.selenide.WebDriverRunner;
+import com.bft.pw.PwSession;
 import io.qameta.allure.Allure;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.annotations.BeforeMethod;
 
 import java.time.Duration;
 
-import static com.codeborne.selenide.Selenide.dismiss;
-import static com.codeborne.selenide.Selenide.screenshot;
+import static com.bft.pw.Selenide.dismiss;
+import static com.bft.pw.Selenide.screenshot;
 
 /**
  * Базовый класс для UI тестов.
@@ -45,7 +42,7 @@ public abstract class UITestBase extends BaseTest {
      * Дополнительная настройка перед каждым UI тестом.
      *
      * <p>Может быть переопределён в наследниках (вызов {@code super.setupUITestMethod()}).
-     * По умолчанию один раз настраивает Selenide через {@link UITestStrategy}
+     * По умолчанию один раз настраивает Playwright через {@link UITestStrategy}
      * (Chrome + расширение КриптоПРО) и логирует начало теста.
      */
     @BeforeMethod
@@ -98,10 +95,14 @@ public abstract class UITestBase extends BaseTest {
      */
     protected void waitForPageLoad() {
         try {
-            WebDriver driver = WebDriverRunner.getWebDriver();
-            new WebDriverWait(driver, PAGE_LOAD_TIMEOUT).until(
-                    d -> "complete".equals(((JavascriptExecutor) d).executeScript("return document.readyState"))
-            );
+            long deadline = System.currentTimeMillis() + PAGE_LOAD_TIMEOUT.toMillis();
+            while (System.currentTimeMillis() < deadline) {
+                Object readyState = PwSession.executeJavaScript("return document.readyState");
+                if ("complete".equals(readyState)) {
+                    return;
+                }
+                Thread.sleep(250);
+            }
         } catch (Exception e) {
             logger.warn("Не удалось дождаться загрузки страницы: {}", e.getMessage());
         }
@@ -112,7 +113,7 @@ public abstract class UITestBase extends BaseTest {
      */
     protected void confirmAlert() {
         try {
-            com.codeborne.selenide.Selenide.confirm();
+            com.bft.pw.Selenide.confirm();
         } catch (Exception e) {
             logger.warn("Не удалось подтвердить alert: {}", e.getMessage());
         }

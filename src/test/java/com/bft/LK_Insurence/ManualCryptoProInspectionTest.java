@@ -5,22 +5,22 @@ import com.bft.config.UITestStrategy;
 import com.bft.test.base.UITestBase;
 import com.bft.ui.pages.CryptoProDemoPage;
 import com.bft.utils.CryptoProPluginVerifier;
-import com.codeborne.selenide.Selenide;
-import com.codeborne.selenide.WebDriverRunner;
-import org.openqa.selenium.logging.LogType;
+import com.bft.pw.Selenide;
+import com.bft.pw.WebDriverRunner;
+import com.bft.pw.logging.LogType;
 import org.testng.annotations.Test;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.bft.enums.UrlConstants.CRYPTOPRO_DEMO_PAGE_URL;
-import static com.codeborne.selenide.Selenide.open;
+import static com.bft.pw.Selenide.open;
 
 /**
  * Вспомогательный тест для Фазы 0: ручной осмотр демо-страницы КриптоПРО.
  * <p>
  * Открывает Chrome с расширением КриптоПРО (через реальный стек проекта:
- * {@link UITestStrategy} + {@link com.bft.browser.factory.ChromeBrowserFactory})
+ * {@link UITestStrategy})
  * и оставляет окно открытым для ручного изучения нативного окна выбора
  * сертификата (это окно ОС, его нельзя автоматизировать Selenium/Playwright).
  * <p>

@@ -1,14 +1,13 @@
 package com.bft.ui.core.wait;
 
-import com.codeborne.selenide.SelenideElement;
-import com.codeborne.selenide.WebDriverRunner;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.support.ui.WebDriverWait;
+import com.bft.pw.PwDriver;
+import com.bft.pw.PwWait;
+import com.bft.pw.SelenideElement;
+import com.bft.pw.WebDriverRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
-import java.util.function.Function;
 
 /**
  * Стратегия ожидания элементов и условий
@@ -60,15 +59,12 @@ public interface WaitStrategy {
             return pollingInterval;
         }
 
-        protected WebDriver getDriver() {
+        protected PwDriver getDriver() {
             return WebDriverRunner.getWebDriver();
         }
 
-        protected WebDriverWait createWebDriverWait() {
-            WebDriverWait wait = new WebDriverWait(getDriver(), timeout);
-            wait.withTimeout(timeout);
-            wait.pollingEvery(pollingInterval);
-            return wait;
+        protected PwWait createWebDriverWait() {
+            return new PwWait(timeout, pollingInterval);
         }
 
         protected void logWait(String description) {

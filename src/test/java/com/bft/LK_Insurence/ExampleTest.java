@@ -5,7 +5,7 @@
 //
 // import com.bft.BaseTest;
 // import com.bft.config.TestConfiguration;
-// import com.codeborne.selenide.Selenide;
+// import com.bft.pw.Selenide;
 // import com.bft.strategy.BaseTestExecutionStrategy;
 // import com.bft.strategy.TestExecutionStrategy;
 // import com.bft.strategy.TestStrategyManager;

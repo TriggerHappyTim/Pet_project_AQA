@@ -2,7 +2,7 @@ package com.bft.ui.component;
 
 import com.bft.ui.core.element.ElementFactory;
 import com.bft.ui.core.element.SmartElement;
-import org.openqa.selenium.By;
+import com.bft.pw.By;
 
 /**
  * Компонент для работы с выпадающими списками и селектами

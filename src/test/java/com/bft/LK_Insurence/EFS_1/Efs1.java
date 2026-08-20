@@ -9,9 +9,9 @@ import com.bft.test.base.UITestBase;
 import io.qameta.allure.*;
 import org.testng.annotations.Test;
 
-import static com.codeborne.selenide.Condition.exist;
-import static com.codeborne.selenide.Condition.visible;
-import static com.codeborne.selenide.Selenide.$x;
+import static com.bft.pw.Condition.exist;
+import static com.bft.pw.Condition.visible;
+import static com.bft.pw.Selenide.$x;
 import static java.time.Duration.ofSeconds;
 
 /**

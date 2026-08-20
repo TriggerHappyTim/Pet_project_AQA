@@ -150,10 +150,7 @@ public class TestLogger {
      */
     public void attachScreenshot(String name) {
         try {
-            // Предполагаем, что у нас есть доступ к WebDriver через Selenide
-            byte[] screenshot = ((org.openqa.selenium.TakesScreenshot)
-                com.codeborne.selenide.WebDriverRunner.getWebDriver())
-                .getScreenshotAs(org.openqa.selenium.OutputType.BYTES);
+            byte[] screenshot = com.bft.pw.PwSession.page().screenshot();
             attachScreenshot(name, screenshot);
         } catch (Exception e) {
             warn("Не удалось сделать скриншот: " + e.getMessage());

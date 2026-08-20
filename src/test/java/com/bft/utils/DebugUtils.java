@@ -1,13 +1,13 @@
 package com.bft.utils;
 
-import com.codeborne.selenide.SelenideElement;
-import org.openqa.selenium.WebDriver;
+import com.bft.pw.SelenideElement;
+import com.bft.pw.PwDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static com.codeborne.selenide.Selenide.$;
-import static com.codeborne.selenide.Selenide.$$x;
-import static com.codeborne.selenide.WebDriverRunner.getWebDriver;
+import static com.bft.pw.Selenide.$;
+import static com.bft.pw.Selenide.$$x;
+import static com.bft.pw.WebDriverRunner.getWebDriver;
 
 /**
  * Утилитный класс для отладки UI тестов.
@@ -65,7 +65,7 @@ public class DebugUtils {
 
             // 3. Сохранение полного HTML
             try {
-                WebDriver driver = getWebDriver();
+                PwDriver driver = getWebDriver();
                 String pageSource = driver.getPageSource();
                 FormStructureParser.saveHtmlToFile(pageSource, "source-" + context);
                 log.debug("HTML страницы сохранен успешно.");

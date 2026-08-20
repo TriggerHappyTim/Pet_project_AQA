@@ -1,18 +1,18 @@
 package com.bft.helpers.forms;
 
 import com.bft.enums.TimeoutConstants;
-import com.codeborne.selenide.Condition;
-import com.codeborne.selenide.ElementsCollection;
-import com.codeborne.selenide.SelenideElement;
-import org.openqa.selenium.By;
+import com.bft.pw.Condition;
+import com.bft.pw.ElementsCollection;
+import com.bft.pw.SelenideElement;
+import com.bft.pw.By;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static com.codeborne.selenide.CollectionCondition.size;
-import static com.codeborne.selenide.Condition.enabled;
-import static com.codeborne.selenide.Condition.visible;
-import static com.codeborne.selenide.Selenide.$;
-import static com.codeborne.selenide.Selenide.$$;
+import static com.bft.pw.CollectionCondition.size;
+import static com.bft.pw.Condition.enabled;
+import static com.bft.pw.Condition.visible;
+import static com.bft.pw.Selenide.$;
+import static com.bft.pw.Selenide.$$;
 
 /**
  * Фасад для работы с формами отчетов.

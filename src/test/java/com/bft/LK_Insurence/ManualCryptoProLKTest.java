@@ -7,11 +7,11 @@ import com.bft.steps.AuthSteps;
 import com.bft.steps.ReportDataEntrySteps;
 import com.bft.steps.ReportNavigationSteps;
 import com.bft.test.base.UITestBase;
-import com.codeborne.selenide.Condition;
-import com.codeborne.selenide.Selenide;
+import com.bft.pw.Condition;
+import com.bft.pw.Selenide;
 import org.testng.annotations.Test;
 
-import static com.codeborne.selenide.Selenide.$x;
+import static com.bft.pw.Selenide.$x;
 
 /**
  * Вспомогательный тест для интеграции КриптоПРО в ЛК Страхователя.
@@ -125,7 +125,7 @@ public class ManualCryptoProLKTest extends UITestBase {
             logger.warn("Не удалось выполнить диагностику страницы: {}", e.getMessage());
         }
         try {
-            String bodySnippet = Selenide.executeJavaScript(
+            String bodySnippet = (String) Selenide.executeJavaScript(
                     "var b = document.body.innerText || ''; return b.substring(0, 2000);");
             logger.info("Текст страницы (фрагмент):\n{}", bodySnippet);
         } catch (Exception e) {

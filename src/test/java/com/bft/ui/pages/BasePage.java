@@ -1,23 +1,22 @@
 package com.bft.ui.pages;
 
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.Select;
+import com.bft.pw.PwDriver;
+import com.bft.pw.PwElement;
 import org.testng.asserts.SoftAssert;
 
 public class BasePage {
-    protected WebDriver driver;
+    protected PwDriver driver;
     protected SoftAssert softAssert;
 
-    public BasePage(WebDriver driver, SoftAssert softAssert) {
+    public BasePage(PwDriver driver, SoftAssert softAssert) {
         this.driver = driver;
         this.softAssert = softAssert;
     }
 
-    protected void fillField(WebElement field, String value, String fieldName) {
+    protected void fillField(PwElement field, String value, String fieldName) {
         if (field != null && field.isDisplayed()) {
             field.clear();
-            field.sendKeys(value);
+            field.setValue(value);
             softAssert.assertEquals(field.getAttribute("value"), value,
                     "Поле '" + fieldName + "' должно содержать значение: " + value);
         } else {
@@ -25,11 +24,11 @@ public class BasePage {
         }
     }
 
-    protected void selectByVisibleText(WebElement selectElement, String text, String fieldName) {
+    protected void selectByVisibleText(PwElement selectElement, String text, String fieldName) {
         if (selectElement != null && selectElement.isEnabled()) {
-            Select select = new Select(selectElement);
-            select.selectByVisibleText(text);
-            String selectedText = select.getFirstSelectedOption().getText();
+            selectElement.selectOption(text);
+            Object selectedText = selectElement.executeJavaScript(
+                    "return arguments[0].options[arguments[0].selectedIndex].text;", selectElement);
             softAssert.assertEquals(selectedText, text,
                     "В поле '" + fieldName + "' должно быть выбрано: " + text);
         } else {
@@ -37,7 +36,7 @@ public class BasePage {
         }
     }
 
-    protected void clickElement(WebElement element, String elementName) {
+    protected void clickElement(PwElement element, String elementName) {
         if (element != null && element.isEnabled()) {
             element.click();
         } else {
@@ -45,7 +44,7 @@ public class BasePage {
         }
     }
 
-    protected boolean isElementEnabled(WebElement element, String elementName) {
+    protected boolean isElementEnabled(PwElement element, String elementName) {
         if (element != null) {
             return element.isEnabled();
         }
@@ -53,7 +52,7 @@ public class BasePage {
         return false;
     }
 
-    protected String getElementValue(WebElement element, String elementName) {
+    protected String getElementValue(PwElement element, String elementName) {
         if (element != null) {
             return element.getAttribute("value");
         }
@@ -61,7 +60,7 @@ public class BasePage {
         return "";
     }
 
-    protected String getElementText(WebElement element, String elementName) {
+    protected String getElementText(PwElement element, String elementName) {
         if (element != null) {
             return element.getText();
         }

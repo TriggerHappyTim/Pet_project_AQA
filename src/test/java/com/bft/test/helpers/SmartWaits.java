@@ -1,11 +1,10 @@
 package com.bft.test.helpers;
 
 import com.bft.enums.TimeoutConstants;
-import com.codeborne.selenide.Condition;
-import com.codeborne.selenide.SelenideElement;
-import com.codeborne.selenide.WebDriverRunner;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.WebDriver;
+import com.bft.pw.Condition;
+import com.bft.pw.PwDriver;
+import com.bft.pw.SelenideElement;
+import com.bft.pw.WebDriverRunner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -146,12 +145,11 @@ public class SmartWaits {
     public static void waitForPageLoad(Duration timeout) {
         logger.debug("Ожидание загрузки страницы (таймаут: {}s)", timeout.getSeconds());
         try {
-            WebDriver driver = WebDriverRunner.getWebDriver();
-            JavascriptExecutor js = (JavascriptExecutor) driver;
-            
+            PwDriver driver = WebDriverRunner.getWebDriver();
+
             long startTime = System.currentTimeMillis();
             while (System.currentTimeMillis() - startTime < timeout.toMillis()) {
-                String readyState = (String) js.executeScript("return document.readyState");
+                String readyState = (String) driver.executeScript("return document.readyState");
                 if ("complete".equals(readyState)) {
                     logger.debug("Страница загружена");
                     return;
@@ -189,18 +187,17 @@ public class SmartWaits {
     public static void waitForAjaxComplete(Duration timeout) {
         logger.debug("Ожидание завершения AJAX запросов (таймаут: {}s)", timeout.getSeconds());
         try {
-            WebDriver driver = WebDriverRunner.getWebDriver();
-            JavascriptExecutor js = (JavascriptExecutor) driver;
-            
+            PwDriver driver = WebDriverRunner.getWebDriver();
+
             long startTime = System.currentTimeMillis();
             while (System.currentTimeMillis() - startTime < timeout.toMillis()) {
                 // Проверяем jQuery.active (если jQuery доступен)
-                Boolean jQueryActive = (Boolean) js.executeScript(
+                Boolean jQueryActive = (Boolean) driver.executeScript(
                     "return (typeof jQuery !== 'undefined' && jQuery.active === 0) || typeof jQuery === 'undefined'"
                 );
                 
                 // Проверяем, что нет активных XMLHttpRequest
-                Long activeRequests = (Long) js.executeScript(
+                Long activeRequests = (Long) driver.executeScript(
                     "return (typeof XMLHttpRequest !== 'undefined') ? " +
                     "(window.XMLHttpRequest.activeRequests || 0) : 0"
                 );
@@ -258,15 +255,14 @@ public class SmartWaits {
         }
         
         try {
-            WebDriver driver = WebDriverRunner.getWebDriver();
-            JavascriptExecutor js = (JavascriptExecutor) driver;
-            
+            PwDriver driver = WebDriverRunner.getWebDriver();
+
             long startTime = System.currentTimeMillis();
             while (System.currentTimeMillis() - startTime < timeout.toMillis()) {
                 boolean allSpinnersHidden = true;
                 
                 for (String selector : spinnerSelectors) {
-                    Long count = (Long) js.executeScript(
+                    Long count = (Long) driver.executeScript(
                         String.format(
                             "return document.querySelectorAll('%s').length",
                             selector.replace("'", "\\'")
@@ -275,7 +271,7 @@ public class SmartWaits {
                     
                     if (count != null && count > 0) {
                         // Проверяем, что элементы скрыты (display: none или visibility: hidden)
-                        Long visibleCount = (Long) js.executeScript(
+                        Long visibleCount = (Long) driver.executeScript(
                             String.format(
                                 "return Array.from(document.querySelectorAll('%s')).filter(el => " +
                                 "window.getComputedStyle(el).display !== 'none' && " +

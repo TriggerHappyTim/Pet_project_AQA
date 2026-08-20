@@ -1,8 +1,8 @@
 package com.bft.ui.core.element;
 
 import com.bft.ui.core.wait.WaitStrategy;
-import com.codeborne.selenide.ElementsCollection;
-import com.codeborne.selenide.SelenideElement;
+import com.bft.pw.ElementsCollection;
+import com.bft.pw.SelenideElement;
 import io.qameta.allure.Step;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

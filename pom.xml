@@ -12,7 +12,7 @@
         <spring-boot.version>2.6.14</spring-boot.version>
         <io.rest-assured>5.3.1</io.rest-assured>
         <testng.version>7.8.0</testng.version>
-        <selenide.version>6.19.0</selenide.version>
+        <playwright.version>1.49.0</playwright.version>
         <allure.version>2.22.2</allure.version>
         <allure.maven.version>2.12.0</allure.maven.version>
         <slf4j-simple.version>2.0.7</slf4j-simple.version>
@@ -20,8 +20,6 @@
         <maven.compiler.plugin.version>3.11.0</maven.compiler.plugin.version>
         <maven.surifire.plugin.version>3.1.0</maven.surifire.plugin.version>
         <lombok.version>1.18.28</lombok.version>
-        <!-- Версия WebDriverManager для автоматического управления драйверами -->
-        <webdrivermanager.version>5.6.3</webdrivermanager.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>11</java.version>
         <maven.compiler.source>11</maven.compiler.source>
@@ -94,17 +92,11 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- Playwright: целевой движок UI-тестов (миграция с Selenide) -->
         <dependency>
-            <groupId>com.codeborne</groupId>
-            <artifactId>selenide</artifactId>
-            <version>${selenide.version}</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>io.qameta.allure</groupId>
-            <artifactId>allure-selenide</artifactId>
-            <version>${allure.version}</version>
+            <groupId>com.microsoft.playwright</groupId>
+            <artifactId>playwright</artifactId>
+            <version>${playwright.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -145,15 +137,6 @@
             <version>2.15.3</version>
             <scope>test</scope>
         </dependency>
-
-        <!-- === ДОБАВЛЕНО: WebDriverManager для авто-обновления драйверов === -->
-        <dependency>
-            <groupId>io.github.bonigarcia</groupId>
-            <artifactId>webdrivermanager</artifactId>
-            <version>${webdrivermanager.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <!-- =============================================================== -->
     </dependencies>
 
     <build>

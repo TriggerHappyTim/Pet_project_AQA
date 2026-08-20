@@ -2,16 +2,16 @@ package com.bft.ui.core.element;
 
 import com.bft.ui.core.wait.WaitStrategy;
 import com.bft.ui.core.wait.WaitStrategies;
-import com.codeborne.selenide.SelenideElement;
-import org.openqa.selenium.By;
+import com.bft.pw.By;
+import com.bft.pw.SelenideElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
 import java.util.List;
 
-import static com.codeborne.selenide.Selenide.$;
-import static com.codeborne.selenide.Selenide.$$;
+import static com.bft.pw.Selenide.$;
+import static com.bft.pw.Selenide.$$;
 
 /**
  * Фабрика для создания и управления UI элементами

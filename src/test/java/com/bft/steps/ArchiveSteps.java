@@ -1,13 +1,13 @@
 package com.bft.steps;
 
 import com.bft.ui.pages.MainPage;
-import com.codeborne.selenide.Condition;
+import com.bft.pw.Condition;
 import io.qameta.allure.Step;
 import org.springframework.stereotype.Component;
 
 import static com.bft.enums.TimeoutConstants.*;
-import static com.codeborne.selenide.Selenide.$;
-import static com.codeborne.selenide.Selenide.$x;
+import static com.bft.pw.Selenide.$;
+import static com.bft.pw.Selenide.$x;
 
 /**
  * Шаги для работы с запросами в архивные организации.

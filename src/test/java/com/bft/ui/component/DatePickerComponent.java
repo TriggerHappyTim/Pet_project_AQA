@@ -1,20 +1,20 @@
 package com.bft.ui.component;
 
 import com.bft.utils.DebugUtils;
-import com.codeborne.selenide.Condition;
-import com.codeborne.selenide.SelenideElement;
-import org.openqa.selenium.Keys;
-import org.openqa.selenium.interactions.Actions;
+import com.bft.pw.Condition;
+import com.bft.pw.SelenideElement;
+import com.bft.pw.Keys;
+import com.bft.pw.Actions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
 
-import static com.codeborne.selenide.Selenide.$;
-import static com.codeborne.selenide.Selenide.$x;
-import static com.codeborne.selenide.Selenide.$$x;
-import static com.codeborne.selenide.Selenide.sleep;
-import static com.codeborne.selenide.WebDriverRunner.getWebDriver;
+import static com.bft.pw.Selenide.$;
+import static com.bft.pw.Selenide.$x;
+import static com.bft.pw.Selenide.$$x;
+import static com.bft.pw.Selenide.sleep;
+import static com.bft.pw.WebDriverRunner.getWebDriver;
 
 /**
  * Компонент для работы с полями дат (DatePicker, masked input, JS-ввод).
@@ -126,7 +126,7 @@ public class DatePickerComponent {
      * @return текущий экземпляр DatePickerComponent для цепочки вызовов
      */
     public DatePickerComponent inputDateByIdViaJs(String inputId, String dateDDMMYYYY) {
-        com.codeborne.selenide.Selenide.executeJavaScript(
+        com.bft.pw.Selenide.executeJavaScript(
             "var el = document.getElementById(arguments[0]) || document.querySelector('input[name=\"' + arguments[0] + '\"]'); if (el) { el.value = arguments[1]; el.dispatchEvent(new Event('input', { bubbles: true })); el.dispatchEvent(new Event('change', { bubbles: true })); }",
             inputId,
             dateDDMMYYYY
@@ -145,7 +145,7 @@ public class DatePickerComponent {
     public DatePickerComponent inputDateByLabelTextViaJs(String labelText, String dateDDMMYYYY) {
         var input = $x("//div[.//*[contains(., '" + labelText.replace("'", "''") + "')]]//input")
                 .shouldBe(Condition.visible, Duration.ofSeconds(10));
-        com.codeborne.selenide.Selenide.executeJavaScript(
+        com.bft.pw.Selenide.executeJavaScript(
             "arguments[0].value = arguments[1]; arguments[0].dispatchEvent(new Event('input', { bubbles: true })); arguments[0].dispatchEvent(new Event('change', { bubbles: true }));",
             input.getWrappedElement(),
             dateDDMMYYYY
@@ -243,7 +243,7 @@ public class DatePickerComponent {
      * чтобы React обновил state (setValue часто не срабатывает для MUI/числовых полей).
      */
     private void setInputValueViaJs(SelenideElement input, String value) {
-        com.codeborne.selenide.Selenide.executeJavaScript(
+        com.bft.pw.Selenide.executeJavaScript(
             "var el = arguments[0]; var v = arguments[1];"
             + "var setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;"
             + "if (setter) setter.call(el, v); else el.value = v;"

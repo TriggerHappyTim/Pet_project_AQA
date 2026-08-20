@@ -3,7 +3,7 @@ package com.bft.ui.component;
 import com.bft.ui.core.element.ElementFactory;
 import com.bft.ui.core.element.SmartElement;
 import com.bft.ui.core.element.SmartElementList;
-import org.openqa.selenium.By;
+import com.bft.pw.By;
 
 /**
  * Компонент для работы с таблицами

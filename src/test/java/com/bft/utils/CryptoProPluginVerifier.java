@@ -1,15 +1,15 @@
 package com.bft.utils;
 
-import com.codeborne.selenide.Selenide;
-import com.codeborne.selenide.SelenideElement;
-import org.openqa.selenium.By;
+import com.bft.pw.Selenide;
+import com.bft.pw.SelenideElement;
+import com.bft.pw.By;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
 
-import static com.codeborne.selenide.Condition.*;
-import static com.codeborne.selenide.Selenide.$;
+import static com.bft.pw.Condition.*;
+import static com.bft.pw.Selenide.$;
 
 /**
  * Утилита для проверки состояния плагина КриптоПРО

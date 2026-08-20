@@ -6,13 +6,13 @@ import com.bft.security.CredentialManager;
 import com.bft.security.TestUsers;
 import com.bft.security.masking.SecureLogger;
 import com.bft.ui.pages.MainPage;
-import com.codeborne.selenide.Selenide;
+import com.bft.pw.Selenide;
 import io.qameta.allure.Step;
 import org.springframework.stereotype.Component;
 
 import static com.bft.enums.TimeoutConstants.SHORT_WAIT;
-import static com.codeborne.selenide.Condition.visible;
-import static com.codeborne.selenide.Selenide.$x;
+import static com.bft.pw.Condition.visible;
+import static com.bft.pw.Selenide.$x;
 
 /**
  * Шаги для авторизации, выхода и управления сессией пользователя.
@@ -128,9 +128,9 @@ public class AuthSteps {
         try {
             Selenide.Wait().withTimeout(java.time.Duration.ofSeconds(10)).until(webDriver -> {
                 boolean onLoginPage = !webDriver.findElements(
-                    org.openqa.selenium.By.xpath("//a[starts-with(@href,'/esia')]")).isEmpty();
+                    com.bft.pw.By.xpath("//a[starts-with(@href,'/esia')]")).isEmpty();
                 boolean onDashboard = !webDriver.findElements(
-                    org.openqa.selenium.By.xpath("//div[contains(@class, 'user-name')]")).isEmpty();
+                    com.bft.pw.By.xpath("//div[contains(@class, 'user-name')]")).isEmpty();
                 return onLoginPage || onDashboard;
             });
             return $x("//div[contains(@class, 'user-name')]").isDisplayed();

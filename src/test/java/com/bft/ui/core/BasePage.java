@@ -1,14 +1,16 @@
 package com.bft.ui.core;
 
 import com.bft.ui.core.wait.WaitStrategy;
-import com.codeborne.selenide.Condition;
-import com.codeborne.selenide.Selenide;
-import com.codeborne.selenide.SelenideElement;
-import com.codeborne.selenide.WebDriverRunner;
+import com.bft.pw.By;
+import com.bft.pw.Condition;
+import com.bft.pw.PwDriver;
+import com.bft.pw.PwWait;
+import com.bft.pw.Selenide;
+import com.bft.pw.SelenideElement;
+import com.bft.pw.TimeoutException;
+import com.bft.pw.WebDriverRunner;
+import com.bft.pw.Actions;
 import io.qameta.allure.Step;
-import org.openqa.selenium.*;
-import org.openqa.selenium.interactions.Actions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,8 +18,8 @@ import java.time.Duration;
 import java.util.List;
 import java.util.function.Function;
 
-import static com.codeborne.selenide.Condition.*;
-import static com.codeborne.selenide.Selenide.*;
+import static com.bft.pw.Condition.*;
+import static com.bft.pw.Selenide.*;
 
 /**
  * Улучшенный абстрактный базовый класс для Page Objects
@@ -33,7 +35,7 @@ public abstract class BasePage<T extends BasePage<T>> {
     protected final Duration longTimeout = Duration.ofSeconds(30);
 
     // Экземпляр драйвера
-    protected final WebDriver driver = WebDriverRunner.getWebDriver();
+    protected final PwDriver driver = WebDriverRunner.getWebDriver();
 
     /**
      * Получение URL страницы
@@ -102,9 +104,7 @@ public abstract class BasePage<T extends BasePage<T>> {
         // Ожидаем, пока документ будет полностью загружен
         waitForCondition(driver -> {
             try {
-                return ((JavascriptExecutor) driver)
-                    .executeScript("return document.readyState")
-                    .equals("complete");
+                return "complete".equals(driver.executeScript("return document.readyState"));
             } catch (Exception e) {
                 return false;
             }
@@ -143,9 +143,9 @@ public abstract class BasePage<T extends BasePage<T>> {
     /**
      * Ожидание условия
      */
-    public T waitForCondition(Function<WebDriver, Boolean> condition, Duration timeout, String errorMessage) {
+    public T waitForCondition(Function<PwDriver, Boolean> condition, Duration timeout, String errorMessage) {
         try {
-            new WebDriverWait(driver, timeout)
+            new PwWait(timeout, Duration.ofMillis(100))
                 .until(condition);
         } catch (TimeoutException e) {
             logger.error("Таймаут при ожидании условия: {}", errorMessage);
@@ -537,8 +537,8 @@ public abstract class BasePage<T extends BasePage<T>> {
     public T waitForJsCondition(String condition, Duration timeout, String description) {
         waitForCondition(driver -> {
             try {
-                return (Boolean) ((JavascriptExecutor) driver)
-                    .executeScript("return " + condition);
+                Object result = driver.executeScript("return " + condition);
+                return Boolean.TRUE.equals(result);
             } catch (Exception e) {
                 return false;
             }

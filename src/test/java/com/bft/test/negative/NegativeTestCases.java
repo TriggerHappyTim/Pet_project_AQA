@@ -6,8 +6,8 @@ import com.bft.test.helpers.AssertionHelper;
 import com.bft.test.helpers.SmartWaits;
 import com.bft.ui.pages.LoginPage;
 import com.bft.enums.UITypeSelector;
-import com.codeborne.selenide.Condition;
-import com.codeborne.selenide.Selenide;
+import com.bft.pw.Condition;
+import com.bft.pw.Selenide;
 import io.qameta.allure.AllureId;
 import io.qameta.allure.Description;
 import io.qameta.allure.Epic;
@@ -19,7 +19,7 @@ import org.testng.annotations.Test;
 
 import java.time.Duration;
 
-import static com.codeborne.selenide.Selenide.$x;
+import static com.bft.pw.Selenide.$x;
 
 /**
  * Негативные тесты для проверки обработки ошибок и граничных случаев

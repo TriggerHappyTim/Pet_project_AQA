@@ -1,7 +1,7 @@
 package com.bft.ui.component;
 
 import com.bft.ui.core.element.ElementFactory;
-import org.openqa.selenium.By;
+import com.bft.pw.By;
 
 import java.io.File;
 

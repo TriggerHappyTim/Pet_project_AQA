@@ -3,13 +3,13 @@ package com.bft.steps;
 import com.bft.enums.ReportFormType;
 import com.bft.security.masking.SecureLogger;
 import com.bft.ui.pages.MainPage;
-import com.codeborne.selenide.Condition;
+import com.bft.pw.Condition;
 import io.qameta.allure.Step;
 import org.springframework.stereotype.Component;
 
 import static com.bft.enums.TimeoutConstants.DEFAULT_WAIT;
 import static com.bft.enums.TimeoutConstants.SHORT_WAIT;
-import static com.codeborne.selenide.Selenide.$x;
+import static com.bft.pw.Selenide.$x;
 
 /**
  * Шаги для навигации к разделу отчетов и создания черновика.
@@ -58,21 +58,21 @@ public class ReportNavigationSteps {
         String escaped = reportTypeText.replace("'", "''");
         logger.info("Выбираем тип отчета: {}", reportTypeText);
 
-        com.codeborne.selenide.Selenide.$x("//span[text() = '" + escaped + "']")
-            .shouldBe(com.codeborne.selenide.Condition.visible, java.time.Duration.ofSeconds(15));
+        com.bft.pw.Selenide.$x("//span[text() = '" + escaped + "']")
+            .shouldBe(com.bft.pw.Condition.visible, java.time.Duration.ofSeconds(15));
         logger.debug("Модальное окно с типом отчета '{}' отображается", reportTypeText);
 
-        com.codeborne.selenide.SelenideElement labelToClick = com.codeborne.selenide.Selenide.$x(
+        com.bft.pw.SelenideElement labelToClick = com.bft.pw.Selenide.$x(
             "//label[contains(@class, 'n2o-radio-input')][.//span[text() = '" + escaped + "']]"
         );
-        labelToClick.shouldBe(com.codeborne.selenide.Condition.visible, java.time.Duration.ofSeconds(10));
+        labelToClick.shouldBe(com.bft.pw.Condition.visible, java.time.Duration.ofSeconds(10));
         labelToClick.click();
         logger.info("Клик по label типа отчета '{}' выполнен", reportTypeText);
 
         try {
-            com.codeborne.selenide.Selenide.$x(
+            com.bft.pw.Selenide.$x(
                 "//label[contains(@class, 'n2o-radio-input')][contains(@class, 'checked')][.//span[text() = '" + escaped + "']]"
-            ).shouldBe(com.codeborne.selenide.Condition.visible, java.time.Duration.ofSeconds(3));
+            ).shouldBe(com.bft.pw.Condition.visible, java.time.Duration.ofSeconds(3));
             logger.debug("Тип отчета '{}' отмечен как выбранный", reportTypeText);
         } catch (Exception e) {
             logger.debug("Класс checked не обнаружен, продолжаем (возможно, другой способ отображения выбора)");

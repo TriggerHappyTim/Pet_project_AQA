@@ -2,17 +2,17 @@ package com.bft.ui.core.element;
 
 import com.bft.ui.core.ClickHelper;
 import com.bft.ui.core.wait.WaitStrategy;
-import com.codeborne.selenide.SelenideElement;
+import com.bft.pw.Keys;
+import com.bft.pw.Actions;
+import com.bft.pw.SelenideElement;
 import io.qameta.allure.Step;
-import org.openqa.selenium.Keys;
-import org.openqa.selenium.interactions.Actions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 
 /**
- * Умный элемент с автоматическим ожиданием и расширенной функциональностью
+ * РЈРјРЅС‹Р№ СЌР»РµРјРµРЅС‚ СЃ Р°РІС‚РѕРјР°С‚РёС‡РµСЃРєРёРј РѕР¶РёРґР°РЅРёРµРј Рё СЂР°СЃС€РёСЂРµРЅРЅРѕР№ С„СѓРЅРєС†РёРѕРЅР°Р»СЊРЅРѕСЃС‚СЊСЋ
  */
 public class SmartElement {
 
@@ -31,305 +31,305 @@ public class SmartElement {
     }
 
     /**
-     * Безопасный клик с автоматическим ожиданием.
-     * При перехвате клика другим элементом выполняется JS-клик (см. {@link ClickHelper}).
+     * Р‘РµР·РѕРїР°СЃРЅС‹Р№ РєР»РёРє СЃ Р°РІС‚РѕРјР°С‚РёС‡РµСЃРєРёРј РѕР¶РёРґР°РЅРёРµРј.
+     * РџСЂРё РїРµСЂРµС…РІР°С‚Рµ РєР»РёРєР° РґСЂСѓРіРёРј СЌР»РµРјРµРЅС‚РѕРј РІС‹РїРѕР»РЅСЏРµС‚СЃСЏ JS-РєР»РёРє (СЃРј. {@link ClickHelper}).
      */
-    @Step("Кликаем по элементу: {name}")
+    @Step("РљР»РёРєР°РµРј РїРѕ СЌР»РµРјРµРЅС‚Сѓ: {name}")
     public SmartElement click() {
-        logger.debug("Кликаем по элементу: {}", name);
+        logger.debug("РљР»РёРєР°РµРј РїРѕ СЌР»РµРјРµРЅС‚Сѓ: {}", name);
         waitStrategy.waitFor(element, name);
         ClickHelper.click(element, name);
-        logger.info("Успешно кликнули по элементу: {}", name);
+        logger.info("РЈСЃРїРµС€РЅРѕ РєР»РёРєРЅСѓР»Рё РїРѕ СЌР»РµРјРµРЅС‚Сѓ: {}", name);
         return this;
     }
 
     /**
-     * Двойной клик
+     * Р”РІРѕР№РЅРѕР№ РєР»РёРє
      */
-    @Step("Двойной клик по элементу: {name}")
+    @Step("Р”РІРѕР№РЅРѕР№ РєР»РёРє РїРѕ СЌР»РµРјРµРЅС‚Сѓ: {name}")
     public SmartElement doubleClick() {
-        logger.debug("Двойной клик по элементу: {}", name);
+        logger.debug("Р”РІРѕР№РЅРѕР№ РєР»РёРє РїРѕ СЌР»РµРјРµРЅС‚Сѓ: {}", name);
         waitStrategy.waitFor(element, name);
         new Actions(element.getWrappedDriver())
             .doubleClick(element)
             .perform();
-        logger.info("Выполнен двойной клик по элементу: {}", name);
+        logger.info("Р’С‹РїРѕР»РЅРµРЅ РґРІРѕР№РЅРѕР№ РєР»РёРє РїРѕ СЌР»РµРјРµРЅС‚Сѓ: {}", name);
         return this;
     }
 
     /**
-     * Наведение курсора
+     * РќР°РІРµРґРµРЅРёРµ РєСѓСЂСЃРѕСЂР°
      */
-    @Step("Наводим курсор на элемент: {name}")
+    @Step("РќР°РІРѕРґРёРј РєСѓСЂСЃРѕСЂ РЅР° СЌР»РµРјРµРЅС‚: {name}")
     public SmartElement hover() {
-        logger.debug("Наводим курсор на элемент: {}", name);
+        logger.debug("РќР°РІРѕРґРёРј РєСѓСЂСЃРѕСЂ РЅР° СЌР»РµРјРµРЅС‚: {}", name);
         waitStrategy.waitFor(element, name);
         element.hover();
-        logger.info("Курсор наведен на элемент: {}", name);
+        logger.info("РљСѓСЂСЃРѕСЂ РЅР°РІРµРґРµРЅ РЅР° СЌР»РµРјРµРЅС‚: {}", name);
         return this;
     }
 
     /**
-     * Очистка поля ввода
+     * РћС‡РёСЃС‚РєР° РїРѕР»СЏ РІРІРѕРґР°
      */
-    @Step("Очищаем элемент: {name}")
+    @Step("РћС‡РёС‰Р°РµРј СЌР»РµРјРµРЅС‚: {name}")
     public SmartElement clear() {
-        logger.debug("Очищаем элемент: {}", name);
+        logger.debug("РћС‡РёС‰Р°РµРј СЌР»РµРјРµРЅС‚: {}", name);
         waitStrategy.waitFor(element, name);
         element.clear();
-        logger.info("Элемент '{}' очищен", name);
+        logger.info("Р­Р»РµРјРµРЅС‚ '{}' РѕС‡РёС‰РµРЅ", name);
         return this;
     }
 
     /**
-     * Отправка клавиш в элемент
+     * РћС‚РїСЂР°РІРєР° РєР»Р°РІРёС€ РІ СЌР»РµРјРµРЅС‚
      */
-    @Step("Отправляем клавиши '{keys}' в элемент: {name}")
+    @Step("РћС‚РїСЂР°РІР»СЏРµРј РєР»Р°РІРёС€Рё '{keys}' РІ СЌР»РµРјРµРЅС‚: {name}")
     public SmartElement sendKeys(String keys) {
-        logger.debug("Отправляем клавиши '{}' в элемент: {}", keys, name);
+        logger.debug("РћС‚РїСЂР°РІР»СЏРµРј РєР»Р°РІРёС€Рё '{}' РІ СЌР»РµРјРµРЅС‚: {}", keys, name);
         waitStrategy.waitFor(element, name);
         element.sendKeys(keys);
-        logger.info("Клавиши '{}' отправлены в элемент: {}", keys, name);
+        logger.info("РљР»Р°РІРёС€Рё '{}' РѕС‚РїСЂР°РІР»РµРЅС‹ РІ СЌР»РµРјРµРЅС‚: {}", keys, name);
         return this;
     }
 
     /**
-     * Ввод текста.
-     * Если clear() падает (MUI/React controlled input), ввод через Ctrl+A и sendKeys.
+     * Р’РІРѕРґ С‚РµРєСЃС‚Р°.
+     * Р•СЃР»Рё clear() РїР°РґР°РµС‚ (MUI/React controlled input), РІРІРѕРґ С‡РµСЂРµР· Ctrl+A Рё sendKeys.
      */
-    @Step("Вводим текст '{value}' в элемент: {name}")
+    @Step("Р’РІРѕРґРёРј С‚РµРєСЃС‚ '{value}' РІ СЌР»РµРјРµРЅС‚: {name}")
     public SmartElement type(String value) {
-        logger.debug("Вводим текст '{}' в элемент: {}", value, name);
+        logger.debug("Р’РІРѕРґРёРј С‚РµРєСЃС‚ '{}' РІ СЌР»РµРјРµРЅС‚: {}", value, name);
         waitStrategy.waitFor(element, name);
         try {
             element.clear();
             element.setValue(value);
         } catch (Throwable e) {
-            logger.debug("clear/setValue пропущен для элемента {}, ввод через Ctrl+A+sendKeys: {}", name, e.getMessage());
+            logger.debug("clear/setValue РїСЂРѕРїСѓС‰РµРЅ РґР»СЏ СЌР»РµРјРµРЅС‚Р° {}, РІРІРѕРґ С‡РµСЂРµР· Ctrl+A+sendKeys: {}", name, e.getMessage());
             element.sendKeys(Keys.chord(Keys.CONTROL, "a"));
             element.sendKeys(value);
         }
-        logger.info("Текст '{}' введен в элемент: {}", value, name);
+        logger.info("РўРµРєСЃС‚ '{}' РІРІРµРґРµРЅ РІ СЌР»РµРјРµРЅС‚: {}", value, name);
         return this;
     }
 
     /**
-     * Выбор из списка
+     * Р’С‹Р±РѕСЂ РёР· СЃРїРёСЃРєР°
      */
-    @Step("Выбираем '{value}' в элементе: {name}")
+    @Step("Р’С‹Р±РёСЂР°РµРј '{value}' РІ СЌР»РµРјРµРЅС‚Рµ: {name}")
     public SmartElement select(String value) {
-        logger.debug("Выбираем '{}' в элементе: {}", value, name);
+        logger.debug("Р’С‹Р±РёСЂР°РµРј '{}' РІ СЌР»РµРјРµРЅС‚Рµ: {}", value, name);
         waitStrategy.waitFor(element, name);
         element.selectOption(value);
-        logger.info("Значение '{}' выбрано в элементе: {}", value, name);
+        logger.info("Р—РЅР°С‡РµРЅРёРµ '{}' РІС‹Р±СЂР°РЅРѕ РІ СЌР»РµРјРµРЅС‚Рµ: {}", value, name);
         return this;
     }
 
     /**
-     * Прокрутка к элементу
+     * РџСЂРѕРєСЂСѓС‚РєР° Рє СЌР»РµРјРµРЅС‚Сѓ
      */
     public SmartElement scrollIntoView() {
-        logger.debug("Прокручиваем к элементу: {}", name);
+        logger.debug("РџСЂРѕРєСЂСѓС‡РёРІР°РµРј Рє СЌР»РµРјРµРЅС‚Сѓ: {}", name);
         element.scrollIntoView(true);
         return this;
     }
 
     /**
-     * Проверка видимости
+     * РџСЂРѕРІРµСЂРєР° РІРёРґРёРјРѕСЃС‚Рё
      */
     public boolean isVisible() {
         try {
             return element.isDisplayed();
         } catch (Exception e) {
-            logger.debug("Ошибка при проверке видимости элемента {}: {}", name, e.getMessage());
+            logger.debug("РћС€РёР±РєР° РїСЂРё РїСЂРѕРІРµСЂРєРµ РІРёРґРёРјРѕСЃС‚Рё СЌР»РµРјРµРЅС‚Р° {}: {}", name, e.getMessage());
             return false;
         }
     }
 
     /**
-     * Проверка присутствия в DOM
+     * РџСЂРѕРІРµСЂРєР° РїСЂРёСЃСѓС‚СЃС‚РІРёСЏ РІ DOM
      */
     public boolean isPresent() {
         try {
             return element.exists();
         } catch (Exception e) {
-            logger.debug("Ошибка при проверке присутствия элемента {}: {}", name, e.getMessage());
+            logger.debug("РћС€РёР±РєР° РїСЂРё РїСЂРѕРІРµСЂРєРµ РїСЂРёСЃСѓС‚СЃС‚РІРёСЏ СЌР»РµРјРµРЅС‚Р° {}: {}", name, e.getMessage());
             return false;
         }
     }
 
     /**
-     * Проверка доступности для взаимодействия
+     * РџСЂРѕРІРµСЂРєР° РґРѕСЃС‚СѓРїРЅРѕСЃС‚Рё РґР»СЏ РІР·Р°РёРјРѕРґРµР№СЃС‚РІРёСЏ
      */
     public boolean isEnabled() {
         try {
             return element.isEnabled();
         } catch (Exception e) {
-            logger.debug("Ошибка при проверке доступности элемента {}: {}", name, e.getMessage());
+            logger.debug("РћС€РёР±РєР° РїСЂРё РїСЂРѕРІРµСЂРєРµ РґРѕСЃС‚СѓРїРЅРѕСЃС‚Рё СЌР»РµРјРµРЅС‚Р° {}: {}", name, e.getMessage());
             return false;
         }
     }
 
     /**
-     * Получение текста
+     * РџРѕР»СѓС‡РµРЅРёРµ С‚РµРєСЃС‚Р°
      */
     public String getText() {
         try {
             waitStrategy.waitFor(element, name);
             String text = element.getText();
-            logger.debug("Получен текст '{}' из элемента: {}", text, name);
+            logger.debug("РџРѕР»СѓС‡РµРЅ С‚РµРєСЃС‚ '{}' РёР· СЌР»РµРјРµРЅС‚Р°: {}", text, name);
             return text;
         } catch (Exception e) {
-            logger.error("Ошибка при получении текста из элемента {}: {}", name, e.getMessage());
+            logger.error("РћС€РёР±РєР° РїСЂРё РїРѕР»СѓС‡РµРЅРёРё С‚РµРєСЃС‚Р° РёР· СЌР»РµРјРµРЅС‚Р° {}: {}", name, e.getMessage());
             return "";
         }
     }
 
     /**
-     * Получение значения атрибута
+     * РџРѕР»СѓС‡РµРЅРёРµ Р·РЅР°С‡РµРЅРёСЏ Р°С‚СЂРёР±СѓС‚Р°
      */
     public String getAttribute(String attribute) {
         try {
             waitStrategy.waitFor(element, name);
             String value = element.getAttribute(attribute);
-            logger.debug("Получен атрибут '{}' = '{}' из элемента: {}", attribute, value, name);
+            logger.debug("РџРѕР»СѓС‡РµРЅ Р°С‚СЂРёР±СѓС‚ '{}' = '{}' РёР· СЌР»РµРјРµРЅС‚Р°: {}", attribute, value, name);
             return value;
         } catch (Exception e) {
-            logger.error("Ошибка при получении атрибута '{}' из элемента {}: {}", attribute, name, e.getMessage());
+            logger.error("РћС€РёР±РєР° РїСЂРё РїРѕР»СѓС‡РµРЅРёРё Р°С‚СЂРёР±СѓС‚Р° '{}' РёР· СЌР»РµРјРµРЅС‚Р° {}: {}", attribute, name, e.getMessage());
             return "";
         }
     }
 
     /**
-     * Проверка, что элемент содержит текст
+     * РџСЂРѕРІРµСЂРєР°, С‡С‚Рѕ СЌР»РµРјРµРЅС‚ СЃРѕРґРµСЂР¶РёС‚ С‚РµРєСЃС‚
      */
-    @Step("Проверяем, что элемент '{name}' содержит текст: {expectedText}")
+    @Step("РџСЂРѕРІРµСЂСЏРµРј, С‡С‚Рѕ СЌР»РµРјРµРЅС‚ '{name}' СЃРѕРґРµСЂР¶РёС‚ С‚РµРєСЃС‚: {expectedText}")
     public SmartElement shouldContainText(String expectedText) {
-        logger.debug("Проверяем, что элемент '{}' содержит текст: {}", name, expectedText);
+        logger.debug("РџСЂРѕРІРµСЂСЏРµРј, С‡С‚Рѕ СЌР»РµРјРµРЅС‚ '{}' СЃРѕРґРµСЂР¶РёС‚ С‚РµРєСЃС‚: {}", name, expectedText);
         waitStrategy.waitFor(element, name);
-        element.shouldHave(com.codeborne.selenide.Condition.text(expectedText));
-        logger.info("Элемент '{}' содержит ожидаемый текст: {}", name, expectedText);
+        element.shouldHave(com.bft.pw.Condition.text(expectedText));
+        logger.info("Р­Р»РµРјРµРЅС‚ '{}' СЃРѕРґРµСЂР¶РёС‚ РѕР¶РёРґР°РµРјС‹Р№ С‚РµРєСЃС‚: {}", name, expectedText);
         return this;
     }
 
     /**
-     * Проверка, что элемент имеет CSS класс
+     * РџСЂРѕРІРµСЂРєР°, С‡С‚Рѕ СЌР»РµРјРµРЅС‚ РёРјРµРµС‚ CSS РєР»Р°СЃСЃ
      */
-    @Step("Проверяем, что элемент '{name}' имеет класс: {cssClass}")
+    @Step("РџСЂРѕРІРµСЂСЏРµРј, С‡С‚Рѕ СЌР»РµРјРµРЅС‚ '{name}' РёРјРµРµС‚ РєР»Р°СЃСЃ: {cssClass}")
     public SmartElement shouldHaveClass(String cssClass) {
-        logger.debug("Проверяем, что элемент '{}' имеет класс: {}", name, cssClass);
+        logger.debug("РџСЂРѕРІРµСЂСЏРµРј, С‡С‚Рѕ СЌР»РµРјРµРЅС‚ '{}' РёРјРµРµС‚ РєР»Р°СЃСЃ: {}", name, cssClass);
         waitStrategy.waitFor(element, name);
-        element.shouldHave(com.codeborne.selenide.Condition.cssClass(cssClass));
-        logger.info("Элемент '{}' имеет ожидаемый класс: {}", name, cssClass);
+        element.shouldHave(com.bft.pw.Condition.cssClass(cssClass));
+        logger.info("Р­Р»РµРјРµРЅС‚ '{}' РёРјРµРµС‚ РѕР¶РёРґР°РµРјС‹Р№ РєР»Р°СЃСЃ: {}", name, cssClass);
         return this;
     }
 
     /**
-     * Проверка, что элемент видим
+     * РџСЂРѕРІРµСЂРєР°, С‡С‚Рѕ СЌР»РµРјРµРЅС‚ РІРёРґРёРј
      */
-    @Step("Проверяем, что элемент '{name}' видим")
+    @Step("РџСЂРѕРІРµСЂСЏРµРј, С‡С‚Рѕ СЌР»РµРјРµРЅС‚ '{name}' РІРёРґРёРј")
     public SmartElement shouldBeVisible() {
-        logger.debug("Проверяем, что элемент '{}' видим", name);
+        logger.debug("РџСЂРѕРІРµСЂСЏРµРј, С‡С‚Рѕ СЌР»РµРјРµРЅС‚ '{}' РІРёРґРёРј", name);
         waitStrategy.waitFor(element, name);
-        element.shouldBe(com.codeborne.selenide.Condition.visible);
-        logger.info("Элемент '{}' видим", name);
+        element.shouldBe(com.bft.pw.Condition.visible);
+        logger.info("Р­Р»РµРјРµРЅС‚ '{}' РІРёРґРёРј", name);
         return this;
     }
 
     /**
-     * Проверка, что элемент невидим
+     * РџСЂРѕРІРµСЂРєР°, С‡С‚Рѕ СЌР»РµРјРµРЅС‚ РЅРµРІРёРґРёРј
      */
-    @Step("Проверяем, что элемент '{name}' невидим")
+    @Step("РџСЂРѕРІРµСЂСЏРµРј, С‡С‚Рѕ СЌР»РµРјРµРЅС‚ '{name}' РЅРµРІРёРґРёРј")
     public SmartElement shouldBeHidden() {
-        logger.debug("Проверяем, что элемент '{}' невидим", name);
-        element.shouldBe(com.codeborne.selenide.Condition.hidden);
-        logger.info("Элемент '{}' невидим", name);
+        logger.debug("РџСЂРѕРІРµСЂСЏРµРј, С‡С‚Рѕ СЌР»РµРјРµРЅС‚ '{}' РЅРµРІРёРґРёРј", name);
+        element.shouldBe(com.bft.pw.Condition.hidden);
+        logger.info("Р­Р»РµРјРµРЅС‚ '{}' РЅРµРІРёРґРёРј", name);
         return this;
     }
 
     /**
-     * Ожидание с указанной стратегией
+     * РћР¶РёРґР°РЅРёРµ СЃ СѓРєР°Р·Р°РЅРЅРѕР№ СЃС‚СЂР°С‚РµРіРёРµР№
      */
     public SmartElement waitWith(WaitStrategy strategy) {
-        logger.debug("Ожидаем элемент '{}' с кастомной стратегией", name);
+        logger.debug("РћР¶РёРґР°РµРј СЌР»РµРјРµРЅС‚ '{}' СЃ РєР°СЃС‚РѕРјРЅРѕР№ СЃС‚СЂР°С‚РµРіРёРµР№", name);
         strategy.waitFor(element, name);
         return this;
     }
 
     /**
-     * Получение базового SelenideElement
+     * РџРѕР»СѓС‡РµРЅРёРµ Р±Р°Р·РѕРІРѕРіРѕ SelenideElement
      */
     public SelenideElement getElement() {
         return element;
     }
 
     /**
-     * Получение имени элемента
+     * РџРѕР»СѓС‡РµРЅРёРµ РёРјРµРЅРё СЌР»РµРјРµРЅС‚Р°
      */
     public String getName() {
         return name;
     }
 
     /**
-     * Получение описания элемента
+     * РџРѕР»СѓС‡РµРЅРёРµ РѕРїРёСЃР°РЅРёСЏ СЌР»РµРјРµРЅС‚Р°
      */
     public String getDescription() {
         return description;
     }
 
     /**
-     * Получение стратегии ожидания
+     * РџРѕР»СѓС‡РµРЅРёРµ СЃС‚СЂР°С‚РµРіРёРё РѕР¶РёРґР°РЅРёСЏ
      */
     public WaitStrategy getWaitStrategy() {
         return waitStrategy;
     }
 
     /**
-     * Загрузка файла
+     * Р—Р°РіСЂСѓР·РєР° С„Р°Р№Р»Р°
      */
-    @Step("Загружаем файл в элемент: {name}")
+    @Step("Р—Р°РіСЂСѓР¶Р°РµРј С„Р°Р№Р» РІ СЌР»РµРјРµРЅС‚: {name}")
     public SmartElement uploadFile(File file) {
-        logger.debug("Загружаем файл '{}' в элемент: {}", file.getName(), name);
+        logger.debug("Р—Р°РіСЂСѓР¶Р°РµРј С„Р°Р№Р» '{}' РІ СЌР»РµРјРµРЅС‚: {}", file.getName(), name);
         waitStrategy.waitFor(element, name);
         element.uploadFile(file);
-        logger.info("Файл '{}' загружен в элемент: {}", file.getName(), name);
+        logger.info("Р¤Р°Р№Р» '{}' Р·Р°РіСЂСѓР¶РµРЅ РІ СЌР»РµРјРµРЅС‚: {}", file.getName(), name);
         return this;
     }
 
     /**
-     * Загрузка файла из classpath
+     * Р—Р°РіСЂСѓР·РєР° С„Р°Р№Р»Р° РёР· classpath
      */
-    @Step("Загружаем файл из classpath '{fileName}' в элемент: {name}")
+    @Step("Р—Р°РіСЂСѓР¶Р°РµРј С„Р°Р№Р» РёР· classpath '{fileName}' РІ СЌР»РµРјРµРЅС‚: {name}")
     public SmartElement uploadFromClasspath(String fileName) {
-        logger.debug("Загружаем файл '{}' из classpath в элемент: {}", fileName, name);
+        logger.debug("Р—Р°РіСЂСѓР¶Р°РµРј С„Р°Р№Р» '{}' РёР· classpath РІ СЌР»РµРјРµРЅС‚: {}", fileName, name);
         waitStrategy.waitFor(element, name);
         element.uploadFromClasspath(fileName);
-        logger.info("Файл '{}' из classpath загружен в элемент: {}", fileName, name);
+        logger.info("Р¤Р°Р№Р» '{}' РёР· classpath Р·Р°РіСЂСѓР¶РµРЅ РІ СЌР»РµРјРµРЅС‚: {}", fileName, name);
         return this;
     }
 
     /**
-     * Загрузка нескольких файлов из classpath
+     * Р—Р°РіСЂСѓР·РєР° РЅРµСЃРєРѕР»СЊРєРёС… С„Р°Р№Р»РѕРІ РёР· classpath
      */
-    @Step("Загружаем файлы из classpath в элемент: {name}")
+    @Step("Р—Р°РіСЂСѓР¶Р°РµРј С„Р°Р№Р»С‹ РёР· classpath РІ СЌР»РµРјРµРЅС‚: {name}")
     public SmartElement uploadFromClasspath(String... fileNames) {
-        logger.debug("Загружаем {} файлов из classpath в элемент: {}", fileNames.length, name);
+        logger.debug("Р—Р°РіСЂСѓР¶Р°РµРј {} С„Р°Р№Р»РѕРІ РёР· classpath РІ СЌР»РµРјРµРЅС‚: {}", fileNames.length, name);
         waitStrategy.waitFor(element, name);
         element.uploadFromClasspath(fileNames);
-        logger.info("Файлы из classpath загружены в элемент: {}", name);
+        logger.info("Р¤Р°Р№Р»С‹ РёР· classpath Р·Р°РіСЂСѓР¶РµРЅС‹ РІ СЌР»РµРјРµРЅС‚: {}", name);
         return this;
     }
 
     /**
-     * Выполнение JavaScript
+     * Р’С‹РїРѕР»РЅРµРЅРёРµ JavaScript
      */
     public Object executeJavaScript(String script, Object... args) {
-        logger.debug("Выполняем JavaScript в элементе: {}", name);
-        return com.codeborne.selenide.Selenide.executeJavaScript(script, args);
+        logger.debug("Р’С‹РїРѕР»РЅСЏРµРј JavaScript РІ СЌР»РµРјРµРЅС‚Рµ: {}", name);
+        return com.bft.pw.Selenide.executeJavaScript(script, args);
     }
 
     /**
-     * Получение SelenideElement (для обратной совместимости)
+     * РџРѕР»СѓС‡РµРЅРёРµ SelenideElement (РґР»СЏ РѕР±СЂР°С‚РЅРѕР№ СЃРѕРІРјРµСЃС‚РёРјРѕСЃС‚Рё)
      */
     public SelenideElement getSelenideElement() {
         return element;

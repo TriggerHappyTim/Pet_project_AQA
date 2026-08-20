@@ -1,16 +1,16 @@
 package com.bft.helpers;
 
 import com.bft.ui.pages.BasePage;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import com.bft.pw.By;
+import com.bft.pw.PwDriver;
+import com.bft.pw.PwElement;
 import org.testng.asserts.SoftAssert;
 
 import static com.bft.testdata.TestDataConstants.Selectors.*;
 
 public class DataFiller extends BasePage {
 
-    public DataFiller(WebDriver driver, SoftAssert softAssert) {
+    public DataFiller(PwDriver driver, SoftAssert softAssert) {
         super(driver, softAssert);
     }
 
@@ -21,51 +21,51 @@ public class DataFiller extends BasePage {
         fillField(getKppField(), kpp, "КПП");
     }
 
-    private WebElement getOrgNameField() {
+    private PwElement getOrgNameField() {
         return driver.findElement(By.name(ORG_NAME_FIELD));
     }
 
-    private WebElement getPfrRegNumberField() {
+    private PwElement getPfrRegNumberField() {
         return driver.findElement(By.name(PFR_REG_NUMBER_FIELD));
     }
 
-    private WebElement getInnField() {
+    private PwElement getInnField() {
         return driver.findElement(By.name(INN_FIELD));
     }
 
-    private WebElement getKppField() {
+    private PwElement getKppField() {
         return driver.findElement(By.name(KPP_FIELD));
     }
 
-    private WebElement getReportPeriodSelect() {
+    private PwElement getReportPeriodSelect() {
         return driver.findElement(By.name(REPORT_PERIOD_SELECT));
     }
 
-    private WebElement getCorrectionNumberField() {
+    private PwElement getCorrectionNumberField() {
         return driver.findElement(By.name(CORRECTION_NUMBER_FIELD));
     }
 
-    private WebElement getInfoTypeSelect() {
+    private PwElement getInfoTypeSelect() {
         return driver.findElement(By.name(INFO_TYPE_SELECT));
     }
 
-    private WebElement getInsuredPersonsTab() {
+    private PwElement getInsuredPersonsTab() {
         return driver.findElement(By.xpath(INSURED_PERSONS_TAB));
     }
 
-    private WebElement getAddPersonButton() {
+    private PwElement getAddPersonButton() {
         return driver.findElement(By.name(ADD_PERSON_BUTTON));
     }
 
-    private WebElement getSaveButton() {
+    private PwElement getSaveButton() {
         return driver.findElement(By.name(SAVE_BUTTON));
     }
 
-    private WebElement getEditButton() {
+    private PwElement getEditButton() {
         return driver.findElement(By.name(EDIT_BUTTON));
     }
 
-    private WebElement getSignAndSendButton() {
+    private PwElement getSignAndSendButton() {
         return driver.findElement(By.name(SIGN_AND_SEND_BUTTON));
     }
 
@@ -107,11 +107,11 @@ public class DataFiller extends BasePage {
         clickElement(getInsuredPersonsTab(), "Вкладка 'Застрахованные лица'");
         clickElement(getAddPersonButton(), "Добавить ЗЛ");
 
-        WebElement lastNameField = driver.findElement(By.name("lastName"));
-        WebElement firstNameField = driver.findElement(By.name("firstName"));
-        WebElement middleNameField = driver.findElement(By.name("middleName"));
-        WebElement snilsField = driver.findElement(By.name("snils"));
-        WebElement innField = driver.findElement(By.name("personInn"));
+        PwElement lastNameField = driver.findElement(By.name("lastName"));
+        PwElement firstNameField = driver.findElement(By.name("firstName"));
+        PwElement middleNameField = driver.findElement(By.name("middleName"));
+        PwElement snilsField = driver.findElement(By.name("snils"));
+        PwElement innField = driver.findElement(By.name("personInn"));
 
         fillField(lastNameField, lastName, "Фамилия ЗЛ");
         fillField(firstNameField, firstName, "Имя ЗЛ");

@@ -1,8 +1,8 @@
 package com.bft.test.helpers;
 
-import com.codeborne.selenide.Selenide;
-import com.codeborne.selenide.WebDriverRunner;
-import org.openqa.selenium.WebDriver;
+import com.bft.pw.Selenide;
+import com.bft.pw.WebDriverRunner;
+import com.bft.pw.PwDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.asserts.SoftAssert;
@@ -78,9 +78,9 @@ public class PageObjectHelper {
                 );
             }
             
-            // Проверяем, что страница открыта (если есть активный WebDriver)
+            // Проверяем, что страница открыта (если есть активный PwDriver)
             if (WebDriverRunner.hasWebDriverStarted()) {
-                WebDriver driver = WebDriverRunner.getWebDriver();
+                PwDriver driver = WebDriverRunner.getWebDriver();
                 if (driver != null) {
                     String currentUrl = driver.getCurrentUrl();
                     logger.debug("Страница открыта: {}", currentUrl);

@@ -1,11 +1,13 @@
 package com.bft.ui.core.wait;
 
-import com.codeborne.selenide.Condition;
-import com.codeborne.selenide.SelenideElement;
-import org.openqa.selenium.TimeoutException;
-import org.openqa.selenium.support.ui.WebDriverWait;
+import com.bft.pw.Condition;
+import com.bft.pw.PwDriver;
+import com.bft.pw.PwWait;
+import com.bft.pw.SelenideElement;
+import com.bft.pw.TimeoutException;
 
 import java.time.Duration;
+import java.util.function.Function;
 
 /**
  * Фабрика и реализации стратегий ожидания
@@ -84,7 +86,7 @@ public class WaitStrategies {
     /**
      * Кастомное ожидание с функцией условия
      */
-    public static WaitStrategy custom(java.util.function.Function<org.openqa.selenium.WebDriver, Boolean> condition) {
+    public static WaitStrategy custom(Function<PwDriver, Boolean> condition) {
         return new CustomWaitStrategy(DEFAULT_TIMEOUT, POLLING_INTERVAL, condition);
     }
 
@@ -98,21 +100,16 @@ public class WaitStrategies {
         @Override
         public void wait(String description) {
             logWait("Ожидаем условие: " + description);
-            // Используем умное ожидание через WebDriverWait вместо Thread.sleep()
-            WebDriverWait wait = createWebDriverWait();
+            PwWait wait = createWebDriverWait();
             try {
-                // Ожидаем готовности страницы (document.readyState == "complete")
                 wait.until(driver -> {
                     try {
-                        return ((org.openqa.selenium.JavascriptExecutor) driver)
-                            .executeScript("return document.readyState")
-                            .equals("complete");
+                        return "complete".equals(driver.executeScript("return document.readyState"));
                     } catch (Exception e) {
                         return false;
                     }
                 });
             } catch (TimeoutException e) {
-                // Если страница не загрузилась за timeout, продолжаем выполнение
                 logWait("Таймаут ожидания условия: " + description);
             }
         }
@@ -136,15 +133,11 @@ public class WaitStrategies {
         @Override
         public void wait(String description) {
             logWait("Ожидаем кликабельности: " + description);
-            // Используем умное ожидание через WebDriverWait вместо Thread.sleep()
-            WebDriverWait wait = createWebDriverWait();
+            PwWait wait = createWebDriverWait();
             try {
-                // Ожидаем готовности страницы и отсутствия блокирующих элементов
                 wait.until(driver -> {
                     try {
-                        String readyState = (String) ((org.openqa.selenium.JavascriptExecutor) driver)
-                            .executeScript("return document.readyState");
-                        // Проверяем, что страница загружена и нет активных анимаций/загрузок
+                        Object readyState = driver.executeScript("return document.readyState");
                         return "complete".equals(readyState);
                     } catch (Exception e) {
                         return false;
@@ -174,15 +167,11 @@ public class WaitStrategies {
         @Override
         public void wait(String description) {
             logWait("Ожидаем присутствия: " + description);
-            // Используем умное ожидание через WebDriverWait вместо Thread.sleep()
-            WebDriverWait wait = createWebDriverWait();
+            PwWait wait = createWebDriverWait();
             try {
-                // Ожидаем готовности DOM дерева
                 wait.until(driver -> {
                     try {
-                        return ((org.openqa.selenium.JavascriptExecutor) driver)
-                            .executeScript("return document.readyState")
-                            .equals("complete");
+                        return "complete".equals(driver.executeScript("return document.readyState"));
                     } catch (Exception e) {
                         return false;
                     }
@@ -211,19 +200,14 @@ public class WaitStrategies {
         @Override
         public void wait(String description) {
             logWait("Ожидаем исчезновения: " + description);
-            // Используем умное ожидание через WebDriverWait вместо Thread.sleep()
-            WebDriverWait wait = createWebDriverWait();
+            PwWait wait = createWebDriverWait();
             try {
-                // Ожидаем завершения анимаций и исчезновения временных элементов
                 wait.until(driver -> {
                     try {
-                        // Проверяем готовность страницы и отсутствие спиннеров/лоадеров
-                        String readyState = (String) ((org.openqa.selenium.JavascriptExecutor) driver)
-                            .executeScript("return document.readyState");
-                        // Дополнительно проверяем отсутствие элементов загрузки
-                        boolean noLoaders = (Boolean) ((org.openqa.selenium.JavascriptExecutor) driver)
-                            .executeScript("return document.querySelectorAll('[class*=\"loading\"], [class*=\"spinner\"], [class*=\"loader\"]').length === 0");
-                        return "complete".equals(readyState) && noLoaders;
+                        Object readyState = driver.executeScript("return document.readyState");
+                        Object noLoaders = driver.executeScript(
+                                "return document.querySelectorAll('[class*=\"loading\"], [class*=\"spinner\"], [class*=\"loader\"]').length === 0");
+                        return "complete".equals(readyState) && Boolean.TRUE.equals(noLoaders);
                     } catch (Exception e) {
                         return false;
                     }
@@ -260,7 +244,7 @@ public class WaitStrategies {
         @Override
         public void waitFor(SelenideElement element, String elementName) {
             logWait("Ожидаем изменения текста элемента: " + elementName);
-            WebDriverWait wait = createWebDriverWait();
+            PwWait wait = createWebDriverWait();
             try {
                 wait.until(driver -> {
                     try {
@@ -292,12 +276,12 @@ public class WaitStrategies {
         @Override
         public void waitFor(SelenideElement element, String elementName) {
             logWait("Ожидаем JS условия для элемента: " + elementName);
-            WebDriverWait wait = createWebDriverWait();
+            PwWait wait = createWebDriverWait();
             try {
                 wait.until(driver -> {
                     try {
-                        return (Boolean) ((org.openqa.selenium.JavascriptExecutor) driver)
-                            .executeScript("return " + condition);
+                        Object result = driver.executeScript("return " + condition);
+                        return Boolean.TRUE.equals(result);
                     } catch (Exception e) {
                         return false;
                     }
@@ -316,13 +300,11 @@ public class WaitStrategies {
         @Override
         public void wait(String description) {
             logWait("Ожидаем загрузки страницы: " + description);
-            WebDriverWait wait = createWebDriverWait();
+            PwWait wait = createWebDriverWait();
             try {
                 wait.until(driver -> {
                     try {
-                        return ((org.openqa.selenium.JavascriptExecutor) driver)
-                            .executeScript("return document.readyState")
-                            .equals("complete");
+                        return "complete".equals(driver.executeScript("return document.readyState"));
                     } catch (Exception e) {
                         return false;
                     }
@@ -334,16 +316,15 @@ public class WaitStrategies {
 
         @Override
         public void waitFor(SelenideElement element, String elementName) {
-            // Для загрузки страницы элемент не требуется
             wait("Загрузка страницы");
         }
     }
 
     private static class CustomWaitStrategy extends WaitStrategy.BaseWaitStrategy {
-        private final java.util.function.Function<org.openqa.selenium.WebDriver, Boolean> condition;
+        private final Function<PwDriver, Boolean> condition;
 
         public CustomWaitStrategy(Duration timeout, Duration pollingInterval,
-                                java.util.function.Function<org.openqa.selenium.WebDriver, Boolean> condition) {
+                                  Function<PwDriver, Boolean> condition) {
             super(timeout, pollingInterval);
             this.condition = condition;
         }
@@ -351,7 +332,7 @@ public class WaitStrategies {
         @Override
         public void wait(String description) {
             logWait("Ожидаем кастомного условия: " + description);
-            WebDriverWait wait = createWebDriverWait();
+            PwWait wait = createWebDriverWait();
             try {
                 wait.until(condition);
             } catch (TimeoutException e) {
@@ -361,7 +342,6 @@ public class WaitStrategies {
 
         @Override
         public void waitFor(SelenideElement element, String elementName) {
-            // Для кастомного условия используем общее ожидание
             wait("Кастомное условие для элемента: " + elementName);
         }
     }

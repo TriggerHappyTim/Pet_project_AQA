@@ -1,10 +1,9 @@
 package com.bft.utils;
 
-import com.codeborne.selenide.SelenideElement;
+import com.bft.pw.SelenideElement;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.WebDriver;
+import com.bft.pw.PwDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,7 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.codeborne.selenide.WebDriverRunner.getWebDriver;
+import static com.bft.pw.WebDriverRunner.getWebDriver;
 
 /**
  * Утилита для парсинга структуры формы и сохранения метаданных полей
@@ -51,9 +50,8 @@ public class FormStructureParser {
         
         try {
             // Получаем WebDriver для выполнения JavaScript
-            WebDriver driver = getWebDriver();
-            JavascriptExecutor js = (JavascriptExecutor) driver;
-            
+            PwDriver driver = getWebDriver();
+                        
             // Извлекаем все интерактивные элементы
             var inputs = formElement.$$x(".//input[not(@type='hidden')]");
             var selects = formElement.$$x(".//select");
@@ -64,7 +62,7 @@ public class FormStructureParser {
             // Парсим inputs
             for (var input : inputs) {
                 if (input.exists() && input.isDisplayed()) {
-                    FormFieldMetadata metadata = parseInputElement(input, formElement, js);
+                    FormFieldMetadata metadata = parseInputElement(input, formElement, driver);
                     if (metadata != null) {
                         fields.add(metadata);
                     }
@@ -74,7 +72,7 @@ public class FormStructureParser {
             // Парсим selects
             for (var select : selects) {
                 if (select.exists() && select.isDisplayed()) {
-                    FormFieldMetadata metadata = parseSelectElement(select, formElement, js);
+                    FormFieldMetadata metadata = parseSelectElement(select, formElement, driver);
                     if (metadata != null) {
                         fields.add(metadata);
                     }
@@ -84,7 +82,7 @@ public class FormStructureParser {
             // Парсим buttons (кнопки в формах)
             for (var button : buttons) {
                 if (button.exists() && button.isDisplayed()) {
-                    FormFieldMetadata metadata = parseButtonElement(button, formElement, js);
+                    FormFieldMetadata metadata = parseButtonElement(button, formElement, driver);
                     if (metadata != null) {
                         fields.add(metadata);
                     }
@@ -94,7 +92,7 @@ public class FormStructureParser {
             // Парсим textareas
             for (var textarea : textareas) {
                 if (textarea.exists() && textarea.isDisplayed()) {
-                    FormFieldMetadata metadata = parseTextareaElement(textarea, formElement, js);
+                    FormFieldMetadata metadata = parseTextareaElement(textarea, formElement, driver);
                     if (metadata != null) {
                         fields.add(metadata);
                     }
@@ -104,7 +102,7 @@ public class FormStructureParser {
             // Парсим comboboxes (MUI Autocomplete)
             for (var combobox : comboboxes) {
                 if (combobox.exists() && combobox.isDisplayed()) {
-                    FormFieldMetadata metadata = parseComboboxElement(combobox, formElement, js);
+                    FormFieldMetadata metadata = parseComboboxElement(combobox, formElement, driver);
                     if (metadata != null) {
                         fields.add(metadata);
                     }
@@ -127,7 +125,7 @@ public class FormStructureParser {
      * @param js JavaScript executor для получения XPath
      * @return метаданные поля или null при ошибке
      */
-    private static FormFieldMetadata parseInputElement(SelenideElement input, SelenideElement formElement, JavascriptExecutor js) {
+    private static FormFieldMetadata parseInputElement(SelenideElement input, SelenideElement formElement, PwDriver driver) {
         FormFieldMetadata metadata = new FormFieldMetadata();
         
         try {
@@ -142,7 +140,7 @@ public class FormStructureParser {
             metadata.setEnabled(input.isEnabled());
             
             // Получаем XPath
-            String xpath = getElementXPath(input, js);
+            String xpath = getElementXPath(input, driver);
             metadata.setXpath(xpath);
             
             // Ищем метку
@@ -153,7 +151,7 @@ public class FormStructureParser {
             }
             
             // Собираем все атрибуты
-            Map<String, String> attrs = getAllAttributes(input, js);
+            Map<String, String> attrs = getAllAttributes(input, driver);
             metadata.setAttributes(attrs != null ? attrs : new HashMap<>());
             
         } catch (Exception e) {
@@ -172,7 +170,7 @@ public class FormStructureParser {
      * @param js JavaScript executor для получения XPath
      * @return метаданные поля или null при ошибке
      */
-    private static FormFieldMetadata parseSelectElement(SelenideElement select, SelenideElement formElement, JavascriptExecutor js) {
+    private static FormFieldMetadata parseSelectElement(SelenideElement select, SelenideElement formElement, PwDriver driver) {
         FormFieldMetadata metadata = new FormFieldMetadata();
         
         try {
@@ -184,7 +182,7 @@ public class FormStructureParser {
             metadata.setEnabled(select.isEnabled());
             
             // Получаем XPath
-            String xpath = getElementXPath(select, js);
+            String xpath = getElementXPath(select, driver);
             metadata.setXpath(xpath);
             
             // Ищем метку
@@ -210,7 +208,7 @@ public class FormStructureParser {
      * @param js JavaScript executor для получения XPath
      * @return метаданные поля или null при ошибке
      */
-    private static FormFieldMetadata parseButtonElement(SelenideElement button, SelenideElement formElement, JavascriptExecutor js) {
+    private static FormFieldMetadata parseButtonElement(SelenideElement button, SelenideElement formElement, PwDriver driver) {
         FormFieldMetadata metadata = new FormFieldMetadata();
         
         try {
@@ -225,7 +223,7 @@ public class FormStructureParser {
             metadata.setVisible(button.isDisplayed());
             metadata.setEnabled(button.isEnabled());
             
-            String xpath = getElementXPath(button, js);
+            String xpath = getElementXPath(button, driver);
             metadata.setXpath(xpath);
             
         } catch (Exception e) {
@@ -244,7 +242,7 @@ public class FormStructureParser {
      * @param js JavaScript executor для получения XPath
      * @return метаданные поля или null при ошибке
      */
-    private static FormFieldMetadata parseTextareaElement(SelenideElement textarea, SelenideElement formElement, JavascriptExecutor js) {
+    private static FormFieldMetadata parseTextareaElement(SelenideElement textarea, SelenideElement formElement, PwDriver driver) {
         FormFieldMetadata metadata = new FormFieldMetadata();
         
         try {
@@ -257,7 +255,7 @@ public class FormStructureParser {
             metadata.setVisible(textarea.isDisplayed());
             metadata.setEnabled(textarea.isEnabled());
             
-            String xpath = getElementXPath(textarea, js);
+            String xpath = getElementXPath(textarea, driver);
             metadata.setXpath(xpath);
             
             String label = findLabelForInput(textarea, formElement);
@@ -282,7 +280,7 @@ public class FormStructureParser {
      * @param js JavaScript executor для получения XPath
      * @return метаданные поля или null при ошибке
      */
-    private static FormFieldMetadata parseComboboxElement(SelenideElement combobox, SelenideElement formElement, JavascriptExecutor js) {
+    private static FormFieldMetadata parseComboboxElement(SelenideElement combobox, SelenideElement formElement, PwDriver driver) {
         FormFieldMetadata metadata = new FormFieldMetadata();
         
         try {
@@ -305,7 +303,7 @@ public class FormStructureParser {
             metadata.setVisible(combobox.isDisplayed());
             metadata.setEnabled(combobox.isEnabled());
             
-            String xpath = getElementXPath(combobox, js);
+            String xpath = getElementXPath(combobox, driver);
             metadata.setXpath(xpath);
             
             // Ищем метку для combobox (обычно находится рядом или в родительском контейнере)
@@ -459,9 +457,9 @@ public class FormStructureParser {
      * @param js JavaScript executor
      * @return XPath строка
      */
-    private static String getElementXPath(SelenideElement element, JavascriptExecutor js) {
+    private static String getElementXPath(SelenideElement element, PwDriver driver) {
         try {
-            return (String) js.executeScript(
+            return (String) driver.executeScript(
                 "function getElementXPath(element) { " +
                 "  if (element.id !== '') return '//*[@id=\"' + element.id + '\"]'; " +
                 "  if (element === document.body) return '/html/body'; " +
@@ -474,7 +472,7 @@ public class FormStructureParser {
                 "    if (sibling.nodeType === 1 && sibling.tagName === element.tagName) ix++; " +
                 "  } " +
                 "} " +
-                "return getElementXPath(arguments[0]);", element.toWebElement());
+                "return getElementXPath(arguments[0]);", element.getWrappedElement());
         } catch (Exception e) {
             log.warn("Ошибка при получении XPath: " + e.getMessage());
             return null;
@@ -489,14 +487,14 @@ public class FormStructureParser {
      * @return Map атрибутов
      */
     @SuppressWarnings("unchecked")
-    private static Map<String, String> getAllAttributes(SelenideElement element, JavascriptExecutor js) {
+    private static Map<String, String> getAllAttributes(SelenideElement element, PwDriver driver) {
         try {
-            return (Map<String, String>) js.executeScript(
+            return (Map<String, String>) driver.executeScript(
                 "var items = {}; " +
                 "for (index = 0; index < arguments[0].attributes.length; ++index) { " +
                 "  items[arguments[0].attributes[index].name] = arguments[0].attributes[index].value " +
                 "} " +
-                "return items;", element.toWebElement());
+                "return items;", element.getWrappedElement());
         } catch (Exception e) {
             log.warn("Ошибка при получении атрибутов: " + e.getMessage());
             return null;

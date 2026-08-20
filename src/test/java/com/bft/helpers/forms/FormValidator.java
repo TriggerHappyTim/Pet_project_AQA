@@ -1,18 +1,18 @@
 package com.bft.helpers.forms;
 
 import com.bft.security.masking.SecureLogger;
-import com.codeborne.selenide.ElementsCollection;
-import com.codeborne.selenide.SelenideElement;
+import com.bft.pw.ElementsCollection;
+import com.bft.pw.SelenideElement;
 import org.slf4j.Logger;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
-import static com.codeborne.selenide.CollectionCondition.size;
-import static com.codeborne.selenide.CollectionCondition.sizeGreaterThan;
-import static com.codeborne.selenide.Condition.*;
-import static com.codeborne.selenide.Selenide.$;
-import static com.codeborne.selenide.Selenide.$$;
+import static com.bft.pw.CollectionCondition.size;
+import static com.bft.pw.CollectionCondition.sizeGreaterThan;
+import static com.bft.pw.Condition.*;
+import static com.bft.pw.Selenide.$;
+import static com.bft.pw.Selenide.$$;
 
 /**
  * Валидатор форм отчётности на базе Selenide.

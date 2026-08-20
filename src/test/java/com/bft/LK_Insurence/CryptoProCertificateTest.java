@@ -26,7 +26,7 @@ public class CryptoProCertificateTest extends UITestBase {
 
         // ПРОВЕРКА URL ЧЕРЕЗ Selenide (вместо несуществующего getCurrentUrl())
         // Если текущий URL не содержит нужного пути, открываем страницу
-        String currentUrl = com.codeborne.selenide.WebDriverRunner.url();
+        String currentUrl = com.bft.pw.WebDriverRunner.url();
         if (currentUrl == null || !currentUrl.contains("cryptopro")) {
             cryptoProPage.openPageAndVerify("Демо-страница КриптоПРО");
         }

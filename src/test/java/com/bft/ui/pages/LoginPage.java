@@ -2,13 +2,13 @@ package com.bft.ui.pages;
 
 import com.bft.enums.TimeoutConstants;
 import com.bft.security.masking.SecureLogger;
-import com.codeborne.selenide.Condition;
-import com.codeborne.selenide.Selenide;
+import com.bft.pw.Condition;
+import com.bft.pw.Selenide;
 import com.bft.enums.UIType;
 import java.time.Duration;
 
-import static com.codeborne.selenide.Selenide.$;
-import static com.codeborne.selenide.Selenide.$x;
+import static com.bft.pw.Selenide.$;
+import static com.bft.pw.Selenide.$x;
 
 /**
  * Page Object для страницы авторизации в системе EVS
@@ -68,9 +68,9 @@ public class LoginPage {
      * @param login логин пользователя (email или username)
      * @param password пароль пользователя
      * @return текущий экземпляр LoginPage для цепочки вызовов
-     * @throws com.codeborne.selenide.ex.ElementNotFoundException 
+     * @throws com.bft.pw.ex.ElementNotFoundException 
      *         если элементы формы авторизации не найдены
-     * @throws com.codeborne.selenide.ex.ElementShould 
+     * @throws com.bft.pw.ex.ElementShould 
      *         если элемент подтверждения входа не появился в течение 60 секунд
      */
     public LoginPage authorize(String login, String password) {
@@ -102,7 +102,7 @@ public class LoginPage {
      * @param login логин пользователя на портале ЕПГУ
      * @param password пароль пользователя на портале ЕПГУ
      * @return текущий экземпляр LoginPage для цепочки вызовов
-     * @throws com.codeborne.selenide.ex.ElementNotFoundException 
+     * @throws com.bft.pw.ex.ElementNotFoundException 
      *         если ссылка ЕПГУ или элементы формы не найдены
      * @see #selectUserCardEPGU(String) для выбора карточки после авторизации
      */
@@ -123,18 +123,18 @@ public class LoginPage {
             
             // Дополнительная проверка: ожидаем либо исчезновения формы авторизации,
             // либо появления страницы выбора карточки, либо успешной авторизации
-            com.codeborne.selenide.Selenide.Wait().until(webDriver -> {
+            com.bft.pw.Selenide.Wait().until(webDriver -> {
                 // Проверяем, что форма авторизации исчезла
-                boolean loginFormGone = webDriver.findElements(org.openqa.selenium.By.id("login")).isEmpty() ||
-                    !webDriver.findElement(org.openqa.selenium.By.id("login")).isDisplayed();
+                boolean loginFormGone = webDriver.findElements(com.bft.pw.By.id("login")).isEmpty() ||
+                    !webDriver.findElement(com.bft.pw.By.id("login")).isDisplayed();
                 
                 // Проверяем появление страницы выбора карточки
                 boolean cardSelectionPageAppeared = !webDriver.findElements(
-                    org.openqa.selenium.By.xpath("//*[@class = 'selectUserCardName']")).isEmpty();
+                    com.bft.pw.By.xpath("//*[@class = 'selectUserCardName']")).isEmpty();
                 
                 // Проверяем успешную авторизацию (если карточка одна, выбор может быть пропущен)
                 boolean userLoggedIn = !webDriver.findElements(
-                    org.openqa.selenium.By.xpath("//div[contains(@class, 'user-name')]")).isEmpty();
+                    com.bft.pw.By.xpath("//div[contains(@class, 'user-name')]")).isEmpty();
                 
                 boolean authCompleted = loginFormGone && (cardSelectionPageAppeared || userLoggedIn);
                 
@@ -173,9 +173,9 @@ public class LoginPage {
      * @param usercard текст на карточке пользователя для выбора
      *                 (например, "ОРГАНИЗАЦИЯ -1546025669")
      * @return текущий экземпляр LoginPage для цепочки вызовов
-     * @throws com.codeborne.selenide.ex.ElementNotFoundException 
+     * @throws com.bft.pw.ex.ElementNotFoundException 
      *         если карточка с указанным текстом не найдена
-     * @throws com.codeborne.selenide.ex.ElementShould 
+     * @throws com.bft.pw.ex.ElementShould 
      *         если карточка не появилась в течение 60 секунд
      */
     public LoginPage selectUserCardEPGU(String usercard) {
@@ -199,7 +199,7 @@ public class LoginPage {
                 return this;
             } catch (Exception e2) {
                 logger.error("Страница выбора карточки не появилась и пользователь не авторизован. Текущий URL: {}", 
-                    com.codeborne.selenide.WebDriverRunner.getWebDriver().getCurrentUrl());
+                    com.bft.pw.WebDriverRunner.getWebDriver().getCurrentUrl());
                 throw new RuntimeException(
                     com.bft.test.helpers.AssertionHelper.formatPageStateError(
                         "Страница выбора карточки",
@@ -240,14 +240,14 @@ public class LoginPage {
         if (!cardFound) {
             try {
                 logger.debug("Стратегия 2: Перебор всех карточек");
-                com.codeborne.selenide.ElementsCollection cards = com.codeborne.selenide.Selenide.$$x("//*[@class = 'selectUserCardName']");
+                com.bft.pw.ElementsCollection cards = com.bft.pw.Selenide.$$x("//*[@class = 'selectUserCardName']");
                 logger.debug("Найдено карточек на странице: {}", cards.size());
                 
                 String normTarget = normalizeForMatch(normalizedCard);
                 
                 // Проход 1: Точное совпадение после нормализации (без регистра и пунктуации).
                 // Предпочтительный вариант — не позволяет ошибочно выбрать чужую карточку.
-                for (com.codeborne.selenide.SelenideElement card : cards) {
+                for (com.bft.pw.SelenideElement card : cards) {
                     String cardText = card.getText().trim();
                     if (orgNumber != null && cardText.contains(orgNumber)) {
                         logger.info("Найдена карточка по номеру: '{}'", cardText);
@@ -267,7 +267,7 @@ public class LoginPage {
                 // Проход 2: Частичное совпадение (карточка содержит искомое название).
                 // Только если точного совпадения не нашлось.
                 if (!cardFound) {
-                    for (com.codeborne.selenide.SelenideElement card : cards) {
+                    for (com.bft.pw.SelenideElement card : cards) {
                         String cardText = card.getText().trim();
                         String normCard = normalizeForMatch(cardText);
                         if (!normTarget.isEmpty() && !normCard.isEmpty() && normCard.contains(normTarget)) {
@@ -301,9 +301,9 @@ public class LoginPage {
         
         if (!cardFound) {
             // Получаем список всех доступных карточек для отладки
-            com.codeborne.selenide.ElementsCollection allCards = com.codeborne.selenide.Selenide.$$x("//*[@class = 'selectUserCardName']");
+            com.bft.pw.ElementsCollection allCards = com.bft.pw.Selenide.$$x("//*[@class = 'selectUserCardName']");
             StringBuilder availableCards = new StringBuilder();
-            for (com.codeborne.selenide.SelenideElement card : allCards) {
+            for (com.bft.pw.SelenideElement card : allCards) {
                 availableCards.append("'").append(card.getText()).append("', ");
             }
             
@@ -316,7 +316,7 @@ public class LoginPage {
                     "Карточка пользователя",
                     "должна быть найдена",
                     String.format("Искали: '%s'. Доступные карточки: [%s]", normalizedCard, availableCardsStr),
-                    com.codeborne.selenide.WebDriverRunner.getWebDriver().getCurrentUrl()
+                    com.bft.pw.WebDriverRunner.getWebDriver().getCurrentUrl()
                 )
             );
         }
@@ -356,7 +356,7 @@ public class LoginPage {
             // Стратегия 3: Проверка по URL - если мы на главной странице, значит авторизованы
             if (!userElementFound) {
                 try {
-                    String currentUrl = com.codeborne.selenide.WebDriverRunner.getWebDriver().getCurrentUrl();
+                    String currentUrl = com.bft.pw.WebDriverRunner.getWebDriver().getCurrentUrl();
                     logger.debug("Текущий URL: {}", currentUrl);
                     
                     // Если URL содержит признаки авторизованной страницы (не страница логина)
@@ -372,7 +372,7 @@ public class LoginPage {
             
             if (!userElementFound) {
                 // Получаем текущий URL для отладки
-                String currentUrl = com.codeborne.selenide.WebDriverRunner.getWebDriver().getCurrentUrl();
+                String currentUrl = com.bft.pw.WebDriverRunner.getWebDriver().getCurrentUrl();
                 logger.error("Элемент user-name не найден. URL: {}", currentUrl);
                 
                 throw new RuntimeException(
@@ -487,7 +487,7 @@ public class LoginPage {
      * 4. Ожидает появления сообщения "Войдите в систему"
      * 
      * @return текущий экземпляр LoginPage для цепочки вызовов
-     * @throws com.codeborne.selenide.ex.ElementShould 
+     * @throws com.bft.pw.ex.ElementShould 
      *         если сообщение "Войдите в систему" не появилось в течение 60 секунд
      */
     public LoginPage logOut() {

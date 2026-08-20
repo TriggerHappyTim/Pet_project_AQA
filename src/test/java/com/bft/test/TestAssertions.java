@@ -1,12 +1,12 @@
 package com.bft.test;
 
 import com.bft.utils.DebugUtils; // Ваш класс утилит отладки
-import com.codeborne.selenide.Selenide;
+import com.bft.pw.Selenide;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.asserts.SoftAssert;
 
-import static com.codeborne.selenide.Condition.exist;
+import static com.bft.pw.Condition.exist;
 
 /**
  * Обертка над SoftAssert для стандартизации проверок в UI тестах.
@@ -63,10 +63,10 @@ public class TestAssertions extends SoftAssert {
     /**
      * Проверка видимости элемента с кастомным сообщением.
      */
-    public void assertVisible(com.codeborne.selenide.SelenideElement element, String elementName) {
+    public void assertVisible(com.bft.pw.SelenideElement element, String elementName) {
         String msg = "Элемент '" + elementName + "' должен быть видимым";
         try {
-            element.shouldBe(com.codeborne.selenide.Condition.visible);
+            element.shouldBe(com.bft.pw.Condition.visible);
             super.assertTrue(true, msg); // Записываем как успех в softAssert
         } catch (AssertionError e) {
             handleFailure(msg);
@@ -77,7 +77,7 @@ public class TestAssertions extends SoftAssert {
     /**
      * Проверка отсутствия элемента на странице.
      */
-    public void assertNotExists(com.codeborne.selenide.SelenideElement element, String elementName) {
+    public void assertNotExists(com.bft.pw.SelenideElement element, String elementName) {
         String msg = "Элемент '" + elementName + "' не должен существовать на странице";
         try {
             element.shouldNot(exist);
