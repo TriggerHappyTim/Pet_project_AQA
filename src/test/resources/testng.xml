@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="EVS UI Tests" verbose="2" parallel="none">
+    <!--
+    Набор для ручного запуска UI-тестов отчётности (ЕФС-1, СЗВ, архив).
+
+    Запуск через Maven:
+      mvn -o test -Dsuite=src/test/resources/testng.xml
+
+    При запуске через CI (-Dsuite=...) профиль run_suite в pom.xml подхватывает
+    этот файл в maven-surefire-plugin.
+    Параллельный запуск методов можно включить: parallel="methods" thread-count="3",
+    но для E2E-тестов против общего окружения EVS он не рекомендуется
+    (тесты могут мешать друг другу).
+    -->
+    <test name="UI Report Tests" group-by-instances="true">
+        <packages>
+            <package name="com.bft.LK_Archive"/>
+            <package name="com.bft.LK_Insurence"/>
+            <package name="com.bft.LK_Insurence.EFS_1"/>
+            <package name="com.bft.LK_Insurence.ODV_1"/>
+            <package name="com.bft.LK_Insurence.SZV_DSO"/>
+            <package name="com.bft.LK_Insurence.SZV_ISH"/>
+            <package name="com.bft.LK_Insurence.SZV_K"/>
+            <package name="com.bft.LK_Insurence.SZV_KORR"/>
+            <package name="com.bft.LK_Insurence.SZV_M"/>
+            <package name="com.bft.LK_Insurence.SZV_STAZH"/>
+            <package name="com.bft.LK_Insurence.SZV_TD"/>
+        </packages>
+        <classes>
+            <class name="com.bft.security.CredentialsTest"/>
+        </classes>
+    </test>
+</suite>

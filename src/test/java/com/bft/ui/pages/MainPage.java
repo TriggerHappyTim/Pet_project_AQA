@@ -2,10 +2,9 @@ package com.bft.ui.pages;
 
 import com.bft.enums.ReportFormType;
 import com.bft.ui.component.*;
-import com.bft.utils.DebugUtils;
+import com.bft.ui.core.ClickHelper;
 import com.codeborne.selenide.Condition;
-import org.openqa.selenium.Keys;
-import org.openqa.selenium.interactions.Actions;
+import com.codeborne.selenide.SelenideElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.asserts.SoftAssert;
@@ -13,7 +12,6 @@ import org.testng.asserts.SoftAssert;
 import java.time.Duration;
 
 import static com.codeborne.selenide.Selenide.*;
-import static com.codeborne.selenide.WebDriverRunner.getWebDriver;
 /**
  * Page Object для главной страницы системы EVS
  * 
@@ -46,10 +44,6 @@ public class MainPage {
 
     /** Заголовок диалога "Льготный стаж" для поиска по тексту. */
     private static final String GRACE_PERIOD_DIALOG_TITLE = "Льготный стаж";
-    /** Имя поля input для льготного стажа в форме. */
-    private static final String INPUT_NAME_TU_BASIS = "tuBasis";
-    /** Каталог для отладочного вывода (парсинг структуры страницы). */
-    private static final String DEBUG_OUTPUT_DIR = "target/debug/";
 
     private SoftAssert softAssert = new SoftAssert();
 
@@ -65,6 +59,9 @@ public class MainPage {
      * (например, ResultsTableComponent, MainTableComponent) для лучшей организации кода.
      */
     private final TableComponent resultsTable = TableComponent.createResultsTable("Таблица результатов");
+
+    // Компонент работы с полями дат (DatePicker, masked input, JS-ввод)
+    private final DatePickerComponent datePickerComponent = new DatePickerComponent();
 
     /**
      * Возвращает актуальный результат выполнения операции
@@ -141,7 +138,9 @@ public class MainPage {
      * @return текущий экземпляр MainPage для цепочки вызовов
      */
     public MainPage clickFooterSpanButton(String buttonName) {
-        $x("//div[@class = 'item-footer']//button[span[text() = '" + buttonName + "']]").click();
+        ClickHelper.click(
+                $x("//div[@class = 'item-footer']//button[span[text() = '" + buttonName + "']]"),
+                "Кнопка футера span '" + buttonName + "'");
         return this;
     }
 
@@ -197,8 +196,10 @@ public class MainPage {
      * @return текущий экземпляр MainPage для цепочки вызовов
      */
     public MainPage clickSecondSpanButton(String buttonName) {
-        $x("(//span[contains(text(),'" + buttonName + "')])[2]")
-                .shouldBe(Condition.visible, Duration.ofSeconds(50)).click();
+        ClickHelper.click(
+                $x("(//span[contains(text(),'" + buttonName + "')])[2]")
+                        .shouldBe(Condition.visible, Duration.ofSeconds(50)),
+                "Вторая span кнопка '" + buttonName + "'");
         return this;
     }
 
@@ -251,7 +252,9 @@ public class MainPage {
      * @return текущий экземпляр MainPage для цепочки вызовов
      */
     public MainPage clickButtonModal(String buttonName) {
-        $x("//div[@class = 'modal-content']//button[*[text() = '" + buttonName + "']]").click();
+        ClickHelper.click(
+                $x("//div[@class = 'modal-content']//button[*[text() = '" + buttonName + "']]"),
+                "Кнопка модального окна '" + buttonName + "'");
         return this;
     }
 
@@ -265,22 +268,10 @@ public class MainPage {
      * @return текущий экземпляр MainPage для цепочки вызовов
      */
     public MainPage clickBtnPrimary(String buttonName) {
-        var btn = $x("//button[contains(@class, 'btn-primary')][.//span[text() = '" + buttonName + "']]")
-                .shouldBe(Condition.visible, Duration.ofSeconds(50));
-        try {
-            com.codeborne.selenide.Selenide.executeJavaScript("arguments[0].scrollIntoView({block:'center'});", btn.getWrappedElement());
-            btn.click();
-        } catch (Throwable e) {
-            Throwable cause = e;
-            while (cause != null && !(cause instanceof org.openqa.selenium.ElementClickInterceptedException)) {
-                cause = cause.getCause();
-            }
-            if (cause != null) {
-                com.codeborne.selenide.Selenide.executeJavaScript("arguments[0].click();", btn.getWrappedElement());
-            } else {
-                throw e;
-            }
-        }
+        ClickHelper.click(
+                $x("//button[contains(@class, 'btn-primary')][.//span[text() = '" + buttonName + "']]")
+                        .shouldBe(Condition.visible, Duration.ofSeconds(50)),
+                "Первичная кнопка '" + buttonName + "'");
         return this;
     }
 
@@ -294,8 +285,10 @@ public class MainPage {
      * @return текущий экземпляр MainPage для цепочки вызовов
      */
     public MainPage clickBtnPrimary_1(String buttonName) {
-        $x("(//button[contains(@class, 'btn-primary')]//span[text() = '" + buttonName + "'])[1]")
-                .shouldBe(Condition.visible, Duration.ofSeconds(50)).click();
+        ClickHelper.click(
+                $x("(//button[contains(@class, 'btn-primary')]//span[text() = '" + buttonName + "'])[1]")
+                        .shouldBe(Condition.visible, Duration.ofSeconds(50)),
+                "Первичная кнопка '" + buttonName + "' #1");
         return this;
     }
 
@@ -309,8 +302,10 @@ public class MainPage {
      * @return текущий экземпляр MainPage для цепочки вызовов
      */
     public MainPage clickBtnPrimary_2(String buttonName) {
-        $x("(//button[contains(@class, 'btn-primary')]//span[text() = '" + buttonName + "'])[2]")
-                .shouldBe(Condition.visible, Duration.ofSeconds(50)).click();
+        ClickHelper.click(
+                $x("(//button[contains(@class, 'btn-primary')]//span[text() = '" + buttonName + "'])[2]")
+                        .shouldBe(Condition.visible, Duration.ofSeconds(50)),
+                "Первичная кнопка '" + buttonName + "' #2");
         return this;
     }
 
@@ -324,8 +319,10 @@ public class MainPage {
      * @return текущий экземпляр MainPage для цепочки вызовов
      */
     public MainPage clickBtnSecondary(String buttonName) {
-        $x("//button[contains(@class, 'btn-secondary')]//span[text() = '" + buttonName + "']")
-                .shouldBe(Condition.visible, Duration.ofSeconds(50)).click();
+        ClickHelper.click(
+                $x("//button[contains(@class, 'btn-secondary')]//span[text() = '" + buttonName + "']")
+                        .shouldBe(Condition.visible, Duration.ofSeconds(50)),
+                "Вторичная кнопка '" + buttonName + "'");
         return this;
     }
 
@@ -336,8 +333,10 @@ public class MainPage {
      * @return текущий экземпляр MainPage для цепочки вызовов
      */
     public MainPage clickBtnSecondary2(String buttonName) {
-        $x("(//button[contains(@class, 'btn-secondary')]//span[text() = '" + buttonName + "'])[2]")
-                .shouldBe(Condition.visible, Duration.ofSeconds(50)).click();
+        ClickHelper.click(
+                $x("(//button[contains(@class, 'btn-secondary')]//span[text() = '" + buttonName + "'])[2]")
+                        .shouldBe(Condition.visible, Duration.ofSeconds(50)),
+                "Вторичная кнопка '" + buttonName + "' #2");
         return this;
     }
 
@@ -348,8 +347,10 @@ public class MainPage {
      * @return текущий экземпляр MainPage для цепочки вызовов
      */
     public MainPage clickBtnSecondary3(String buttonName) {
-        $x("(//button[contains(@class, 'btn-secondary')]//span[text() = '" + buttonName + "'])[3]")
-                .shouldBe(Condition.visible, Duration.ofSeconds(50)).click();
+        ClickHelper.click(
+                $x("(//button[contains(@class, 'btn-secondary')]//span[text() = '" + buttonName + "'])[3]")
+                        .shouldBe(Condition.visible, Duration.ofSeconds(50)),
+                "Вторичная кнопка '" + buttonName + "' #3");
         return this;
     }
 
@@ -360,8 +361,10 @@ public class MainPage {
      * @return текущий экземпляр MainPage для цепочки вызовов
      */
     public MainPage clickBtnSecondary4(String buttonName) {
-        $x("(//button[contains(@class, 'btn-secondary')]//span[text() = '" + buttonName + "'])[4]")
-                .shouldBe(Condition.visible, Duration.ofSeconds(50)).click();
+        ClickHelper.click(
+                $x("(//button[contains(@class, 'btn-secondary')]//span[text() = '" + buttonName + "'])[4]")
+                        .shouldBe(Condition.visible, Duration.ofSeconds(50)),
+                "Вторичная кнопка '" + buttonName + "' #4");
         return this;
     }
 
@@ -373,22 +376,10 @@ public class MainPage {
      * @return текущий экземпляр MainPage для цепочки вызовов
      */
     public MainPage clickBtnSecondary5(String buttonName) {
-        var btn = $x("(//button[contains(@class, 'btn-secondary')][.//span[text() = '" + buttonName + "']])[5]")
-                .shouldBe(Condition.visible, Duration.ofSeconds(50));
-        try {
-            com.codeborne.selenide.Selenide.executeJavaScript("arguments[0].scrollIntoView({block:'center'});", btn.getWrappedElement());
-            btn.click();
-        } catch (Throwable e) {
-            Throwable cause = e;
-            while (cause != null && !(cause instanceof org.openqa.selenium.ElementClickInterceptedException)) {
-                cause = cause.getCause();
-            }
-            if (cause != null) {
-                com.codeborne.selenide.Selenide.executeJavaScript("arguments[0].click();", btn.getWrappedElement());
-            } else {
-                throw e;
-            }
-        }
+        ClickHelper.click(
+                $x("(//button[contains(@class, 'btn-secondary')][.//span[text() = '" + buttonName + "']])[5]")
+                        .shouldBe(Condition.visible, Duration.ofSeconds(50)),
+                "Вторичная кнопка '" + buttonName + "' #5");
         return this;
     }
 
@@ -419,8 +410,10 @@ public class MainPage {
      */
     public MainPage clickBtnSecondary1(String buttonName) {
         switchTo().window(1);
-        $x("(//button[contains(@class, 'btn-secondary')]//span)[1]")
-                .shouldBe(Condition.visible, Duration.ofSeconds(10)).click();
+        ClickHelper.click(
+                $x("(//button[contains(@class, 'btn-secondary')]//span)[1]")
+                        .shouldBe(Condition.visible, Duration.ofSeconds(10)),
+                "Вторичная кнопка '" + buttonName + "' в новом окне");
         return this;
     }
 
@@ -433,8 +426,10 @@ public class MainPage {
      * @return текущий экземпляр MainPage для цепочки вызовов
      */
     public MainPage clickBtn(String buttonName) {
-        $x("//button[text() = '" + buttonName + "']")
-                .shouldBe(Condition.visible, Duration.ofSeconds(50)).click();
+        ClickHelper.click(
+                $x("//button[text() = '" + buttonName + "']")
+                        .shouldBe(Condition.visible, Duration.ofSeconds(50)),
+                "Кнопка '" + buttonName + "'");
         return this;
     }
 
@@ -447,7 +442,9 @@ public class MainPage {
      * @return текущий экземпляр MainPage для цепочки вызовов
      */
     public MainPage clickButtonModalDialog(String buttonName) {
-        $x("//div[@class = 'modal-dialog']//button[text() = '" + buttonName + "']").click();
+        ClickHelper.click(
+                $x("//div[@class = 'modal-dialog']//button[text() = '" + buttonName + "']"),
+                "Кнопка модального диалога '" + buttonName + "'");
         return this;
     }
 
@@ -460,7 +457,9 @@ public class MainPage {
      * @return текущий экземпляр MainPage для цепочки вызовов
      */
     public MainPage clickButtonCloseDialog(String buttonName) {
-        $x("//div[@class = 'close-dialog']//button[text() = '" + buttonName + "']").click();
+        ClickHelper.click(
+                $x("//div[@class = 'close-dialog']//button[text() = '" + buttonName + "']"),
+                "Кнопка закрытия диалога '" + buttonName + "'");
         return this;
     }
 
@@ -473,7 +472,9 @@ public class MainPage {
      * @return текущий экземпляр MainPage для цепочки вызовов
      */
     public MainPage clickSpanCloseDialog(String buttonName) {
-        $x("//div[@class = 'close-dialog']//span[text() = '" + buttonName + "']").click();
+        ClickHelper.click(
+                $x("//div[@class = 'close-dialog']//span[text() = '" + buttonName + "']"),
+                "Span кнопка закрытия диалога '" + buttonName + "'");
         return this;
     }
 
@@ -487,7 +488,9 @@ public class MainPage {
      * @return текущий экземпляр MainPage для цепочки вызовов
      */
     public MainPage clickButtonProviderDialog(String buttonName) {
-        $x("//div[@class = 'provider-dialog']//button[text() = '" + buttonName + "']").click();
+        ClickHelper.click(
+                $x("//div[@class = 'provider-dialog']//button[text() = '" + buttonName + "']"),
+                "Кнопка диалога провайдера '" + buttonName + "'");
         return this;
     }
 
@@ -553,6 +556,41 @@ public class MainPage {
                 }
             }
         }
+    }
+
+    /**
+     * Выбирает радиокнопку по атрибуту name и значению value.
+     * 
+     * Кликает по label, оборачивающему input, что надёжнее при скрытом нативном input.
+     * 
+     * @param name  значение атрибута name радиогруппы
+     * @param value значение атрибута value нужной опции
+     * @return текущий экземпляр MainPage для цепочки вызовов
+     */
+    public MainPage clickRadioByNameValue(String name, String value) {
+        SelenideElement label = $x("//input[@name='" + name + "' and @value='" + value + "']/ancestor::label")
+                .shouldBe(Condition.visible, Duration.ofSeconds(10));
+        ClickHelper.click(label, "Радио " + name + "=" + value);
+        return this;
+    }
+
+    /**
+     * Сохраняет сведения о периоде работы / страховом стаже: клик по «Сохранить»
+     * в модалке отчётного периода (диалог с полем {@code reportPeriod}).
+     * 
+     * Вызывается после сохранения льготного периода, когда модалка отчётного
+     * периода остаётся открытой поверх формы ЗЛ.
+     * 
+     * @return текущий экземпляр MainPage для цепочки вызовов
+     */
+    public MainPage clickSaveReportPeriodModal() {
+        SelenideElement modal = $x("//div[@role='dialog'][.//input[@name='reportPeriod']]")
+                .shouldBe(Condition.visible, Duration.ofSeconds(10));
+        SelenideElement saveBtn = modal.$x(".//button[contains(@class, 'btn-primary')][.//span[text() = 'Сохранить']]")
+                .shouldBe(Condition.visible, Duration.ofSeconds(10));
+        ClickHelper.click(saveBtn, "Сохранить (сведения о периоде работы)");
+        sleep(500);
+        return this;
     }
 
     /**
@@ -748,14 +786,14 @@ public class MainPage {
     /**
      * Устанавливает дату в поле по ID
      * 
-     * Использует DateComponent для установки даты в указанном формате.
+     * Использует DatePickerComponent для установки даты в указанном формате.
      * 
      * @param value ID поля даты
      * @param content дата в формате строки (например, "01-01-2000")
      * @return текущий экземпляр MainPage для цепочки вызовов
      */
     public MainPage inputDateLabel(String value, String content) {
-        DateComponent.createIdDate(value, value).setDate(content);
+        datePickerComponent.inputDateLabel(value, content);
         return this;
     }
 
@@ -768,7 +806,7 @@ public class MainPage {
      * @return текущий экземпляр MainPage для цепочки вызовов
      */
     public MainPage inputDateByLabel(String label, String date) {
-        DateComponent.createLabeledDateContains(label, label).setDate(date);
+        datePickerComponent.inputDateByLabel(label, date);
         return this;
     }
 
@@ -780,39 +818,7 @@ public class MainPage {
      * @return текущий экземпляр MainPage для цепочки вызовов
      */
     public MainPage inputDateEventDateViaCalendar(String dateDDMMYYYY) {
-        String[] parts = dateDDMMYYYY.replace("-", ".").split("\\.");
-        int day = parts.length > 0 ? Integer.parseInt(parts[0].trim()) : 1;
-        int year = parts.length > 2 ? Integer.parseInt(parts[2].trim()) : 2025;
-
-        $x("//input[@id='eventDate']").shouldBe(Condition.visible, Duration.ofSeconds(10)).click();
-        $("[role=dialog]").shouldBe(Condition.visible, Duration.ofSeconds(10));
-
-        String yearStr = String.valueOf(year);
-        for (int i = 0; i < 24; i++) {
-            String header = $("[role=dialog]").getText().toLowerCase();
-            if (header.contains(yearStr) && (header.contains("январ") || header.contains("january"))) {
-                break;
-            }
-            boolean clicked = false;
-            if ($("[role=dialog]").$x(".//button[contains(@aria-label, 'revious') or contains(@aria-label, 'Previous') or contains(@aria-label, 'редыдущ') or contains(@aria-label, 'ack') or contains(@aria-label, 'efore')]").exists()) {
-                $("[role=dialog]").$x(".//button[contains(@aria-label, 'revious') or contains(@aria-label, 'Previous') or contains(@aria-label, 'редыдущ') or contains(@aria-label, 'ack') or contains(@aria-label, 'efore')]").click();
-                clicked = true;
-            }
-            if (!clicked && $("[role=dialog]").$x(".//div[contains(@class,'CalendarHeader')]//button[1]").exists()) {
-                $("[role=dialog]").$x(".//div[contains(@class,'CalendarHeader')]//button[1]").click();
-                clicked = true;
-            }
-            if (!clicked && $("[role=dialog]").$x(".//button[.//*[local-name()='svg']][1]").exists()) {
-                $("[role=dialog]").$x(".//button[.//*[local-name()='svg']][1]").click();
-                clicked = true;
-            }
-            if (!clicked) {
-                break;
-            }
-            $x("//body").shouldBe(Condition.visible, Duration.ofMillis(400));
-        }
-
-        $("[role=dialog]").$x(".//*[@role='gridcell' and text()='" + day + "']").shouldBe(Condition.visible, Duration.ofSeconds(5)).click();
+        datePickerComponent.inputDateEventDateViaCalendar(dateDDMMYYYY);
         return this;
     }
 
@@ -824,7 +830,7 @@ public class MainPage {
      * @return текущий экземпляр MainPage для цепочки вызовов
      */
     public MainPage inputDateEventDateViaJs(String dateDDMMYYYY) {
-        inputDateByIdViaJs("eventDate", dateDDMMYYYY);
+        datePickerComponent.inputDateEventDateViaJs(dateDDMMYYYY);
         return this;
     }
 
@@ -837,11 +843,7 @@ public class MainPage {
      * @return текущий экземпляр MainPage для цепочки вызовов
      */
     public MainPage inputDateByIdViaJs(String inputId, String dateDDMMYYYY) {
-        com.codeborne.selenide.Selenide.executeJavaScript(
-            "var el = document.getElementById(arguments[0]) || document.querySelector('input[name=\"' + arguments[0] + '\"]'); if (el) { el.value = arguments[1]; el.dispatchEvent(new Event('input', { bubbles: true })); el.dispatchEvent(new Event('change', { bubbles: true })); }",
-            inputId,
-            dateDDMMYYYY
-        );
+        datePickerComponent.inputDateByIdViaJs(inputId, dateDDMMYYYY);
         return this;
     }
 
@@ -854,117 +856,8 @@ public class MainPage {
      * @return текущий экземпляр MainPage для цепочки вызовов
      */
     public MainPage inputDateByLabelTextViaJs(String labelText, String dateDDMMYYYY) {
-        var input = $x("//div[.//*[contains(., '" + labelText.replace("'", "''") + "')]]//input")
-                .shouldBe(Condition.visible, Duration.ofSeconds(10));
-        com.codeborne.selenide.Selenide.executeJavaScript(
-            "arguments[0].value = arguments[1]; arguments[0].dispatchEvent(new Event('input', { bubbles: true })); arguments[0].dispatchEvent(new Event('change', { bubbles: true }));",
-            input.getWrappedElement(),
-            dateDDMMYYYY
-        );
+        datePickerComponent.inputDateByLabelTextViaJs(labelText, dateDDMMYYYY);
         return this;
-    }
-
-    /**
-     * Возвращает диалог формы «Льготный стаж», открытый после клика «Добавить» в таблице.
-     * Ищет НОВЫЙ диалог с формой строки (не родительский диалог "Сведения о льготном периоде").
-     * Форма строки открывается в отдельном диалоге с полем tuBasis.
-     * При ошибке поиска парсит структуру страницы для отладки.
-     */
-    private com.codeborne.selenide.SelenideElement getGracePeriodFormDialog() {
-        try {
-            // АЛЬТЕРНАТИВНАЯ СТРАТЕГИЯ 1: Ищем поле tuBasis глобально на странице (в новом диалоге)
-            // Это самый надёжный способ - форма строки всегда содержит это поле
-            for (int attempt = 0; attempt < 30; attempt++) {
-                try {
-                    var tuBasisInput = $("input[name='" + INPUT_NAME_TU_BASIS + "']");
-                    if (tuBasisInput.exists() && tuBasisInput.isDisplayed()) {
-                        // Нашли поле tuBasis - ищем его родительский диалог
-                        var dialog = tuBasisInput.$x("./ancestor::*[@role='dialog'][1]");
-                        if (dialog.exists() && dialog.isDisplayed()) {
-                            log.debug("Найден диалог формы строки по полю tuBasis");
-                            return dialog;
-                        }
-                        // Если не нашли по role='dialog', пробуем по классу modal
-                        dialog = tuBasisInput.$x("./ancestor::*[contains(@class,'modal')][1]");
-                        if (dialog.exists() && dialog.isDisplayed()) {
-                            log.debug("Найден диалог формы строки по полю tuBasis (через класс modal)");
-                            return dialog;
-                        }
-                    }
-                } catch (Exception ignored) {
-                    // Продолжаем поиск
-                }
-                
-                sleep(300);
-            }
-            
-            // АЛЬТЕРНАТИВНАЯ СТРАТЕГИЯ 2: Ищем все открытые диалоги и проверяем наличие tuBasis в каждом
-            try {
-                var allDialogs = $$x("//*[@role='dialog']");
-                for (var dialog : allDialogs) {
-                    try {
-                        var tuBasisInDialog = dialog.$x(".//input[@name='" + INPUT_NAME_TU_BASIS + "']");
-                        if (tuBasisInDialog.exists() && tuBasisInDialog.isDisplayed()) {
-                            log.debug("Найден диалог формы строки среди открытых диалогов");
-                            return dialog;
-                        }
-                    } catch (Exception ignored) {
-                        // Продолжаем поиск в следующем диалоге
-                    }
-                }
-            } catch (Exception ignored) {
-                // Продолжаем к следующей стратегии
-            }
-            
-            // АЛЬТЕРНАТИВНАЯ СТРАТЕГИЯ 3: Используем самый последний открытый диалог как fallback
-            try {
-                var allDialogs = $$x("//*[@role='dialog']");
-                if (allDialogs.size() > 0) {
-                    var lastDialog = allDialogs.get(allDialogs.size() - 1);
-                    log.debug("Используем последний открытый диалог как fallback");
-                    return lastDialog;
-                }
-            } catch (Exception ignored) {
-                // Продолжаем к финальной проверке
-            }
-            
-            // Если ничего не найдено, пробрасываем ошибку
-            throw new AssertionError("Не удалось найти диалог с формой строки (поле tuBasis не найдено)");
-            
-        } catch (Throwable e) {
-            // Если не удалось найти диалог, парсим структуру страницы для отладки
-            log.warn("========================================");
-            log.warn("ОШИБКА: Не найден диалог формы строки 'Льготный стаж' (input[name='tuBasis'])");
-            log.warn("Парсим структуру страницы для анализа...");
-            log.warn("========================================");
-
-            DebugUtils.savePageStateOnError("grace-period-failure", e);
-            
-            // Пробрасываем исходное исключение с информацией о сохранённых данных
-            throw new AssertionError("Не найден диалог формы строки 'Льготный стаж'. " +
-                "Элемент input[name='tuBasis'] не найден на странице. " +
-                "Возможно, форма строки не открылась после клика 'Добавить' в таблице. " +
-                "Структура страницы сохранена в " + DEBUG_OUTPUT_DIR + " для анализа. " +
-                "Оригинальная ошибка: " + e.getMessage(), e);
-        }
-    }
-
-
-    /**
-     * Устанавливает значение в React controlled input через нативный setter и события,
-     * чтобы React обновил state (setValue часто не срабатывает для MUI/числовых полей).
-     */
-    private void setInputValueViaJs(com.codeborne.selenide.SelenideElement input, String value) {
-        com.codeborne.selenide.Selenide.executeJavaScript(
-            "var el = arguments[0]; var v = arguments[1];"
-            + "var setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;"
-            + "if (setter) setter.call(el, v); else el.value = v;"
-            + "el.dispatchEvent(new Event('input', { bubbles: true }));"
-            + "el.dispatchEvent(new Event('change', { bubbles: true }));"
-            + "el.dispatchEvent(new Event('blur', { bubbles: true }));",
-            input.getWrappedElement(),
-            value
-        );
     }
 
     /**
@@ -973,7 +866,7 @@ public class MainPage {
      * @return текущий экземпляр MainPage для цепочки вызовов
      */
     public MainPage pressEscape() {
-        new Actions(getWebDriver()).sendKeys(Keys.ESCAPE).perform();
+        datePickerComponent.pressEscape();
         return this;
     }
 

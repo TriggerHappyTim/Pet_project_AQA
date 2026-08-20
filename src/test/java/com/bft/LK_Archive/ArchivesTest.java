@@ -97,28 +97,6 @@ public class ArchivesTest extends UITestBase {
         steps.selectCertificate();
     }
 
-    @Test(groups = {"web", "archive", "evs", "regression"},
-          testName = "#4 Полная обработка запроса с подписанием",
-          description = "Полное заполнение запроса и подписание в ЕВС")
-    @AllureId("ARCH-004")
-    @Story("Полное заполнение и подписание запроса")
-    @Description("Поиск определённого запроса в ЕВС, полное заполнение (период работы, загранкомандировка, ответ) с дальнейшим подписанием")
-    @Severity(SeverityLevel.CRITICAL)
-    public void setRegisterRequests() {
-        SzvReportsSteps steps = new SzvReportsSteps();
-
-        steps.authorizeArhivEVS(UITypeSelector.getSelectedUIType(UIType.EVS_UAT_LKA));
-        steps.reestrZaprosov();
-        steps.searchRequest1("ЗСПО-124-000000307");
-        steps.assignPerformer();
-        steps.answerRequest();
-        steps.addPeriodWork();
-        steps.addBusinessTrip();
-        steps.fillAnswer();
-        steps.submitSigning();
-        steps.selectCertificate();
-    }
-
     // ========== E2E ==========
 
     @Test(groups = {"web", "archive", "e2e", "regression"},

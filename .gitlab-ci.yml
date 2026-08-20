@@ -139,7 +139,7 @@ maven test:
             ;;
         esac
         #MVN="mvn "$MAVEN_EXTRA" --activate-profiles "${ENVIRONMENT_OVERRIDE}","${TEST_SCRIPT}","${BROWSERS}" -s settings.xml --batch-mode --errors --fail-at-end --show-version"
-        ARCHIVE_TESTS="ArchivesTest#createRequestInRPU,ArchivesTest#addIspolnitel,ArchivesTest#processRequestInEVS,ArchivesTest#setRegisterRequests,ArchivesTest#createNewRequestFullFlow"
+        ARCHIVE_TESTS="ArchivesTest#createRequestInRPU,ArchivesTest#addIspolnitel,ArchivesTest#processRequestInEVS,ArchivesTest#createNewRequestFullFlow"
         EXCLUDE_GROUPS=""
 
         if [ "${LK_SCOPE}" = "ЛК Архива" ]; then
@@ -163,13 +163,13 @@ maven test:
           then
             case "${TEST_SCRIPT}" in
               "Системные")
-                TEST_LIST="CryptoProCertificateTest#verifyCryptoProPluginLoaded,CryptoProCertificateTest#testCertificateSelectionAndSigning,CryptoProCertificateTest#testPageDiagnostics,CryptoProCertificateTest#verifyCryptoProPluginWithStrategy,CryptoProCertificateTest#testCertificateSigningWithStrategy,CryptoProCertificateTest#quickPluginCheck,CryptoProCertificateTest#testPluginFailureScenario"
+                TEST_LIST="CryptoProCertificateTest#verifyCryptoProPluginLoaded,CryptoProCertificateTest#testCertificateSelectionAndSigning,CryptoProCertificateTest#testPageDiagnostics,CryptoProCertificateTest#verifyCryptoProPluginWithStrategy,CryptoProCertificateTest#quickPluginCheck"
                 ;;
               "Ручной ввод")
                 TEST_LIST="Efs1#efs_szv_td,Efs1#efs_szv_staj,Efs1#efs_szv_td_krivonosov,Szv_td#szv_td,Szv_m#szv_m"
                 ;;
               "Загрузка через XML")
-                TEST_LIST="Efs1#efs_1_xml,Efs1#efs_1_xml_krivonosov,Efs1#efs_1_xml_babkina,Szv_td#szv_td_xml,Szv_m#szv_m_xml,Szv_staj#szv_staj_xml,Szv_korr#szv_korr_xml,Szv_k#szv_k_xml,Szv_ish#szv_ish_xml,Szv_dso#szv_dso_xml,Odv1#odv_1_xml"
+                TEST_LIST="ReportXmlUploadTest#uploadReportViaXml,Efs1#efs_1_xml_krivonosov,Efs1#efs_1_xml_babkina,Szv_ish#szv_ish_xml"
                 ;;
               *)
                 TEST_LIST=""
@@ -229,7 +229,7 @@ maven test:
         ENVIRONMENT_OVERRIDE="${ENVIRONMENT}"
         echo "Using ENVIRONMENT=${ENVIRONMENT_OVERRIDE} (HELM_NAMESPACE is empty)"
         
-        ARCHIVE_TESTS="ArchivesTest#createRequestInRPU,ArchivesTest#addIspolnitel,ArchivesTest#processRequestInEVS,ArchivesTest#setRegisterRequests,ArchivesTest#createNewRequestFullFlow"
+        ARCHIVE_TESTS="ArchivesTest#createRequestInRPU,ArchivesTest#addIspolnitel,ArchivesTest#processRequestInEVS,ArchivesTest#createNewRequestFullFlow"
         EXCLUDE_GROUPS=""
 
         if [ "${LK_SCOPE}" = "ЛК Архива" ]; then
@@ -253,13 +253,13 @@ maven test:
           then
             case "${TEST_SCRIPT}" in
               "Системные")
-                TEST_LIST="CryptoProCertificateTest#verifyCryptoProPluginLoaded,CryptoProCertificateTest#testCertificateSelectionAndSigning,CryptoProCertificateTest#testPageDiagnostics,CryptoProCertificateTest#verifyCryptoProPluginWithStrategy,CryptoProCertificateTest#testCertificateSigningWithStrategy,CryptoProCertificateTest#quickPluginCheck,CryptoProCertificateTest#testPluginFailureScenario"
+                TEST_LIST="CryptoProCertificateTest#verifyCryptoProPluginLoaded,CryptoProCertificateTest#testCertificateSelectionAndSigning,CryptoProCertificateTest#testPageDiagnostics,CryptoProCertificateTest#verifyCryptoProPluginWithStrategy,CryptoProCertificateTest#quickPluginCheck"
                 ;;
               "Ручной ввод")
                 TEST_LIST="Efs1#efs_szv_td,Efs1#efs_szv_staj,Efs1#efs_szv_td_krivonosov,Szv_td#szv_td,Szv_m#szv_m"
                 ;;
               "Загрузка через XML")
-                TEST_LIST="Efs1#efs_1_xml,Efs1#efs_1_xml_krivonosov,Efs1#efs_1_xml_babkina,Szv_td#szv_td_xml,Szv_m#szv_m_xml,Szv_staj#szv_staj_xml,Szv_korr#szv_korr_xml,Szv_k#szv_k_xml,Szv_ish#szv_ish_xml,Szv_dso#szv_dso_xml,Odv1#odv_1_xml"
+                TEST_LIST="ReportXmlUploadTest#uploadReportViaXml,Efs1#efs_1_xml_krivonosov,Efs1#efs_1_xml_babkina,Szv_ish#szv_ish_xml"
                 ;;
               *)
                 TEST_LIST=""

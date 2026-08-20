@@ -1,5 +1,6 @@
 package com.bft.ui.core.element;
 
+import com.bft.ui.core.ClickHelper;
 import com.bft.ui.core.wait.WaitStrategy;
 import com.codeborne.selenide.SelenideElement;
 import io.qameta.allure.Step;
@@ -30,13 +31,14 @@ public class SmartElement {
     }
 
     /**
-     * Безопасный клик с автоматическим ожиданием
+     * Безопасный клик с автоматическим ожиданием.
+     * При перехвате клика другим элементом выполняется JS-клик (см. {@link ClickHelper}).
      */
     @Step("Кликаем по элементу: {name}")
     public SmartElement click() {
         logger.debug("Кликаем по элементу: {}", name);
         waitStrategy.waitFor(element, name);
-        element.click();
+        ClickHelper.click(element, name);
         logger.info("Успешно кликнули по элементу: {}", name);
         return this;
     }

@@ -1,17 +1,17 @@
 # EVS Testing Framework - Roadmap по улучшению кода
 
 **Дата создания**: 2026-01-29  
-**Дата последнего обновления**: 2026-03-11  
-**Статус**: ✅ ВСЕ ОСНОВНЫЕ ФАЗЫ ЗАВЕРШЕНЫ (Фаза 1–4)  
+**Дата последнего обновления**: 2026-08-19  
+**Статус**: ✅ ВСЕ ОСНОВНЫЕ ФАЗЫ ЗАВЕРШЕНЫ (Фаза 1–4) + рефакторинг по `REFACTORING_PLAN.md` (шаги 1–7)  
 **Основание**: Аудит проекта по правилам `.cursorrules` и Javadoc стандартам
 
 ---
 
 ## 📋 Общая статистика
 
-- **Всего Java файлов**: 138
+- **Всего Java файлов**: 126
 - **Main**: 1 (`Application.java`)
-- **Test**: 137 (Page Objects, Components, Tests, Helpers, Config, Security, Integration, Strategy, Monitoring)
+- **Test**: 125 (Page Objects, Components, Tests, Helpers, Config, Security, Integration, Strategy, Monitoring)
 - **Проверено файлов**: 100+ ключевых
 - **Выявлено категорий проблем**: 6
 - **Приоритетных задач**: 24
@@ -21,23 +21,23 @@
 
 | Пакет | Файлов | Описание |
 |-------|--------|----------|
-| `com.bft.LK_Insurence` | 14 | Тесты ЛК Страхователя (EFS, SZV, ODV) |
+| `com.bft.LK_Insurence` | 8 | Тесты ЛК Страхователя (EFS, SZV, ODV) |
 | `com.bft.LK_Archive` | 1 | Тесты ЛК Архивной организации |
-| `com.bft.ui` | 18 | Page Objects, Components, Core |
-| `com.bft.gui` | 4 | Legacy Page Objects (используются) |
-| `com.bft.config` | 7 | Конфигурация и стратегии |
-| `com.bft.security` | 13 | Безопасность и маскировка |
-| `com.bft.helpers` | 9 | Вспомогательные классы |
+| `com.bft.ui` | 23 | Page Objects, Components, Core (единственный источник правды) |
+| `com.bft.gui` | — | ~~Удалён~~ — перенесено в `com.bft.ui` (шаг 4 `REFACTORING_PLAN.md`) |
+| `com.bft.config` | 3 | Конфигурация и стратегии |
+| `com.bft.security` | 12 | Безопасность и маскировка |
+| `com.bft.helpers` | 7 | Вспомогательные классы (TestConfig удалён — константы в `testdata`) |
 | `com.bft.integration` | 14 | Jira/Zephyr (закомментировано) |
 | `com.bft.strategy` | 8 | Стратегии тестирования |
-| `com.bft.test` | 16 | Base classes, annotations, logging |
-| `com.bft.browser.factory` | 6 | Фабрики браузеров |
-| `com.bft.testdata` | 3 | TestData builders |
+| `com.bft.test` | 23 | Base classes, annotations, logging |
+| `com.bft.browser.factory` | 3 | Фабрики браузеров |
+| `com.bft.testdata` | 4 | TestData builders, TestDataConstants |
 | `com.bft.monitoring` | 2 | PerformanceMonitor, FlakyTestDetector |
-| `com.bft.enums` | 6 | Перечисления (UIType, ReportType и др.) |
+| `com.bft.enums` | 7 | Перечисления (UIType, ReportType и др.) |
 | `com.bft.constants` | 2 | TimeoutConstants, UrlConstants |
-| `com.bft.steps` | 1 | SzvReportsSteps |
-| `com.bft.utils` | 3 | FormStructureParser и др. |
+| `com.bft.steps` | 6 | SzvReportsSteps (фасад) + AuthSteps, ArchiveSteps, Report*Steps |
+| `com.bft.utils` | 4 | FormStructureParser и др. |
 
 ---
 
@@ -1946,5 +1946,65 @@ java.lang.NullPointerException
    - Удалены неиспользуемые: `TimeoutConstants`, `Story`, статический импорт `$` (используется только `$x`).
 
 **Статус**: ✅ Задача выполнена
+
+---
+
+### 2026-08-19 - Аудит и план действий (P0-P3): выполнены P0, P1, P2
+
+**Задача**: Аудит заявленного документа «5 дней + ключевые результаты», составление реалистичного плана (P0-P3) и его исполнение.
+
+#### ✅ P0 - CI и .gitignore
+
+1. **.gitlab-ci.yml** — оба дублирующихся блока тест-списков приведены в соответствие с рефакторингом:
+   - `ARCHIVE_TESTS`: удалён несуществующий `ArchivesTest#setRegisterRequests`;
+   - «Системные»: удалены несуществующие `testCertificateSigningWithStrategy` и `testPluginFailureScenario`;
+   - «Загрузка через XML»: заменён на `ReportXmlUploadTest#uploadReportViaXml,Efs1#efs_1_xml_krivonosov,Efs1#efs_1_xml_babkina,Szv_ish#szv_ish_xml` (все оставшиеся методы проверены — существуют).
+2. **.gitignore** — добавлены `/allure-results/` и `/allure-report/` (в репо лежали устаревшие артефакты чужих прогонов).
+3. **validate-tests.sh** — путь `gui/CryptoProDemoPage` исправлен на `ui/pages/CryptoProDemoPage`.
+
+#### ✅ P1 - Стабильность кликов и retry
+
+1. **RetryAnalyzer** был мёртвым кодом: `@Retry(maxAttempts=3)` в `CryptoProCertificateTest.verifyCryptoProPluginLoaded` не работал — в `@Test` добавлен `retryAnalyzer = RetryAnalyzer.class`.
+2. **ClickHelper** (новый, `ui/core/ClickHelper.java`) — единый устойчивый клик: scrollIntoView → click → JS-fallback при `ElementClickInterceptedException`.
+3. **SmartElement.click()** переведён на `ClickHelper` — закрывает все клики через `ButtonComponent`.
+4. **MainPage** — 17 клик-методов флоу EFS-1 переведены на `ClickHelper`; инлайн-дублирование паттерна удалено.
+
+#### ✅ P2 - Инфраструктура TestNG
+
+1. **testng.xml** (новый) — валидный набор с реальными пакетами (`LK_Archive`, `LK_Insurence` и подпакеты `EFS_1`/`SZV_ISH`/`SZV_M`/`SZV_TD`); битый `testng.xml.example` (пакеты `com.bft.api.tests`/`com.bft.performance.tests`) удалён.
+2. **pom.xml** — свойство `<suite>src/test/resources/testng.xml</suite>` и профиль `run_suite` (активация при `-Dsuite=...`), который подключает `suiteXmlFiles` в surefire. Без `-Dsuite` флоу CI через `-Dtest` не затронут (проверено через `help:effective-pom`).
+
+**Статус**: ✅ P0, P1, P2, P3 выполнены. `mvn -o test-compile` на JDK 11 — exit code 0.
+
+#### ✅ P3 - Инфраструктура тестов и рефакторинг
+
+1. **TestAssertions в BaseTest** — `assertions` теперь тип `com.bft.test.TestAssertions` (наследник SoftAssert); создаётся перед каждым тестом, `assertAll()` выполняется автоматически. `assertEquals` сделан null-safe.
+2. **Декомпозиция MainPage** — date-функциональность (ввод дат через календарь/JS, диалог «Льготный стаж», `pressEscape`) вынесена в `com.bft.ui.component.DatePickerComponent`; `MainPage` делегирует в компонент, публичный fluent-API сохранён.
+3. **NewFeatureTestTemplate** — шаблон нового теста в `com.bft.test.template` (пакет не входит в testng.xml, примеры не выполняются).
+4. **README_new_tests.md** — гайд по написанию новых тестов (структура, правила, запуск, чек-лист).
+
+---
+
+## 🔧 Надо сделать (бэклог)
+
+### 1. Оптимизация и сокращение методов (приоритет: высокий)
+
+- Пройтись по steps/pages/компонентам и убрать дублирование логики по максимуму.
+- Примеры выявленного дублирования:
+  - `ReportNavigationSteps.navigateToReports()` vs `addReports()` — оба выполняют переход «ЛК Страхователя» → «Отчеты» → «Список отчетов» (сейчас `navigateToReports()` не используется в тестах, решить судьбу метода).
+  - `MainPage.clickBtn*` / `clickButton*` / `clickBtnPrimary_1/2`, `clickBtnSecondary1-6` и др. — много однотипных клик-методов; свести к универсальным на базе `ButtonComponent` + `ClickHelper`.
+  - `MainPage.selectReportType` (MUI, не используется) и `ReportNavigationSteps.selectReportType` (radio, рабочий) — оставить один проверенный вариант, второй удалить.
+  - Повторяющиеся XPath-паттерны селектов/инпутов — вынести в компоненты.
+- После рефакторинга: `mvn -o test-compile` (JDK 11) + контроль, что CI-флоу (`-Dtest`, testng.xml) не сломан.
+
+### 2. Онбординг нового тестировщика (приоритет: средний)
+
+- Составить детальную пошаговую инструкцию по проекту для нового члена команды:
+  - как развернуть окружение (JDK 11/17, Maven, браузер, credentials/`evs.*` переменные),
+  - как устроен проект (пакеты, шаги, страницы, компоненты, базовые классы),
+  - как написать и запустить первый тест (по `NewFeatureTestTemplate` + `README_new_tests.md`),
+  - как прогонять тесты локально и в CI (команды `mvn test -Dtest=...`, `-Dsuite=...`),
+  - частые ошибки и их решение (JDK 24/Lombok, невидимые sidebar-элементы, выбор типа отчёта и т.п.).
+- При необходимости расширить/упростить `README_new_tests.md` или выделить отдельный `ONBOARDING.md`.
 
 ---

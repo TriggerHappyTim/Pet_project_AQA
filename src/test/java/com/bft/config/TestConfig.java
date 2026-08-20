@@ -62,8 +62,8 @@ public class TestConfig {
 
         // --- CryptoPro Paths ---
         // Пути по умолчанию, если не заданы
-        String defaultCrx = "src/test/resources/CryptoPro Chrome 1.2.13.0.crx";
-        String defaultXpi = "src/test/resources/cryptopro.ru.xpi";
+        String defaultCrx = "src/test/resources/chrome.crx";
+        String defaultXpi = "src/test/resources/firefox_cryptopro_extension_latest.xpi";
 
         this.cryptoProPath = getSystemOrEnvProperty(null, "CRYPTOPRO_PATH", defaultCrx);
         this.cryptoProXpiPath = getSystemOrEnvProperty(null, "CRYPTOPRO_XPI_PATH", defaultXpi);

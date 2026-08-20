@@ -213,23 +213,27 @@ public class LoginPage {
         // Шаг 4: Ищем карточку с указанным текстом
         // Используем несколько стратегий для надежности (проблемы с кодировкой)
         String normalizedCard = usercard.trim();
-        // Извлекаем номер организации из строки (последние цифры) для использования в нескольких стратегиях
-        String orgNumber = normalizedCard.replaceAll(".*?(-?\\d+)$", "$1");
+        // Извлекаем номер организации из строки (последние цифры), если он есть.
+        // Если номера нет — оставляем null и полагаемся на текстовое сравнение.
+        java.util.regex.Matcher numMatcher = java.util.regex.Pattern.compile("(-?\\d+)\\s*$").matcher(normalizedCard);
+        String orgNumber = numMatcher.find() ? numMatcher.group(1) : null;
         logger.debug("Ищем карточку: '{}', номер организации: '{}'", normalizedCard, orgNumber);
         
         boolean cardFound = false;
         
         // Стратегия 1: Поиск по номеру организации (самый надежный способ)
-        // Используем contains() для поиска по номеру, так как он уникален и не зависит от кодировки
-        try {
-            logger.debug("Стратегия 1: Поиск по номеру организации '{}'", orgNumber);
-            $x("//*[@class = 'selectUserCardName' and contains(text(), '" + orgNumber + "')]")
-                .shouldBe(Condition.visible, Duration.ofSeconds(10))
-                .click();
-            logger.info("Карточка найдена по номеру организации: {}", orgNumber);
-            cardFound = true;
-        } catch (Exception e) {
-            logger.debug("Поиск по номеру организации не удался: {}", e.getMessage());
+        // Используем contains() по normalize-space(.) — работает и для текста во вложенных элементах
+        if (orgNumber != null) {
+            try {
+                logger.debug("Стратегия 1: Поиск по номеру организации '{}'", orgNumber);
+                $x("//*[@class = 'selectUserCardName' and contains(normalize-space(.), '" + orgNumber + "')]")
+                    .shouldBe(Condition.visible, Duration.ofSeconds(10))
+                    .click();
+                logger.info("Карточка найдена по номеру организации: {}", orgNumber);
+                cardFound = true;
+            } catch (Exception e) {
+                logger.debug("Поиск по номеру организации не удался: {}", e.getMessage());
+            }
         }
         
         // Стратегия 2: Перебор всех карточек и поиск по номеру или части текста
@@ -239,25 +243,39 @@ public class LoginPage {
                 com.codeborne.selenide.ElementsCollection cards = com.codeborne.selenide.Selenide.$$x("//*[@class = 'selectUserCardName']");
                 logger.debug("Найдено карточек на странице: {}", cards.size());
                 
+                String normTarget = normalizeForMatch(normalizedCard);
+                
+                // Проход 1: Точное совпадение после нормализации (без регистра и пунктуации).
+                // Предпочтительный вариант — не позволяет ошибочно выбрать чужую карточку.
                 for (com.codeborne.selenide.SelenideElement card : cards) {
                     String cardText = card.getText().trim();
-                    logger.debug("Проверяем карточку: '{}'", cardText);
-                    
-                    // Проверяем совпадение по номеру организации (самый надежный способ)
-                    if (cardText.contains(orgNumber)) {
+                    if (orgNumber != null && cardText.contains(orgNumber)) {
                         logger.info("Найдена карточка по номеру: '{}'", cardText);
                         card.shouldBe(Condition.visible).click();
                         cardFound = true;
                         break;
                     }
-                    
-                    // Дополнительная проверка: частичное совпадение текста (на случай проблем с кодировкой)
-                    if (normalizedCard.toLowerCase().contains(cardText.toLowerCase()) ||
-                        cardText.toLowerCase().contains(normalizedCard.toLowerCase())) {
-                        logger.info("Найдена карточка по частичному совпадению: '{}'", cardText);
+                    String normCard = normalizeForMatch(cardText);
+                    if (!normTarget.isEmpty() && normTarget.equals(normCard)) {
+                        logger.info("Найдена карточка по точному совпадению: '{}'", cardText);
                         card.shouldBe(Condition.visible).click();
                         cardFound = true;
                         break;
+                    }
+                }
+                
+                // Проход 2: Частичное совпадение (карточка содержит искомое название).
+                // Только если точного совпадения не нашлось.
+                if (!cardFound) {
+                    for (com.codeborne.selenide.SelenideElement card : cards) {
+                        String cardText = card.getText().trim();
+                        String normCard = normalizeForMatch(cardText);
+                        if (!normTarget.isEmpty() && !normCard.isEmpty() && normCard.contains(normTarget)) {
+                            logger.info("Найдена карточка по частичному совпадению: '{}'", cardText);
+                            card.shouldBe(Condition.visible).click();
+                            cardFound = true;
+                            break;
+                        }
                     }
                 }
             } catch (Exception e) {
@@ -271,7 +289,7 @@ public class LoginPage {
                 logger.debug("Стратегия 3: Точное совпадение текста");
                 // Используем concat() для правильной обработки UTF-8 в XPath
                 String escapedCard = normalizedCard.replace("'", "''"); // Экранируем одинарные кавычки
-                $x("//*[@class = 'selectUserCardName' and normalize-space(text()) = '" + escapedCard + "']")
+                $x("//*[@class = 'selectUserCardName' and normalize-space(.) = '" + escapedCard + "']")
                     .shouldBe(Condition.visible, Duration.ofSeconds(10))
                     .click();
                 logger.info("Карточка найдена по точному совпадению");
@@ -377,6 +395,76 @@ public class LoginPage {
         
         logger.info("Карточка пользователя успешно выбрана: {}", usercard);
         return this;
+    }
+
+    /**
+     * Нормализует строку для сравнения при поиске карточки:
+     * нижний регистр, удаление всех символов кроме букв и цифр
+     * и приведение визуально похожих букв кириллицы/латиницы к общему виду.
+     *
+     * <p>Устойчиво к кавычкам, скобкам, дефисам, неразрывным пробелам и
+     * латинским буквам-двойникам (например «С» вместо «С», «O» вместо «О»).
+     *
+     * @param value исходная строка (название организации)
+     * @return нормализованная строка для case/punctuation-insensitive сравнения
+     */
+    private static String normalizeForMatch(String value) {
+        if (value == null) {
+            return "";
+        }
+        StringBuilder sb = new StringBuilder(value.length());
+        for (int i = 0; i < value.length(); i++) {
+            char base = mapToBaseLetter(value.charAt(i));
+            if (base != 0) {
+                sb.append(base);
+            }
+        }
+        return sb.toString();
+    }
+
+    /**
+     * Приводит букву к «базовому» латинскому виду, объединяя кириллицу и
+     * визуально неотличимые латинские буквы (гомоглифы). Не-буквы возвращают 0.
+     */
+    private static char mapToBaseLetter(char c) {
+        switch (c) {
+            case 'А': case 'а': case 'A': return 'a';
+            case 'Б': case 'б': case 'В': case 'в': case 'Ь': case 'ъ': return 'b';
+            case 'B': return 'b';
+            case 'Г': case 'г': return 'g';
+            case 'Д': case 'д': case 'D': return 'd';
+            case 'Е': case 'е': case 'Ё': case 'ё': case 'Э': case 'э': return 'e';
+            case 'E': return 'e';
+            case 'Ж': case 'ж': return 'z';
+            case 'З': case 'з': case 'Z': return 'z';
+            case 'И': case 'и': case 'Й': case 'й': case 'Ы': case 'ы': return 'i';
+            case 'I': return 'i';
+            case 'К': case 'к': return 'k';
+            case 'K': return 'k';
+            case 'Л': case 'л': return 'l';
+            case 'L': return 'l';
+            case 'М': case 'м': return 'm';
+            case 'M': return 'm';
+            case 'Н': case 'н': case 'Ч': case 'ч': return 'h';
+            case 'H': return 'h';
+            case 'О': case 'о': case 'O': return 'o';
+            case 'П': case 'п': case 'Р': case 'р': return 'p';
+            case 'P': return 'p';
+            case 'С': case 'с': case 'Ц': case 'ц': return 'c';
+            case 'C': return 'c';
+            case 'Т': case 'т': return 't';
+            case 'T': return 't';
+            case 'У': case 'у': case 'Ю': case 'ю': return 'y';
+            case 'Y': return 'y';
+            case 'Ф': case 'ф': return 'f';
+            case 'F': return 'f';
+            case 'Х': case 'х': case 'X': return 'x';
+            case 'Ш': case 'ш': case 'Щ': case 'щ': return 's';
+            case 'S': return 's';
+            case 'Я': case 'я': return 'a';
+            default:
+                return Character.isLetterOrDigit(c) ? Character.toLowerCase(c) : 0;
+        }
     }
 
     /**

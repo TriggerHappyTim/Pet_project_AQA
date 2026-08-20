@@ -1,6 +1,7 @@
 package com.bft.ui.component;
 
 import com.bft.enums.TimeoutConstants;
+import com.bft.ui.core.ClickHelper;
 import com.bft.utils.DebugUtils;
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.SelenideElement;
@@ -22,7 +23,7 @@ public class GracePeriodDialogComponent {
     private static final String INPUT_NAME_TU_BASIS = "tuBasis";
     private static final String DIALOG_TITLE_PART = "ЛЬГОТНЫЙ СТАЖ";
 
-    private final SelenideElement dialog;
+    private SelenideElement dialog;
 
     /**
      * Конструктор. Находит активный диалог "Льготный стаж".
@@ -43,8 +44,18 @@ public class GracePeriodDialogComponent {
                 return tuBasisInput.$x("./ancestor::*[@role='dialog'][1]");
             }
 
-            // Стратегия 2: Поиск по заголовку или содержанию
-            var dialogByTitle = $x("//*[@role='dialog'][contains(., '" + DIALOG_TITLE_PART + "')]");
+            // Стратегия 2: Поиск по уникальному полю периода (experienceTimePeriodDateAt).
+            // Открытая форма льготного стажа всегда содержит это поле — это точнее заголовка.
+            var dateAtInput = $("input[id='experienceTimePeriodDateAt']");
+            if (dateAtInput.exists() && dateAtInput.isDisplayed()) {
+                return dateAtInput.$x("./ancestor::*[@role='dialog'][1]");
+            }
+
+            // Стратегия 3: Поиск по заголовку (без учета регистра, XPath 1.0 через translate)
+            String escapedTitle = DIALOG_TITLE_PART.toLowerCase();
+            var dialogByTitle = $x("//*[@role='dialog'][contains(translate(., " +
+                    "'АБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯЁ', 'абвгдежзийклмнопрстуфхцчшщъыьэюяё'), '" +
+                    escapedTitle + "')]");
             if (dialogByTitle.exists() && dialogByTitle.isDisplayed()) {
                 return dialogByTitle;
             }
@@ -80,6 +91,13 @@ public class GracePeriodDialogComponent {
             endField = dialog.$x(".//input[contains(@id, 'DateTo') or contains(@placeholder, 'Конец')]");
         }
 
+        // Крайняя мера: глобальный поиск видимого поля. ID полей уникальны на странице,
+        // поэтому при проблемах с определением диалога ищем по всей странице.
+        if (!startField.exists() || !endField.exists()) {
+            startField = findVisibleDateInput("DateAt");
+            endField = findVisibleDateInput("DateTo");
+        }
+
         startField.shouldBe(Condition.visible, Duration.ofSeconds(5));
         endField.shouldBe(Condition.visible, Duration.ofSeconds(5));
 
@@ -88,6 +106,19 @@ public class GracePeriodDialogComponent {
 
         waitForStabilization();
         return this;
+    }
+
+    /**
+     * Ищет первое видимое поле даты по части id.
+     * Если в DOM есть скрытые остатки старых модалок — выбирает только видимый input.
+     */
+    private SelenideElement findVisibleDateInput(String idPart) {
+        for (SelenideElement el : $$x("//input[contains(@id, '" + idPart + "')]")) {
+            if (el.isDisplayed()) {
+                return el;
+            }
+        }
+        throw new AssertionError("Видимое поле даты (id содержит '" + idPart + "') не найдено.");
     }
 
     /**
@@ -106,6 +137,10 @@ public class GracePeriodDialogComponent {
         // Ждем появления НОВОГО диалога (формы строки)
         waitForNewDialogAppearance(dialogsBefore);
 
+        // Переключаемся на новый диалог (форму строки): все поля строки (tuBasis, ...)
+        // находятся именно в нём, а не в родительском диалоге льготного стажа.
+        this.dialog = $$x("//*[@role='dialog']").last();
+
         return this;
     }
 
@@ -118,7 +153,8 @@ public class GracePeriodDialogComponent {
         if (!input.exists()) {
             throw new AssertionError("Поле с name='" + fieldName + "' не найдено в диалоге.");
         }
-        input.shouldBe(Condition.visible, Duration.ofSeconds(5)).click();
+        input.shouldBe(Condition.visible, Duration.ofSeconds(5));
+        ClickHelper.click(input, "Поле '" + fieldName + "'");
         clickDropdownOptionByText(value);
         waitForStabilization();
         return this;
@@ -160,6 +196,8 @@ public class GracePeriodDialogComponent {
         var input = dialog.$("input[name='" + fieldName + "']");
         if (input.exists() && input.isDisplayed()) {
             setInputValueViaJs(input, value);
+            // После JS-ввода закрываем появившийся дропдаун автокомплита
+            closeAutocompleteDropdown();
             return this;
         }
         return inputByLabelVariants(labels, value);
@@ -193,6 +231,7 @@ public class GracePeriodDialogComponent {
             if (coefInput.isDisplayed() && shareInput.isDisplayed()) {
                 setInputValueViaJs(coefInput, coef);
                 setInputValueViaJs(shareInput, share);
+                closeAutocompleteDropdown();
                 return this;
             }
         } catch (Exception ignored) {}
@@ -216,23 +255,47 @@ public class GracePeriodDialogComponent {
         sleep(500);
     }
 
+    /**
+     * Сохраняет сведения о периоде работы: клик по «Сохранить» в родительском
+     * диалоге льготного стажа. Вызывается после сохранения строки (clickSaveInForm),
+     * когда форма строки уже закрыта.
+     *
+     * @return текущий экземпляр для цепочки вызовов
+     */
+    @io.qameta.allure.Step("Сохранение сведений о периоде работы (диалог льготного стажа)")
+    public GracePeriodDialogComponent clickSavePeriodOfWork() {
+        // Переопределяем диалог: после сохранения строки форма строки закрыта,
+        // нужно вернуться к родительскому диалогу «Льготный стаж».
+        this.dialog = findActiveDialog();
+        var saveBtn = dialog.$x(".//button[contains(@class, 'btn-primary')][.//span[text() = 'Сохранить']]")
+                .shouldBe(Condition.visible, Duration.ofSeconds(5));
+        ClickHelper.click(saveBtn, "Сохранить (период работы)");
+        sleep(500);
+        return this;
+    }
+
     // --- Приватные вспомогательные методы ---
 
     private void selectByLabel(String label, String value) {
         String escaped = label.replace("'", "''");
+        // Закрываем возможный открытый автокомплит-дропдаун, иначе он перехватит клик
+        closeAutocompleteDropdown();
         var trigger = dialog.$x(".//*[contains(., '" + escaped + "')]/ancestor::*[contains(@class,'MuiFormControl')]//input[not(@type='hidden')] | .//*[contains(., '" + escaped + "')]/following::input[not(@type='hidden')][1]");
 
         if (!trigger.exists()) {
             throw new AssertionError("Не найден input для метки: " + label);
         }
 
-        trigger.shouldBe(Condition.visible, Duration.ofSeconds(3)).click();
+        trigger.shouldBe(Condition.visible, Duration.ofSeconds(3));
+        ClickHelper.click(trigger, "Поле '" + label + "'");
         clickDropdownOptionByText(value);
         waitForStabilization();
     }
 
     private void inputByLabel(String label, String value) {
         String escaped = label.replace("'", "''");
+        // Закрываем возможный открытый автокомплит-дропдаун, иначе он перехватит клик
+        closeAutocompleteDropdown();
         var input = dialog.$x(".//*[contains(., '" + escaped + "')]/ancestor::*[contains(@class,'MuiFormControl')]//input[not(@type='hidden')] | .//*[contains(., '" + escaped + "')]/following::input[not(@type='hidden')][1]");
 
         if (!input.exists()) {
@@ -241,6 +304,22 @@ public class GracePeriodDialogComponent {
 
         input.shouldBe(Condition.visible, Duration.ofSeconds(3));
         setInputValueViaJs(input, value);
+        // После JS-ввода закрываем появившийся дропдаун автокомплита
+        closeAutocompleteDropdown();
+    }
+
+    /**
+     * Закрывает открытый выпадающий список автокомплита (MUI Autocomplete), если он есть.
+     * Иначе открытый listbox перехватывает клики по следующим полям формы.
+     */
+    private void closeAutocompleteDropdown() {
+        try {
+            com.codeborne.selenide.Selenide.actions()
+                    .sendKeys(org.openqa.selenium.Keys.ESCAPE)
+                    .pause(150)
+                    .perform();
+        } catch (Exception ignored) {
+        }
     }
 
     private void clickDropdownOptionByText(String text) {

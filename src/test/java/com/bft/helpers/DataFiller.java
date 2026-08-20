@@ -1,12 +1,12 @@
 package com.bft.helpers;
 
-/*import com.bft.helpers.forms.FormElements;*/
-import com.bft.helpers.forms.FormSelectors;
 import com.bft.ui.pages.BasePage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.testng.asserts.SoftAssert;
+
+import static com.bft.testdata.TestDataConstants.Selectors.*;
 
 public class DataFiller extends BasePage {
 
@@ -22,7 +22,51 @@ public class DataFiller extends BasePage {
     }
 
     private WebElement getOrgNameField() {
-        return null;
+        return driver.findElement(By.name(ORG_NAME_FIELD));
+    }
+
+    private WebElement getPfrRegNumberField() {
+        return driver.findElement(By.name(PFR_REG_NUMBER_FIELD));
+    }
+
+    private WebElement getInnField() {
+        return driver.findElement(By.name(INN_FIELD));
+    }
+
+    private WebElement getKppField() {
+        return driver.findElement(By.name(KPP_FIELD));
+    }
+
+    private WebElement getReportPeriodSelect() {
+        return driver.findElement(By.name(REPORT_PERIOD_SELECT));
+    }
+
+    private WebElement getCorrectionNumberField() {
+        return driver.findElement(By.name(CORRECTION_NUMBER_FIELD));
+    }
+
+    private WebElement getInfoTypeSelect() {
+        return driver.findElement(By.name(INFO_TYPE_SELECT));
+    }
+
+    private WebElement getInsuredPersonsTab() {
+        return driver.findElement(By.xpath(INSURED_PERSONS_TAB));
+    }
+
+    private WebElement getAddPersonButton() {
+        return driver.findElement(By.name(ADD_PERSON_BUTTON));
+    }
+
+    private WebElement getSaveButton() {
+        return driver.findElement(By.name(SAVE_BUTTON));
+    }
+
+    private WebElement getEditButton() {
+        return driver.findElement(By.name(EDIT_BUTTON));
+    }
+
+    private WebElement getSignAndSendButton() {
+        return driver.findElement(By.name(SIGN_AND_SEND_BUTTON));
     }
 
     public void fillOrgName(String orgName) {

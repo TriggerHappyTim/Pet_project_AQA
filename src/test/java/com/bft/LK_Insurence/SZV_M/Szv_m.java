@@ -5,6 +5,7 @@ import com.bft.enums.ReportFormType;
 import com.bft.enums.ReportXmlResource;
 import com.bft.enums.UITypeSelector;
 import com.bft.enums.UIType;
+import com.bft.security.TestUsers;
 import com.bft.steps.SzvReportsSteps;
 import io.qameta.allure.AllureId;
 import io.qameta.allure.Description;
@@ -18,9 +19,9 @@ import org.testng.annotations.Test;
 /**
  * Тесты для отчёта СЗВ-М (Сведения о застрахованных лицах)
  * 
- * Покрывает различные сценарии создания и отправки отчётов СЗВ-М:
- * - Ручное создание отчёта с заполнением застрахованных лиц
- * - Загрузка через XML файл
+ * Покрывает сценарий ручного создания отчёта СЗВ-М с заполнением застрахованных лиц.
+ * Загрузка СЗВ-М через XML покрыта параметризованным тестом
+ * {@link com.bft.LK_Insurence.ReportXmlUploadTest}.
  */
 @Epic("Формы отчетности")
 @Feature("СЗВ-М Reports")
@@ -48,21 +49,20 @@ public class Szv_m extends UITestBase {
         steps.saveZL();
     }
 
-    @Test(groups = {"web", "szv-m", "smoke", "xml-upload"}, 
-          testName = "#2 Загрузка отчёта СЗВ-М через XML файл",
-          description = "Загрузка отчёта СЗВ-М через XML файл")
-    @AllureId("SZVM-002")
-    @Story("XML Upload")
-    @Description("Тест проверяет возможность загрузки отчёта СЗВ-М через XML файл в систему ЕВС")
+    @Test(groups = {"web", "szv-m", "smoke", "xml-upload", "user-specific"},
+            testName = "#2 Загрузка отчёта СЗВ-М через XML (Кривоносов А.П.)",
+            description = "Загрузка отчёта СЗВ-М через XML от пользователя Кривоносов")
+    @AllureId("SZVM-001")
+    @Story("XML Upload - Кривоносов А.П.")
+    @Description("Тест проверяет загрузку отчёта СЗВ-М через XML от пользователя Кривоносов Александр Петрович")
     @Severity(SeverityLevel.CRITICAL)
-    public void szv_m_xml() {
-
+    public void szv_m_xml_krivonosov() {
         SzvReportsSteps steps = new SzvReportsSteps();
 
-        steps.authorizeEVS(UITypeSelector.getSelectedUIType());
-        steps.addReports(); //Добавление отчета
-        steps.selectReportType(ReportFormType.SZVM); //Выбор отчета
-        steps.addNewReport(); // выбор нового отчета
-        steps.sendXml(ReportXmlResource.SZV_M); //отправка xml
+        steps.authorizeEVS(UITypeSelector.getSelectedUIType(), TestUsers.KRIVONOSOV_ALEXANDER);
+        steps.addReports();
+        steps.selectReportType(ReportFormType.SZVM);
+        steps.addNewReport();
+        steps.sendXml(ReportXmlResource.SZV_M);
     }
 }

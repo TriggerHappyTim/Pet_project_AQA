@@ -1,4 +1,4 @@
-package com.bft.gui;
+package com.bft.ui.pages;
 
 import com.bft.ui.core.BasePage;
 import com.bft.ui.core.element.ElementFactory;

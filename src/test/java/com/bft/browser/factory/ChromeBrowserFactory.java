@@ -81,6 +81,12 @@ public class ChromeBrowserFactory {
         options.setAcceptInsecureCerts(true);
         options.addArguments("--disable-notifications", "--disable-popup-blocking");
 
+        String debugPort = System.getProperty("chrome.debug.port");
+        if (debugPort != null && !debugPort.isEmpty()) {
+            options.addArguments("--remote-debugging-port=" + debugPort);
+            log.info("Chrome: включён remote debugging на порту {}", debugPort);
+        }
+
         Map<String, Object> prefs = new HashMap<>();
         prefs.put("intl.accept_languages", "ru");
         options.setExperimentalOption("prefs", prefs);

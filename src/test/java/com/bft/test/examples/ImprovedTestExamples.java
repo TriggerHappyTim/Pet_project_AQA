@@ -3,7 +3,7 @@
 // ============================================================================
 // package com.bft.test.examples;
 //
-// import com.bft.gui.CryptoProDemoPage;
+// import com.bft.ui.pages.CryptoProDemoPage;
 // import com.bft.test.base.DataDrivenTestBase;
 // import io.qameta.allure.*;
 // import org.testng.annotations.Test;

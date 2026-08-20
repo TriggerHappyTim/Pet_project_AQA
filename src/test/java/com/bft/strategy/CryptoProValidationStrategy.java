@@ -1,6 +1,6 @@
 package com.bft.strategy;
 
-import com.bft.gui.CryptoProDemoPage;
+import com.bft.ui.pages.CryptoProDemoPage;
 import com.bft.utils.CryptoProPluginVerifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

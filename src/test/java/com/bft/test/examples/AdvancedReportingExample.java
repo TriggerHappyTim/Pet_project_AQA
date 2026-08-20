@@ -7,7 +7,7 @@
 // import com.bft.test.base.UITestBase;
 // import com.bft.test.logging.AllureIntegration;
 // import com.bft.test.logging.TestLogger;
-// import com.bft.gui.CryptoProDemoPage;
+// import com.bft.ui.pages.CryptoProDemoPage;
 // import io.qameta.allure.*;
 // import org.testng.annotations.Test;
 //

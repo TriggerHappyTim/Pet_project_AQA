@@ -30,7 +30,7 @@ echo "=== Checking test files ==="
 test_files=(
     "src/test/java/com/bft/LK_Insurence/CryptoProCertificateTest.java"
     "src/test/java/com/bft/test/base/UITestBase.java"
-    "src/test/java/com/bft/gui/CryptoProDemoPage.java"
+    "src/test/java/com/bft/ui/pages/CryptoProDemoPage.java"
 )
 
 for file in "${test_files[@]}"; do

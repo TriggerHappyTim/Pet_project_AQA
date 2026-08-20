@@ -1,4 +1,4 @@
-package com.bft.LK_Insurence.EFS_1;
+package com.bft.security;
 
 import com.bft.security.CredentialManager;
 import io.qameta.allure.AllureId;

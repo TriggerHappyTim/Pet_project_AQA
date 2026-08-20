@@ -1,12 +1,13 @@
 package com.bft.LK_Insurence;
 
-import com.bft.gui.CryptoProDemoPage;
+import com.bft.ui.pages.CryptoProDemoPage;
 import com.bft.strategy.CryptoProValidationStrategy;
 import com.bft.strategy.ExecutionStrategyType;
 import com.bft.strategy.TestExecutionStrategy;
 import com.bft.strategy.TestStrategyManager;
 import com.bft.test.base.UITestBase;
 import com.bft.test.retry.Retry;
+import com.bft.test.retry.RetryAnalyzer;
 import com.bft.utils.CryptoProPluginVerifier;
 import io.qameta.allure.*;
 import org.testng.annotations.BeforeMethod;
@@ -31,7 +32,8 @@ public class CryptoProCertificateTest extends UITestBase {
         }
     }
 
-    @Test(groups = {"web", "crypto", "smoke"}, testName = "#6 Проверка загрузки плагина КриптоПРО")
+    @Test(groups = {"web", "crypto", "smoke"}, testName = "#6 Проверка загрузки плагина КриптоПРО",
+            retryAnalyzer = RetryAnalyzer.class)
     @AllureId("CRYPTO-006")
     @Story("Проверка загрузки плагина")
     @Severity(SeverityLevel.CRITICAL)

@@ -54,7 +54,7 @@ public class TestAssertions extends SoftAssert {
 
     @Override
     public void assertEquals(Object actual, Object expected, String message) {
-        if (!expected.equals(actual)) {
+        if (!java.util.Objects.equals(actual, expected)) {
             handleFailure(message + String.format(" (Ожидалось: '%s', Получено: '%s')", expected, actual));
         }
         super.assertEquals(actual, expected, message);

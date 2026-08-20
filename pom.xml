@@ -26,6 +26,8 @@
         <java.version>11</java.version>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
+        <!-- Набор TestNG по умолчанию, переопределяется через -Dsuite=... -->
+        <suite>src/test/resources/testng.xml</suite>
     </properties>
 
     <dependencies>
@@ -324,6 +326,29 @@
                         <artifactId>maven-surefire-plugin</artifactId>
                         <configuration>
                             <!-- Без указания groups запустятся все тесты независимо от групп -->
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <!-- Запуск через TestNG suite (активируется при передаче -Dsuite=...) -->
+        <profile>
+            <id>run_suite</id>
+            <activation>
+                <property>
+                    <name>suite</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <suiteXmlFiles>
+                                <suiteXmlFile>${suite}</suiteXmlFile>
+                            </suiteXmlFiles>
                         </configuration>
                     </plugin>
                 </plugins>

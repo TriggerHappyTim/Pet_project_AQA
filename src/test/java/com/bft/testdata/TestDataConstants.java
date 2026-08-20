@@ -1,6 +1,15 @@
-package com.bft.helpers;
+package com.bft.testdata;
 
-public class TestConfig {
+/**
+ * Константы тестовых данных для форм отчётности.
+ *
+ * <p>Вынесены из {@code com.bft.helpers.TestConfig}: единый источник констант
+ * страхователя, застрахованных лиц и селекторов полей формы.
+ */
+public final class TestDataConstants {
+
+    private TestDataConstants() {
+    }
 
     // Данные страхователя
     public static final String ORG_NAME = "ООО 'Тестовая Компания'";

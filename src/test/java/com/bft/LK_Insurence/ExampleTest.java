@@ -243,7 +243,7 @@
 //         Selenide.open(demoUrl);
 //
 //         // Создаем страницу с улучшенным Page Object
-//         com.bft.gui.CryptoProDemoPage cryptoPage = new com.bft.gui.CryptoProDemoPage(softAssert);
+//         com.bft.ui.pages.CryptoProDemoPage cryptoPage = new com.bft.ui.pages.CryptoProDemoPage(softAssert);
 //
 //         // Используем fluent API с автоматическими ожиданиями
 //         cryptoPage.openPageAndVerify("КриптоПРО демо-страница")

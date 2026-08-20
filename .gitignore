@@ -1,4 +1,6 @@
 /.allure/
+/allure-results/
+/allure-report/
 /.idea/
 /target/
 /build/
