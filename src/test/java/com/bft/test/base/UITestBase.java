@@ -4,6 +4,7 @@ import com.bft.config.TestConfig;
 import com.bft.config.UITestStrategy;
 import com.bft.pw.PwSession;
 import io.qameta.allure.Allure;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 
 import java.time.Duration;
@@ -57,6 +58,21 @@ public abstract class UITestBase extends BaseTest {
             }
         }
         logger.info("Подготовка UI теста: {}", getClass().getSimpleName());
+    }
+
+    /**
+     * Завершение UI теста: закрывает Playwright-сессию, чтобы каждый тест
+     * получал свежий браузер и изолированное состояние приложения.
+     * Повторяет поведение Selenide по умолчанию ({@code holdBrowserOpen=false}).
+     */
+    @AfterMethod
+    protected void teardownUITestMethod() {
+        try {
+            PwSession.close();
+        } catch (Exception e) {
+            logger.warn("Ошибка при закрытии Playwright-сессии: {}", e.getMessage());
+        }
+        cryptoProConfigured = false;
     }
 
     /**
