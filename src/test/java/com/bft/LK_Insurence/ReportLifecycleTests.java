@@ -299,10 +299,13 @@ public class ReportLifecycleTests extends UITestBase {
         arrangeActAssert(
             () -> {
                 authSteps.authorizeEVS(UITypeSelector.getSelectedUIType(), TestUsers.KRIVONOSOV_ALEXANDER);
+                // Данные: создаём черновик отчёта, чтобы список был непустым (тест самодостаточен)
+                reportNavSteps.createNewReportDraft(ReportFormType.SZVM);
+                legacySteps.sendXml(ReportXmlResource.SZV_M);
             },
             () -> {
                 new MainPage()
-                        .openTab("ЛК Страхователя")
+                        .ensureSidebarExpanded()
                         .openTab("Отчеты")
                         .openTab("Список отчетов")
                         .waitTableToLoad();

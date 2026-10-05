@@ -3,7 +3,10 @@ package com.bft.ui.component;
 import com.bft.ui.core.element.ElementFactory;
 import com.bft.ui.core.element.SmartElement;
 import com.bft.ui.core.element.SmartElementList;
+import com.bft.enums.TimeoutConstants;
 import com.bft.pw.By;
+import com.bft.pw.Selenide;
+import com.bft.pw.TimeoutException;
 
 /**
  * Компонент для работы с таблицами
@@ -282,11 +285,18 @@ public class TableComponent extends BaseComponent {
      */
     public TableComponent waitForLoad() {
         logger.info("Ожидаем загрузки таблицы: {}", componentName);
-        ElementFactory.xpath("//table//tbody/*[1]/*[6]")
+        SmartElement firstRow = ElementFactory.xpath("//table//tbody/*[1]/*[6]")
                 .named("Первый элемент таблицы")
-                .waitVisible()
                 .build();
-        logger.info("Таблица '{}' загружена", componentName);
+        try {
+            Selenide.Wait()
+                    .withTimeout(TimeoutConstants.LONG_WAIT)
+                    .until(d -> firstRow.isVisible());
+            logger.info("Таблица '{}' загружена", componentName);
+        } catch (TimeoutException e) {
+            // Пустая таблица — допустимое состояние; наличие данных проверяют сами тесты
+            logger.warn("Таблица '{}' пуста или не загрузилась за {}", componentName, TimeoutConstants.LONG_WAIT);
+        }
         return this;
     }
 

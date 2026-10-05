@@ -103,6 +103,16 @@ public class MainPage {
     }
 
     /**
+     * Разворачивает боковое меню модуля, если оно свёрнуто (после полноэкранных форм).
+     *
+     * @return текущий экземпляр MainPage для цепочки вызовов
+     */
+    public MainPage ensureSidebarExpanded() {
+        navigation.ensureSidebarExpanded();
+        return this;
+    }
+
+    /**
      * Открывает таблицу результатов
      * 
      * Выполняет переход к таблице результатов через навигационный компонент.

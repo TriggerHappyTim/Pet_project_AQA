@@ -99,7 +99,8 @@ public class ButtonComponent extends BaseComponent {
      */
     public static ButtonComponent createButton(String buttonName) {
         return new ButtonComponent(
-            By.xpath("//section[contains(@class, 'application')]//button[*[text() = '" + buttonName + "']]"),
+            By.xpath("//section[contains(@class, 'application')]//button[*[text() = '" + buttonName
+                    + "'] or normalize-space(text()) = '" + buttonName + "']"),
             "Кнопка '" + buttonName + "'"
         );
     }

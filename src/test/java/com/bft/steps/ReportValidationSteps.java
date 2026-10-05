@@ -8,6 +8,7 @@ import com.bft.pw.Condition;
 import com.bft.pw.ElementsCollection;
 import com.bft.pw.PwSession;
 import com.bft.pw.SelenideElement;
+import com.bft.pw.TimeoutException;
 import com.bft.pw.WebDriverRunner;
 import com.bft.utils.FormStructureParser;
 import io.qameta.allure.Step;
@@ -182,6 +183,15 @@ public class ReportValidationSteps {
     @Step("Проверка наличия отчётов в таблице")
     public ReportValidationSteps verifyReportTableNotEmpty() {
         getResultsTable().waitForLoad();
+
+        // Таблица грузится асинхронно: дожидаемся появления строк
+        try {
+            Selenide.Wait()
+                    .withTimeout(Duration.ofSeconds(20))
+                    .until(d -> $$x("//table//tbody/tr").size() > 0);
+        } catch (TimeoutException e) {
+            log.debug("Строки в таблице отчётов не появились за 20с: {}", e.getMessage());
+        }
 
         ElementsCollection rows = $$x("//table//tbody/tr");
         softAssert.assertNotEquals(rows.size(), 0, "Таблица отчётов должна содержать хотя бы одну запись");

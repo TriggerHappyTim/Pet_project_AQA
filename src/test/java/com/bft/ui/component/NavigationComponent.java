@@ -74,6 +74,23 @@ public class NavigationComponent extends BaseComponent {
     }
 
     /**
+     * Разворачивает боковое меню модуля, если оно свёрнуто (кнопка-гамбургер).
+     * Нужно после действий, уводящих на полноэкранные формы (например, загрузка XML).
+     */
+    public NavigationComponent ensureSidebarExpanded() {
+        SmartElement switcher = ElementFactory.xpath("//i[contains(@class,'n2o-sidebar-switcher')]")
+                .named("Переключатель бокового меню")
+                .waitVisible()
+                .build();
+        String classes = switcher.getAttribute("class");
+        if (classes != null && classes.contains("fa-bars")) {
+            logger.info("Разворачиваем боковое меню модуля");
+            switcher.click();
+        }
+        return this;
+    }
+
+    /**
      * Открывает таблицу (кликает по ней)
      */
     public NavigationComponent openTable() {
