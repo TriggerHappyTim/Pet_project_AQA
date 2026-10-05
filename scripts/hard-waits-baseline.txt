@@ -1,0 +1,10 @@
+src/test/java/com/bft/LK_Insurence/SZV_M/CryptoproSignModalProbe.java 2
+src/test/java/com/bft/service/graphql/SignServiceImpl.java 1
+src/test/java/com/bft/service/grpc/GrpcChannelFactory.java 1
+src/test/java/com/bft/service/sign/DaPortalClient.java 3
+src/test/java/com/bft/steps/ReportSignSteps.java 1
+src/test/java/com/bft/steps/ReportValidationSteps.java 1
+src/test/java/com/bft/test/base/UITestBase.java 1
+src/test/java/com/bft/ui/component/DatePickerComponent.java 1
+src/test/java/com/bft/ui/component/GracePeriodDialogComponent.java 6
+src/test/java/com/bft/ui/pages/MainPage.java 4

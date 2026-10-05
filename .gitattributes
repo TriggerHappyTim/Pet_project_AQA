@@ -4,6 +4,9 @@
 # Shell scripts must stay LF for Linux CI
 *.sh text eol=lf
 
+# Text data files (baselines, lists)
+*.txt text eol=lf
+
 # Windows scripts stay CRLF
 *.bat text eol=crlf
 *.cmd text eol=crlf
