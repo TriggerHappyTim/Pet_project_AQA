@@ -457,3 +457,23 @@ maven publish:
 cleanup helm:
   rules:
     - when: never
+
+# Quality gates: Checkstyle (test sources) + hard-waits ratchet.
+# Runs first (.pre) and blocks the pipeline on failure.
+quality:
+  stage: .pre
+  image:
+    name: "harbor.bft.local/library/base-images/maven:0.1.0-kubectl-2023.04.28"
+  script:
+    - MVN_ARGS=""
+    - if [ -f settings.xml ]; then MVN_ARGS="-s settings.xml"; fi
+    - mvn $MVN_ARGS --batch-mode --errors checkstyle:check
+    - bash scripts/check-hard-waits.sh
+  rules:
+    - if: $CI_COMMIT_BRANCH =~ /master/
+    - if: $CI_PIPELINE_SOURCE =~ /web|pipeline/
+  artifacts:
+    when: always
+    paths:
+      - target/checkstyle-result.xml
+    expire_in: 1 week
