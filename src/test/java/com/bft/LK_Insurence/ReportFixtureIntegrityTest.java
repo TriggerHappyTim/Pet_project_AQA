@@ -22,6 +22,7 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Tag;
 
 /**
  * Проверка целостности XML-фикстур отчётов ЕВС (слой данных, без UI).
@@ -40,6 +41,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * {@code src/test/resources/scheme/evs/*.xsd} (замкнутый набор, собранный из AF.2.106d).
  */
 @DisplayName("Целостность XML-фикстур отчётов ЕВС")
+@Tag("lk-insurer")
 class ReportFixtureIntegrityTest {
 
     private static final String RESOURCE_PREFIX = "application";

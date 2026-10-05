@@ -25,6 +25,7 @@ import org.junit.jupiter.api.Test;
  * Загрузка СЗВ-М через XML покрыта параметризованным тестом
  * {@link com.bft.LK_Insurence.ReportXmlUploadTest}.
  */
+@Tag("lk-insurer")
 @Tag("web")
 @Epic("Формы отчетности")
 @Feature("СЗВ-М Reports")

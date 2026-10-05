@@ -10,12 +10,14 @@ import org.junit.jupiter.api.Test;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import org.junit.jupiter.api.Tag;
 
 /**
  * ПРОБА: залогиниться, создать отчёт СЗВ-М и слить n2o-конфиг страницы отчёта
  * (https://ecp-test.sfr.gov.ru/insurer/n2o/page/reports/svzm/{id}/mainInfo) и глобальный
  * /insurer/n2o/config — чтобы найти action «Подписать и отправить» и его backend-эндпоинт.
  */
+@Tag("lk-insurer")
 public class N2oSignActionProbe extends com.bft.test.base.UITestBase {
 
     @Test

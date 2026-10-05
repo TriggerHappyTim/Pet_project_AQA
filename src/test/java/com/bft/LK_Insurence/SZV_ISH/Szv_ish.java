@@ -27,6 +27,7 @@ import org.junit.jupiter.api.Test;
  * 
  * @see TestUsers#KRIVONOSOV_ALEXANDER
  */
+@Tag("lk-insurer")
 @Tag("web")
 @Tag("xml-upload")
 @Epic("Формы отчетности")

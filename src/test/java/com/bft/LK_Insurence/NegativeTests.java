@@ -31,6 +31,7 @@ import static com.bft.pw.Selenide.$x;
  *
  * @see <a href="docs/test-cases-lks-krivonosov.md">Тест-кейсы ЛК Страхователя</a>
  */
+@Tag("lk-insurer")
 @Tag("negative")
 @Epic("Формы отчетности")
 @Feature("Негативные сценарии")

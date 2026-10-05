@@ -12,7 +12,9 @@ import org.junit.jupiter.api.Test;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import org.junit.jupiter.api.Tag;
 
+@Tag("lk-insurer")
 public class DebugDumpTest extends UITestBase {
 
     private static ReportFormType formType() {

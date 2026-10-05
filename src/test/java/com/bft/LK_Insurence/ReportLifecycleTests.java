@@ -39,6 +39,7 @@ import static java.time.Duration.ofSeconds;
  *   <li>TC-LKS-MISC-003: Копирование отчёта</li>
  * </ul>
  */
+@Tag("lk-insurer")
 @Tag("smoke")
 @Tag("web")
 @Epic("Жизненный цикл отчётов")

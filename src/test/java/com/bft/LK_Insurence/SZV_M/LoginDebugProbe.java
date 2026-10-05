@@ -9,10 +9,12 @@ import org.junit.jupiter.api.Test;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import org.junit.jupiter.api.Tag;
 
 /**
  * ПРОБА: пройти authorizeEVS, поймать где застряли, сбросить HTML страницы в файл.
  */
+@Tag("lk-insurer")
 public class LoginDebugProbe extends com.bft.test.base.UITestBase {
 
     @Test

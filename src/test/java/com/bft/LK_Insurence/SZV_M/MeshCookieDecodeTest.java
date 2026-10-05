@@ -10,12 +10,14 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import org.junit.jupiter.api.Tag;
 
 /**
  * Изолированная проверка: авторизация в oauth2-прокси mesh (reader-user) и расшифровка
  * session-cookie для извлечения keycloak access_token. БЕЗ app-логина (ESIA) и БЕЗ E2E,
  * чтобы быстро проверить механизм аутентификации mesh.
  */
+@Tag("lk-insurer")
 public class MeshCookieDecodeTest extends UITestBase {
 
     private String secret() {

@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Полный E2E СЗВ-ТД на базе СЗВ-М: загрузка XML → подписание (API/rest) → проверка статуса.
  */
+@Tag("lk-insurer")
 @Tag("smoke")
 @Tag("report-sign")
 @Feature("СЗВ-ТД")

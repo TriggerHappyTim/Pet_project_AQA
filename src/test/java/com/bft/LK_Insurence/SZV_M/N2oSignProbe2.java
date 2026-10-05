@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import org.junit.jupiter.api.Tag;
 
 /**
  * ПРОБА 2: залогиниться, создать отчёт, затем эмпирически прощупать n2o data-эндпоинты
@@ -18,6 +19,7 @@ import java.nio.file.Paths;
  *  - POST .../sign/syncSign (cms)         -> смотрим контракт (поля/формат)
  *  - POST .../sign/syncVisualize          -> результат
  */
+@Tag("lk-insurer")
 public class N2oSignProbe2 extends com.bft.test.base.UITestBase {
 
     @Test

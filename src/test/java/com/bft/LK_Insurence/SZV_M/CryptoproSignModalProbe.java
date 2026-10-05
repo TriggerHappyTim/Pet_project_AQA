@@ -15,12 +15,14 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import static com.bft.pw.Selenide.$x;
+import org.junit.jupiter.api.Tag;
 
 /**
  * ПРОБА: открыть модалку «Подписание» (dig-sign-modal) на отчёте СЗВ-М, нажать
  * «Подписать» и слить DOM всех фреймов (в т.ч. iframe плагина CAdES) — чтобы найти
  * селекторы окна «Выбор сертификата» и кнопки завершения.
  */
+@Tag("lk-insurer")
 public class CryptoproSignModalProbe extends com.bft.test.base.UITestBase {
 
     @Test

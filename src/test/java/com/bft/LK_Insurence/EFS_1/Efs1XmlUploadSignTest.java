@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Полный E2E ЕФС-1 на базе СЗВ-М: загрузка XML → подписание (API/rest) → проверка статуса.
  */
+@Tag("lk-insurer")
 @Tag("smoke")
 @Tag("report-sign")
 @Feature("ЕФС-1")

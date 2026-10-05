@@ -28,6 +28,7 @@ import org.junit.jupiter.api.Test;
  *   <li>Полный E2E поток: РПУ -> ЕВС</li>
  * </ul>
  */
+@Tag("lk-archive")
 @Tag("archive")
 @Tag("web")
 @Epic("ЛК Архивной организации")

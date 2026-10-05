@@ -44,6 +44,7 @@ import static com.bft.pw.Selenide.refresh;
  *   -Devs.sign.variant=common -Devs.sign.pem-dir=src/test/resources/certs -Dheadless=true
  * </pre>
  */
+@Tag("lk-insurer")
 @Tag("signing")
 @Tag("all-reports")
 @Tag("web")

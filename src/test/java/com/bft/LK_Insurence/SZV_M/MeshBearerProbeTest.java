@@ -4,6 +4,7 @@ import com.bft.service.graphql.KeycloakTokenProvider;
 import com.bft.service.sign.DaPortalClient;
 import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
+import org.junit.jupiter.api.Tag;
 
 /**
  * ПРОБА: получить Bearer-токен Keycloak (admin-cli / ROPC) и послать мутацию
@@ -11,6 +12,7 @@ import org.slf4j.LoggerFactory;
  * Если ошибка меняется с "UNAUTHENTICATED: не передан токен" на иную — значит Bearer принимается
  * (mesh берёт любой валидный токен realm geop), и это и есть чистый API-путь без расшифровки cookie.
  */
+@Tag("lk-insurer")
 public class MeshBearerProbeTest {
 
     @Test

@@ -29,6 +29,7 @@ import static java.time.Duration.ofSeconds;
 /**
  * Тесты для отчёта ЕФС-1 (Единая форма сведений)
  */
+@Tag("lk-insurer")
 @Tag("web")
 @Tag("efs")
 @Epic("Формы отчетности")

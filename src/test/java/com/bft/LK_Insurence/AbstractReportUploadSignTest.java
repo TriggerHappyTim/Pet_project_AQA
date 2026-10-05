@@ -36,6 +36,7 @@ import static com.bft.pw.Selenide.refresh;
  * reader-user, READ) + n2o syncSign в браузерной сессии ЕСИА (владелец отчёта →
  * ресурсная проверка пройдена). КриптоПРО не требуется.
  */
+@Tag("lk-insurer")
 @Tag("xml-upload")
 @Tag("web")
 @Tag("signing")

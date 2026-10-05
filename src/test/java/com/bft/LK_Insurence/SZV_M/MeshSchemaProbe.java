@@ -2,11 +2,13 @@ package com.bft.LK_Insurence.SZV_M;
 
 import com.bft.service.graphql.GraphQLClient;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Tag;
 
 /**
  * ПРОБА: интроспекция схемы mesh (reader-user Bearer) — найти мутации создания отчёта,
  * чтобы создать отчёт от имени reader-user (тогда reader-user владелец, и processSignatureCommon пройдёт).
  */
+@Tag("lk-insurer")
 public class MeshSchemaProbe extends com.bft.test.base.UITestBase {
 
     @Test

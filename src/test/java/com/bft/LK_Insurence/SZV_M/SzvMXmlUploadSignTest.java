@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Test;
  * <p>Наследует базовый флоу {@link AbstractReportUploadSignTest} (загрузка XML → API-подписание
  * → проверка статуса), а также тесты ручного заполнения (минимального и максимального).
  */
+@Tag("lk-insurer")
 @Tag("smoke")
 @Tag("xml-upload")
 @Tag("web")

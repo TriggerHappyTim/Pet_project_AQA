@@ -31,6 +31,7 @@ import org.junit.jupiter.params.provider.MethodSource;
  * @see ReportFormType
  * @see ReportXmlResource
  */
+@Tag("lk-insurer")
 @Tag("smoke")
 @Tag("xml-upload")
 @Epic("Формы отчетности")
