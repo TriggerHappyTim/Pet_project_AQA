@@ -13,6 +13,7 @@ import io.qameta.allure.Feature;
 import io.qameta.allure.Severity;
 import io.qameta.allure.SeverityLevel;
 import io.qameta.allure.Story;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -34,6 +35,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 @Tag("lk-insurer")
 @Tag("smoke")
 @Tag("xml-upload")
+@Disabled("Стенд test: импорт XML отчётов недоступен (бэкенд отвечает ошибками: "
+        + "«Ошибка поиска страхователя в РС», NOT_FOUND grpc-сервиса ЕФС-1) — обнаружено 06.10.2026")
 @Epic("Формы отчетности")
 @Feature("Report XML Upload (unified)")
 public class ReportXmlUploadTest extends UITestBase {

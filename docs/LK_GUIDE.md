@@ -40,11 +40,12 @@ mvn -B test -Dgroups="lk-insurer"
 
 ## Известные ограничения тестового стенда
 
-- **06.10.2026, test:** XML-загрузка ЕФС-1 недоступна — grpc-сервис
-  `ru.gov.pfr.ecp.uos.efs1.xml.client.Efs1XmlProcessService` не зарегистрирован
-  (ошибка `NOT_FOUND`). Затронуты тесты `ReportLifecycleTests#fullCycleEfs1WithProtocol`
-  и `#checkProtocolsPositive` — временно помечены `@Disabled` с этой причиной.
-  После восстановления сервиса снять `@Disabled` и проверить тесты.
+- **06.10.2026, test:** импорт XML отчётов недоступен — бэкенд отвечает ошибками
+  («Ошибка поиска страхователя в РС»; для ЕФС-1 — `NOT_FOUND` grpc-сервиса
+  `ru.gov.pfr.ecp.uos.efs1.xml.client.Efs1XmlProcessService`).
+  Затронуты: `ReportXmlUploadTest` (отключён целиком), `ReportLifecycleTests#fullCycleEfs1WithProtocol`
+  и `#checkProtocolsPositive` (отключены точечно) — помечены `@Disabled` с этой причиной.
+  После восстановления импорта на стенде: снять `@Disabled` и проверить тесты.
 
 ## Чек-лист: новый ЛК за один день
 

@@ -6,12 +6,17 @@ import com.bft.testdata.TestDataConstants;
 import com.bft.ui.component.GracePeriodDialogComponent;
 import com.bft.ui.pages.MainPage;
 import com.bft.pw.Condition;
+import com.bft.pw.Selenide;
+import com.bft.pw.TimeoutException;
 import com.bft.pw.WebDriverRunner;
 import io.qameta.allure.Step;
+
+import java.time.Duration;
 
 import static com.bft.enums.TimeoutConstants.DEFAULT_WAIT;
 import static com.bft.enums.TimeoutConstants.REPORT_PROCESSING_WAIT;
 import static com.bft.pw.Selenide.$x;
+import static com.bft.pw.Selenide.$$x;
 
 public class ReportDataEntrySteps {
 
@@ -436,5 +441,41 @@ public class ReportDataEntrySteps {
         new MainPage()
                 .clickButtonModal("Загрузить")
                 .clickButtonModalDialog("Да");
+
+        // Диагностика сбоя загрузки: сервер может вернуть ошибку (например, NOT_FOUND grpc-сервиса
+        // или «Ошибка поиска страхователя в РС»), при этом модалка остаётся открытой и позже
+        // блокирует навигацию. Падаем сразу и с текстом ошибки, а не с непонятным таймаутом.
+        try {
+            Selenide.Wait().withTimeout(Duration.ofSeconds(15)).until(d -> {
+                var alerts = $$x("//div[contains(@class,'ps-alert-danger')]");
+                for (int i = 0; i < alerts.size(); i++) {
+                    if (alerts.get(i).isDisplayed()) {
+                        return true;
+                    }
+                }
+                return false;
+            });
+
+            String title = "";
+            String details = "";
+            var titles = $$x("//h4[contains(@class,'ps-alert-title')]");
+            for (int i = 0; i < titles.size(); i++) {
+                if (titles.get(i).isDisplayed()) {
+                    title = titles.get(i).getText();
+                    break;
+                }
+            }
+            var texts = $$x("//p[contains(@class,'ps-alert-text')]");
+            for (int i = 0; i < texts.size(); i++) {
+                if (texts.get(i).isDisplayed()) {
+                    details = texts.get(i).getText();
+                    break;
+                }
+            }
+            throw new AssertionError("Ошибка при загрузке XML ('" + reportXmlResource + "'): "
+                    + (title.isEmpty() ? "" : title + ". ") + details);
+        } catch (TimeoutException e) {
+            // Ошибок не появилось — загрузка принята сервером
+        }
     }
 }
