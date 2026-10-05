@@ -193,6 +193,8 @@ docker run --network evs-testing-network evs-testing-framework
 - **[Настройка среды](SETUP_GUIDE.md)** — установка, конфигурация, Docker, CI/CD
 - **[Руководство разработчика](DEVELOPMENT_GUIDE.md)** — SOLID, Arrange-Act-Assert, best practices
 - **[API Reference](API_REFERENCE.md)** — справочник всех классов и методов
+- **[Contributing](CONTRIBUTING.md)** — правила написания тестов, quality gates, DoD
+- **[Гайд по ЛК](docs/LK_GUIDE.md)** — конвенции ЛК, масштабирование до 9 кабинетов
 
 ### Дополнительно
 - **[Roadmap](src/test/resources/docs/roadmap.md)** — план улучшений и прогресс
