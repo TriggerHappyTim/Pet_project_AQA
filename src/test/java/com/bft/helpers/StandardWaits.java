@@ -8,7 +8,11 @@ import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
 
-import static com.bft.enums.TimeoutConstants.*;
+import static com.bft.enums.TimeoutConstants.AJAX_WAIT;
+import static com.bft.enums.TimeoutConstants.DEFAULT_WAIT;
+import static com.bft.enums.TimeoutConstants.MODAL_WAIT;
+import static com.bft.enums.TimeoutConstants.PAGE_LOAD_WAIT;
+import static com.bft.enums.TimeoutConstants.SHORT_WAIT;
 
 /**
  * Типовые ожидания для UI тестов

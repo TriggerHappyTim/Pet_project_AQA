@@ -354,7 +354,7 @@ public class DaPortalClient {
         page.bringToFront();
         try {
             page.waitForLoadState(com.microsoft.playwright.options.LoadState.LOAD);
-        } catch (Exception ignore) {
+        } catch (Exception ignored) {
         }
         // если сессия слетела и graphiql перенаправил на keycloak — пройти заново
         if (page.url() != null && page.url().contains("keycloak")) {
@@ -410,7 +410,7 @@ public class DaPortalClient {
                 page.bringToFront();
                 try {
                     page.waitForLoadState(com.microsoft.playwright.options.LoadState.LOAD);
-                } catch (Exception ignore) {
+                } catch (Exception ignored) {
                 }
                 Object result = page.evaluate(jsExpression, arg);
                 if (result == null) {
@@ -526,7 +526,7 @@ public class DaPortalClient {
             }
             try {
                 meshPage.waitForLoadState(com.microsoft.playwright.options.LoadState.LOAD);
-            } catch (Exception ignore) {
+            } catch (Exception ignored) {
             }
             log.info("Mesh auth: успешно, сессия mesh установлена (хост {})", meshHost);
             for (com.microsoft.playwright.options.Cookie c : PwSession.context().cookies()) {
@@ -803,7 +803,7 @@ public class DaPortalClient {
             try {
                 java.nio.file.Files.write(java.nio.file.Paths.get("build/cookies_dump.txt"),
                         names, java.nio.charset.StandardCharsets.UTF_8);
-            } catch (Exception ignore) {
+            } catch (Exception ignored) {
             }
         } catch (Exception e) {
             log.warn("extractAppToken: чтение cookie не удалось: {}", e.getMessage());
@@ -855,7 +855,7 @@ public class DaPortalClient {
                 log.info("extractMeshCookieRaw DEBUG:\n{}joined.first40={}\njoined.last20={}", sb,
                         joined.substring(0, Math.min(40, joined.length())),
                         joined.substring(Math.max(0, joined.length() - 20)));
-            } catch (Exception ignore) {
+            } catch (Exception ignored) {
             }
             return joined;
         } catch (Exception e) {
@@ -931,14 +931,14 @@ public class DaPortalClient {
                             capturedMeshUrls.add(url);
                         }
                     }
-                } catch (Exception ignore) {
+                } catch (Exception ignored) {
                 }
             });
             page.onRequestFinished(req -> {
                 try {
                     java.nio.file.Files.write(java.nio.file.Paths.get("build/requrls.txt"),
                             urls, java.nio.charset.StandardCharsets.UTF_8);
-                } catch (Exception ignore) {
+                } catch (Exception ignored) {
                 }
             });
             log.info("captureAppBearer: подписан на сетевые запросы браузера");

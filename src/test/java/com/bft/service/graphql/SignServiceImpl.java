@@ -49,7 +49,7 @@ public class SignServiceImpl implements SignService {
         // чтобы processSignatureCommon не уходил с просроченным токеном (UNAUTHENTICATED).
         try {
             KeycloakTokenProvider.invalidate();
-        } catch (Exception ignore) {
+        } catch (Exception ignored) {
         }
         if (graphqlViaBrowser) {
             if (daClient == null) {

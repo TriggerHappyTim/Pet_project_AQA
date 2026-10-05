@@ -72,21 +72,21 @@ public final class OAuth2ProxyCookieDecoder {
         java.util.List<byte[]> out = new java.util.ArrayList<>();
         try {
             out.add(MessageDigest.getInstance("SHA-256").digest(secret.getBytes(StandardCharsets.UTF_8)));
-        } catch (Exception ignore) {
+        } catch (Exception ignored) {
         }
         try {
             byte[] b64 = Base64.getUrlDecoder().decode(secret);
             if (b64.length == 32) {
                 out.add(b64);
             }
-        } catch (Exception ignore) {
+        } catch (Exception ignored) {
         }
         try {
             byte[] b64s = Base64.getDecoder().decode(secret);
             if (b64s.length == 32) {
                 out.add(b64s);
             }
-        } catch (Exception ignore) {
+        } catch (Exception ignored) {
         }
         // сырой секрет, обрезанный/дополненный до 32 байт
         byte[] raw = secret.getBytes(StandardCharsets.UTF_8);

@@ -269,8 +269,19 @@
                 <configuration>
                     <configLocation>config/checkstyle/checkstyle.xml</configLocation>
                     <propertyExpansion>config_location=${project.basedir}/config/checkstyle</propertyExpansion>
-                    <failOnViolation>false</failOnViolation>
+                    <includeTestSourceDirectory>true</includeTestSourceDirectory>
+                    <consoleOutput>true</consoleOutput>
+                    <failOnViolation>true</failOnViolation>
                 </configuration>
+                <executions>
+                    <execution>
+                        <id>checkstyle-validate</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

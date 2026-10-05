@@ -6,7 +6,18 @@ import com.bft.pw.PwDriver;
 import com.bft.pw.PwElement;
 import com.bft.test.TestAssertions;
 
-import static com.bft.testdata.TestDataConstants.Selectors.*;
+import static com.bft.testdata.TestDataConstants.Selectors.ADD_PERSON_BUTTON;
+import static com.bft.testdata.TestDataConstants.Selectors.CORRECTION_NUMBER_FIELD;
+import static com.bft.testdata.TestDataConstants.Selectors.EDIT_BUTTON;
+import static com.bft.testdata.TestDataConstants.Selectors.INFO_TYPE_SELECT;
+import static com.bft.testdata.TestDataConstants.Selectors.INN_FIELD;
+import static com.bft.testdata.TestDataConstants.Selectors.INSURED_PERSONS_TAB;
+import static com.bft.testdata.TestDataConstants.Selectors.KPP_FIELD;
+import static com.bft.testdata.TestDataConstants.Selectors.ORG_NAME_FIELD;
+import static com.bft.testdata.TestDataConstants.Selectors.PFR_REG_NUMBER_FIELD;
+import static com.bft.testdata.TestDataConstants.Selectors.REPORT_PERIOD_SELECT;
+import static com.bft.testdata.TestDataConstants.Selectors.SAVE_BUTTON;
+import static com.bft.testdata.TestDataConstants.Selectors.SIGN_AND_SEND_BUTTON;
 
 public class DataFiller extends BasePage {
 

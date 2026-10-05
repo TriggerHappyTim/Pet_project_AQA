@@ -115,7 +115,7 @@ public class GraphQLClient {
                 String origin = u.getScheme() + "://" + u.getHost();
                 rb.header("Origin", origin);
                 rb.header("X-Requested-With", "XMLHttpRequest");
-            } catch (Exception ignore) {
+            } catch (Exception ignored) {
             }
             log.info("GraphQL: отправлены cookies (via-browser)");
         }

@@ -9,7 +9,8 @@ import com.bft.pw.Condition;
 import com.bft.pw.WebDriverRunner;
 import io.qameta.allure.Step;
 
-import static com.bft.enums.TimeoutConstants.*;
+import static com.bft.enums.TimeoutConstants.DEFAULT_WAIT;
+import static com.bft.enums.TimeoutConstants.REPORT_PROCESSING_WAIT;
 import static com.bft.pw.Selenide.$x;
 
 public class ReportDataEntrySteps {

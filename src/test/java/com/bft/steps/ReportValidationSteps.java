@@ -31,11 +31,16 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.bft.test.TestAssertions;
 import com.bft.pw.Selenide;
 
-import static com.bft.pw.Selenide.*;
+import static com.bft.pw.Selenide.$x;
+import static com.bft.pw.Selenide.$$x;
+import static com.bft.pw.Selenide.back;
+import static com.bft.pw.Selenide.executeJavaScript;
 
 /**
  * Класс шагов для валидации отчетов и данных.

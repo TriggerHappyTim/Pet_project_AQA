@@ -10,7 +10,11 @@ import java.time.format.DateTimeFormatter;
 
 import static com.bft.pw.CollectionCondition.size;
 import static com.bft.pw.CollectionCondition.sizeGreaterThan;
-import static com.bft.pw.Condition.*;
+import static com.bft.pw.Condition.and;
+import static com.bft.pw.Condition.enabled;
+import static com.bft.pw.Condition.text;
+import static com.bft.pw.Condition.value;
+import static com.bft.pw.Condition.visible;
 import static com.bft.pw.Selenide.$;
 import static com.bft.pw.Selenide.$$;
 

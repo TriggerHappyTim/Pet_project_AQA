@@ -10,8 +10,11 @@ import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
 
-import static com.bft.pw.Selenide.*;
+import static com.bft.pw.Selenide.$;
+import static com.bft.pw.Selenide.$x;
 import static com.bft.pw.Selenide.$$x;
+import static com.bft.pw.Selenide.executeJavaScript;
+import static com.bft.pw.Selenide.sleep;
 
 /**
  * Компонент для работы с диалогом формы "Льготный стаж".

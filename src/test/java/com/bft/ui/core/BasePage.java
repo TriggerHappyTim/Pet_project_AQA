@@ -18,8 +18,12 @@ import java.time.Duration;
 import java.util.List;
 import java.util.function.Function;
 
-import static com.bft.pw.Condition.*;
-import static com.bft.pw.Selenide.*;
+import static com.bft.pw.Condition.cssClass;
+import static com.bft.pw.Condition.enabled;
+import static com.bft.pw.Condition.text;
+import static com.bft.pw.Condition.value;
+import static com.bft.pw.Condition.visible;
+import static com.bft.pw.Selenide.$;
 
 /**
  * Улучшенный абстрактный базовый класс для Page Objects

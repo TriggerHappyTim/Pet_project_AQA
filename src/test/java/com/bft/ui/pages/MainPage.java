@@ -1,7 +1,16 @@
 package com.bft.ui.pages;
 
 import com.bft.enums.ReportFormType;
-import com.bft.ui.component.*;
+import com.bft.ui.component.ButtonComponent;
+import com.bft.ui.component.CheckboxComponent;
+import com.bft.ui.component.DatePickerComponent;
+import com.bft.ui.component.FileComponent;
+import com.bft.ui.component.InputComponent;
+import com.bft.ui.component.NavigationComponent;
+import com.bft.ui.component.RadioButtonComponent;
+import com.bft.ui.component.SelectComponent;
+import com.bft.ui.component.TableComponent;
+import com.bft.ui.component.TextareaComponent;
 import com.bft.ui.core.ClickHelper;
 import com.bft.pw.Condition;
 import com.bft.pw.SelenideElement;
@@ -11,7 +20,12 @@ import com.bft.test.TestAssertions;
 
 import java.time.Duration;
 
-import static com.bft.pw.Selenide.*;
+import static com.bft.pw.Selenide.$;
+import static com.bft.pw.Selenide.$x;
+import static com.bft.pw.Selenide.open;
+import static com.bft.pw.Selenide.refresh;
+import static com.bft.pw.Selenide.sleep;
+import static com.bft.pw.Selenide.switchTo;
 /**
  * Page Object для главной страницы системы EVS
  * 
