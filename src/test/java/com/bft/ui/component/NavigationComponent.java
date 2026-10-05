@@ -69,6 +69,10 @@ public class NavigationComponent extends BaseComponent {
                 .named("Вкладка '" + tabName + "'")
                 .waitClickable()
                 .build();
+        if (!tab.isVisible()) {
+            // Меню модуля могло быть свёрнуто (после полноэкранных форм) — разворачиваем
+            ensureSidebarExpanded();
+        }
         tab.click();
         return this;
     }
@@ -78,7 +82,9 @@ public class NavigationComponent extends BaseComponent {
      * Нужно после действий, уводящих на полноэкранные формы (например, загрузка XML).
      */
     public NavigationComponent ensureSidebarExpanded() {
-        SmartElement switcher = ElementFactory.xpath("//i[contains(@class,'n2o-sidebar-switcher')]")
+        SmartElement switcher = ElementFactory
+                .xpath("//section[contains(@class,'header__sidebar-switcher')]"
+                        + "//i[contains(@class,'n2o-sidebar-switcher')]")
                 .named("Переключатель бокового меню")
                 .waitVisible()
                 .build();

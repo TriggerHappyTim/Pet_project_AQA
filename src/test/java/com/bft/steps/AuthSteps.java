@@ -284,7 +284,10 @@ public class AuthSteps {
                 logger.info("Авторизован по кэшированной сессии");
                 return true;
             }
-            logger.warn("Кэш сессии не был принят сервером");
+            // Важно: убираем отвергнутые cookie, иначе реальный логин пойдёт с ними и SSO зациклится
+            PwSession.context().clearCookies();
+            AuthSessionCache.clear();
+            logger.warn("Кэш сессии не был принят сервером — cookie очищены, кэш сброшен");
             return false;
         } catch (Exception e) {
             logger.warn("Не удалось авторизоваться по кэшу сессии: " + e.getMessage());
@@ -298,7 +301,8 @@ public class AuthSteps {
     private boolean looksAuthenticated(String base) {
         try {
             String url = PwSession.page().url();
-            if (url != null && (url.contains("sso-test") || url.contains("oauth2/authorize"))) {
+            if (url != null && (url.contains("sso-test") || url.contains("oauth2/authorize")
+                    || url.startsWith("chrome-error"))) {
                 return false;
             }
             String content = PwSession.page().content();

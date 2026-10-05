@@ -13,7 +13,10 @@ import com.bft.ui.component.TableComponent;
 import com.bft.ui.component.TextareaComponent;
 import com.bft.ui.core.ClickHelper;
 import com.bft.pw.Condition;
+import com.bft.pw.PwSession;
+import com.bft.pw.Selenide;
 import com.bft.pw.SelenideElement;
+import com.bft.pw.TimeoutException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.bft.test.TestAssertions;
@@ -797,6 +800,25 @@ public class MainPage {
     }
 
     /**
+     * Выбирает значение в фильтре-автокомплите по name-атрибуту input
+     * (например, reportType, documentChannel на странице «Список отчётов»).
+     *
+     * <p>Надёжнее поиска по метке: name-атрибуты стабильны, а метки могут быть обёрнуты
+     * в разные контейнеры (pgs-help-label и т.п.).
+     *
+     * @param inputName  значение атрибута name у input фильтра
+     * @param optionText текст опции для выбора (частичное совпадение)
+     * @return текущий экземпляр MainPage для цепочки вызовов
+     */
+    public MainPage selectFilterByInputName(String inputName, String optionText) {
+        SelenideElement input = $x(String.format("//input[@name='%s']", inputName));
+        input.click();
+        input.sendKeys(optionText);
+        $x("//li[contains(@id, 'option')][contains(., '" + optionText.replace("'", "''") + "')]").click();
+        return this;
+    }
+
+    /**
      * Выбирает значение в MUI селекте по span элементу
      * 
      * Использует SelectComponent для работы с Material-UI селектами через span.
@@ -1328,20 +1350,51 @@ public class MainPage {
      * @return текущий экземпляр MainPage для цепочки вызовов
      */
     public MainPage openReportUos() {
+        // Гарантируем, что мы на списке отчётов: после загрузки XML приложение остаётся на форме
+        if (!$x("//table//tbody/tr[1]").exists()) {
+            log.info("Таблица отчётов не найдена — переходим в список отчётов");
+            ensureSidebarExpanded().openTab("Отчеты").openTab("Список отчетов").waitTableToLoad();
+        }
+
+        int pagesBefore = PwSession.context().pages().size();
+        String listUrl = PwSession.driver().getCurrentUrl();
+
+        // Карточка отчёта открывается кликом по строке в новой вкладке; на медленном стенде
+        // срабатывает двойной клик — сначала пробуем клик, затем фолбэк.
         $x("//table//tbody/tr[1]").click();
-        // Wait for navigation to report detail page
+        boolean opened = waitForNewPage(pagesBefore, Duration.ofSeconds(10));
+        if (!opened) {
+            $x("//table//tbody/tr[1]").doubleClick();
+            opened = waitForNewPage(pagesBefore, Duration.ofSeconds(10));
+        }
+        if (opened) {
+            switchTo().window(PwSession.context().pages().size() - 1);
+            log.info("Карточка отчёта открыта в новой вкладке");
+        } else {
+            log.warn("Новая вкладка с карточкой не открылась — остаёмся в текущей");
+        }
+
+        // Ждём, что активная страница сменилась на карточку отчёта
         try {
-            $x("//*[contains(@class, 'report') or contains(@class, 'form') or contains(@class, 'detail')]")
-                    .shouldBe(Condition.visible, Duration.ofSeconds(10));
-        } catch (Exception e) {
-            // If specific element not found, wait for URL change or page load
-            try {
-                Thread.sleep(3000);
-            } catch (InterruptedException ie) {
-                Thread.currentThread().interrupt();
-            }
+            Selenide.Wait().withTimeout(Duration.ofSeconds(20))
+                    .until(d -> {
+                        String url = PwSession.driver().getCurrentUrl();
+                        return url != null && !url.equals(listUrl);
+                    });
+        } catch (TimeoutException e) {
+            log.warn("URL карточки отчёта не изменился: {}", PwSession.driver().getCurrentUrl());
         }
         return this;
+    }
+
+    private boolean waitForNewPage(int pagesBefore, Duration timeout) {
+        try {
+            Selenide.Wait().withTimeout(timeout)
+                    .until(d -> PwSession.context().pages().size() > pagesBefore);
+            return true;
+        } catch (TimeoutException e) {
+            return false;
+        }
     }
 
     /**

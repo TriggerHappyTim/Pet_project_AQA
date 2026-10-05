@@ -130,6 +130,17 @@ public final class AuthSessionCache {
         return null;
     }
 
+    /**
+     * Удаляет кэш сессии (например, если сервер отверг сохранённую сессию).
+     */
+    public static void clear() {
+        try {
+            Files.deleteIfExists(file().toPath());
+        } catch (Exception ignored) {
+            // кэш — не критичен
+        }
+    }
+
     private static File file() {
         String path = System.getProperty(FILE_KEY);
         if (path == null || path.isEmpty()) {

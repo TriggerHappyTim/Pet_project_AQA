@@ -31,6 +31,9 @@ docker/cache/
 # Playwright E2E tests (not used in this project)
 playwright-e2e/
 
+# Playwright MCP artifacts
+.playwright-mcp/
+
 # Local artifacts (logs, patches, session dumps)
 *.log
 *.patch
