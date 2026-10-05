@@ -1,0 +1,24 @@
+# Normalize line endings across platforms (Windows devs + Linux CI)
+* text=auto
+
+# Shell scripts must stay LF for Linux CI
+*.sh text eol=lf
+
+# Windows scripts stay CRLF
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+
+# Binary-ish files must not be touched
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.zip binary
+*.jar binary
+*.crx binary
+*.xpi binary
+*.p12 binary
+*.pfx binary
+*.keystore binary

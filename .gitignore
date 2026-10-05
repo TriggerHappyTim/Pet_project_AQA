@@ -30,3 +30,11 @@ docker/cache/
 
 # Playwright E2E tests (not used in this project)
 playwright-e2e/
+
+# Local artifacts (logs, patches, session dumps)
+*.log
+*.patch
+local_history*
+test-run-*.log
+*.jfr
+hs_err_pid*.log
