@@ -31,6 +31,8 @@ mvn -B test -Dtest="Efs1#efs_szv_td"
 | Hard-waits ratchet | `bash scripts/check-hard-waits.sh` | новые `Thread.sleep` / `sleep()` в тестах |
 
 - Checkstyle **привязан к фазе `validate`** и валит сборку при нарушениях. Нарушений сейчас 0 — держим планку.
+- Те же гейты автоматически гоняются в **GitLab CI** (job `quality`, стадия `.pre`, блокирующий)
+  и в **GitHub Actions** (`.github/workflows/quality.yml`).
 - Hard waits запрещены в тестовом коде, кроме инфраструктуры ожиданий (`com.bft.pw.*`, `SmartWaits`).
   Текущие вхождения заморожены в `scripts/hard-waits-baseline.txt`; файл можно только **уменьшать**.
   Если hard wait временно необходим — обнови baseline (`scripts/check-hard-waits.sh --update`)

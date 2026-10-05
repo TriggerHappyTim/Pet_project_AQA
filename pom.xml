@@ -238,7 +238,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${maven.surifire.plugin.version}</version>
                 <configuration>
-                    <testFailureIgnore>true</testFailureIgnore>
+                    <testFailureIgnore>false</testFailureIgnore>
                     <useSystemClassLoader>true</useSystemClassLoader>
                     <argLine>
                         -javaagent:"${settings.localRepository}/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar"

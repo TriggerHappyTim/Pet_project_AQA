@@ -332,6 +332,7 @@ deploy report:
   needs:
     - job: maven test
       artifacts: true
+  when: always
   allow_failure: true
   variables:
     ALLURE_SERVER: "allure-server.bft.local"
@@ -376,6 +377,7 @@ send_notif:
   needs:
     - job: deploy report
       artifacts: true
+  when: always
   allow_failure: true
   script:
     - |

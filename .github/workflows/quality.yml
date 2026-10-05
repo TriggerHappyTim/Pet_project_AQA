@@ -1,0 +1,30 @@
+name: Quality gates
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 11
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "11"
+          cache: maven
+
+      # Checkstyle bound to validate phase (test sources included, fail on violation)
+      - name: Checkstyle
+        run: mvn -B -DskipTests validate
+
+      # Ratchet: no new Thread.sleep / sleep() in test code
+      - name: Hard-waits ratchet
+        run: bash scripts/check-hard-waits.sh
