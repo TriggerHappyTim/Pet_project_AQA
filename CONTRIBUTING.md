@@ -6,6 +6,9 @@
 ## Быстрый старт
 
 ```bash
+# все quality-гейты разом (Checkstyle + hard-waits)
+bash scripts/verify-quality.sh
+
 # компиляция + статический анализ
 mvn -B -DskipTests test-compile
 
@@ -74,6 +77,20 @@ mvn -B test -Dtest="Efs1#efs_szv_td"
   `@DisabledByIssue("TICKET-123")` (есть готовые JUnit-расширения).
 - Инфраструктурные проблемы — `@DisabledByInfrastructure`.
 - `FlakyTestDetector` помогает собирать статистику; не игнорируй его отчёты.
+  Подключается точечно: `@ExtendWith(FlakyTestDetector.class)` на проблемном классе.
+
+## Параллелизм (пилот)
+
+Пока тесты идут последовательно. Пилотный запуск — форками JVM (каждый форк = свой браузер,
+изоляция сессии уже на уровне теста):
+
+```bash
+# smoke ЛК Страхователя в 2 форка
+mvn -B test -Dgroups="lk-insurer & smoke" -DforkCount=2
+```
+
+Перед расширением параллелизма убедись, что тесты не делят данные: уникальные данные
+на тест, без статических мутабельных полей, cleanup после каждого теста.
 
 ## Добавление нового ЛК
 
