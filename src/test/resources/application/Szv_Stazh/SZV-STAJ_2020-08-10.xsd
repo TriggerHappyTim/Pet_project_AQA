@@ -1,0 +1,341 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema version="2.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://пф.рф/СЗВ-СТАЖ/2020-08-10" xmlns:ВС2="http://пф.рф/ВС/типы/2017-10-23" xmlns:АФ5="http://пф.рф/АФ/2018-12-07" xmlns:УТ2="http://пф.рф/УТ/2017-08-21" xmlns:ИС5="http://пф.рф/ВС/ИС/2020-08-10" targetNamespace="http://пф.рф/СЗВ-СТАЖ/2020-08-10" elementFormDefault="qualified">
+	<xs:import namespace="http://пф.рф/УТ/2017-08-21" schemaLocation="../../../УнифТипы_2017-08-21.xsd" />
+	<xs:import namespace="http://пф.рф/АФ/2018-12-07" schemaLocation="../../../ТипыАФ_2018-12-07.xsd" />
+	<xs:import namespace="http://пф.рф/ВС/типы/2017-10-23" schemaLocation="../../ТипыВС_2017-10-23.xsd" />
+	<xs:import namespace="http://пф.рф/ВС/ИС/2020-08-10" schemaLocation="ТипыИС_2020-08-10.xsd" />
+	<xs:import namespace="http://www.w3.org/2000/09/xmldsig#" schemaLocation="../../../xmldsig_core_schema.xsd" />
+	<xs:annotation>
+		<xs:documentation>СЗВ-СТАЖ Сведения о страховом стаже застрахованного лица</xs:documentation>
+	</xs:annotation>
+	<xs:element name="ЭДПФР">
+		<xs:annotation>
+			<xs:documentation>Корневой элемент. Электронный документ СЗВ-СТАЖ (Сведения о страховом стаже застрахованного лица). Содержит сведения самого документа и служебную информацию об электронном документе.</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:all>
+				<xs:element name="СлужебнаяИнформация" type="АФ5:ТипСлужебнаяИнформацияППЭД">
+					<xs:annotation>
+						<xs:documentation>Служебная информация об электронном документе.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="ОДВ-1">
+					<xs:annotation>
+						<xs:documentation>Форма ОДВ-1 (ОДВ-1).</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Тип">
+								<xs:annotation>
+									<xs:documentation>Тип сведений ОДВ-1. Возможные значения:
+									0 - исходная</xs:documentation>
+								</xs:annotation>
+								<xs:simpleType>
+									<xs:restriction base="xs:integer">
+										<xs:enumeration value="0" />
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="Страхователь" type="ИС5:ТипСтраховательИСРегНомер2">
+								<xs:annotation>
+									<xs:documentation>Данные о страхователе (плательщике страховых взносов).</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="ОтчетныйПериод" type="ОтчетныйПериодСЗВ-СТАЖ">
+								<xs:annotation>
+									<xs:documentation>Отчетный период, за который представляются сведения.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="КоличествоЗЛ" type="xs:positiveInteger">
+								<xs:annotation>
+									<xs:documentation>Количество застрахованных лиц, на которых представлены сведения СЗВ-СТАЖ, чел.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="ОснованияДНП" minOccurs="0" maxOccurs="unbounded">
+								<xs:annotation>
+									<xs:documentation>Блок сведений об основании для отражения данных о периодах работы застрахованного лица в условиях, дающих право на досрочное назначение пенсии в соответствии со статьями 30 и 31 Федерального закона от 28.12.2013 № 400–ФЗ «О страховых пенсиях».</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="Основание" maxOccurs="unbounded">
+											<xs:annotation>
+												<xs:documentation>Блок сведений об основании для отражения данных о периодах работы застрахованного лица в условиях, дающих право на досрочное назначение пенсии в соответствии со статьями 30 и 31 Федерального закона от 28.12.2013 № 400–ФЗ «О страховых пенсиях»</xs:documentation>
+											</xs:annotation>
+											<xs:complexType>
+												<xs:sequence>
+													<xs:group ref="ИС5:ГрОснованиеДНП">
+														<xs:annotation>
+															<xs:documentation>Группа элементов со сведениями об основании для отражения данных о периодах работы застрахованного лица в условиях, дающих право на досрочное назначение пенсии в соответствии со статьями 30 и 31 Федерального закона от 28.12.2013 № 400–ФЗ «О страховых пенсиях».</xs:documentation>
+														</xs:annotation>
+													</xs:group>
+													<xs:element name="ОУТ" maxOccurs="unbounded">
+														<xs:annotation>
+															<xs:documentation>Сведения об особых условиях труда: код особых условий труда или код основания досрочного назначения пенсии и код профессии в соответствии со Списками 1 и 2 производств, работ, профессий, должностей и показателей, дающих право на льготное обеспечение, утвержденными Постановлением Кабинета Министров СССР от 26.01.1991 № 10</xs:documentation>
+														</xs:annotation>
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="Код">
+																	<xs:annotation>
+																		<xs:documentation>Код особых условий труда или код основания досрочного назначения пенсии</xs:documentation>
+																	</xs:annotation>
+																	<xs:simpleType>
+																		<xs:restriction base="xs:normalizedString">
+																			<xs:enumeration value="27-1" />
+																			<xs:enumeration value="27-2" />
+																			<xs:enumeration value="27-3" />
+																			<xs:enumeration value="27-4" />
+																			<xs:enumeration value="27-5" />
+																			<xs:enumeration value="27-6" />
+																			<xs:enumeration value="27-7" />
+																			<xs:enumeration value="27-8" />
+																			<xs:enumeration value="27-9" />
+																			<xs:enumeration value="27-10" />
+																			<xs:enumeration value="27-ОС" />
+																			<xs:enumeration value="27-ПЖ" />
+																			<xs:enumeration value="28-СЕВ" />
+																			<xs:enumeration value="27-11ГР" />
+																			<xs:enumeration value="27-11ВП" />
+																			<xs:enumeration value="27-12" />
+																			<xs:enumeration value="27-СП" />
+																			<xs:enumeration value="27-ПД" />
+																			<xs:enumeration value="27-ПДРК" />
+																			<xs:enumeration value="27-ГД" />
+																			<xs:enumeration value="27-СМ" />
+																			<xs:enumeration value="27-ГДХР" />
+																			<xs:enumeration value="27-СМХР" />
+																			<xs:enumeration value="ТВОРЧ15" />
+																			<xs:enumeration value="ТВОРЧ20" />
+																			<xs:enumeration value="ТВОРЧ25" />
+																			<xs:enumeration value="ТВОРЧ30" />
+																			<xs:enumeration value="САМОЛЕТ" />
+																			<xs:enumeration value="СПЕЦАВ" />
+																			<xs:enumeration value="СПАСАВ" />
+																			<xs:enumeration value="УЧЛЕТ" />
+																			<xs:enumeration value="ВЫСШПИЛ" />
+																			<xs:enumeration value="НОРМАПР" />
+																			<xs:enumeration value="НОРМСП" />
+																			<xs:enumeration value="РЕАКТИВН" />
+																			<xs:enumeration value="ЛЕТРАБ" />
+																			<xs:enumeration value="ЛЕТИСП" />
+																			<xs:enumeration value="ИТСИСП" />
+																			<xs:enumeration value="ИТСМАВ" />
+																			<xs:enumeration value="ИНСПЕКТ" />
+																			<xs:enumeration value="27-14" />
+																			<xs:enumeration value="27-15" />
+																		</xs:restriction>
+																	</xs:simpleType>
+																</xs:element>
+																<xs:element name="ПозицияСписка" minOccurs="0" type="УТ2:ТипНепустаяСтрока">
+																	<xs:annotation>
+																		<xs:documentation>Код профессии в соответствии со Списками 1 и 2 производств, работ, профессий, должностей и показателей, дающих право на льготное обеспечение, утвержденными Постановлением Кабинета Министров СССР от 26.01.1991 № 10</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:group ref="ИС5:ГрИтогоДНП">
+											<xs:annotation>
+												<xs:documentation>Общее количество рабочих мест и фактически работающих в особых условиях труда по штату</xs:documentation>
+											</xs:annotation>
+										</xs:group>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="Руководитель">
+								<xs:annotation>
+									<xs:documentation>Должность и ФИО руководителя организации-страхователя.</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="Должность" type="УТ2:ТипНепустаяСтрока">
+											<xs:annotation>
+												<xs:documentation>Наименование должности руководителя организации-страхователя.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="ФИО" type="УТ2:ТипФИО">
+											<xs:annotation>
+												<xs:documentation>ФИО руководителя организации-страхователя.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="ДатаЗаполнения" type="xs:date">
+								<xs:annotation>
+									<xs:documentation>Дата заполнения документа.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="СЗВ-СТАЖ">
+					<xs:annotation>
+						<xs:documentation>Сведения о страховом стаже застрахованного лица</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Страхователь" type="ИС5:ТипСтраховательИСРегНомер2">
+								<xs:annotation>
+									<xs:documentation>Данные о страхователе (плательщике страховых взносов).</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Тип">
+								<xs:annotation>
+									<xs:documentation>Тип сведений. Возможные значения:
+									0 - исходная,
+									1 - дополняющая,
+									2 - назначение пенсии.</xs:documentation>
+								</xs:annotation>
+								<xs:simpleType>
+									<xs:restriction base="xs:integer">
+										<xs:enumeration value="0" />
+										<xs:enumeration value="1" />
+										<xs:enumeration value="2" />
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="ОтчетныйПериод" type="ОтчетныйПериодСЗВ-СТАЖ">
+								<xs:annotation>
+									<xs:documentation>Отчетный период, за который представляются сведения.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="ЗЛ" maxOccurs="unbounded">
+								<xs:annotation>
+									<xs:documentation>Сведения о периодах работы по одному застрахованному лицу.</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="ФИО" type="УТ2:ТипФИО">
+											<xs:annotation>
+												<xs:documentation>Фамилия, имя, отчество застрахованного лица, на которого представляются данные, без сокращений, в соответствии с документом, удостоверяющим личность.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="СНИЛС" type="УТ2:ТипСтраховойНомер">
+											<xs:annotation>
+												<xs:documentation>Страховой номер индивидуального лицевого счета застрахованного лица в системе персонифицированного учета СФР.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="СтажевыйПериод" maxOccurs="unbounded">
+											<xs:annotation>
+												<xs:documentation>Блок сведений о корректировке периодов работы застрахованного лица.</xs:documentation>
+											</xs:annotation>
+											<xs:complexType>
+												<xs:complexContent>
+													<xs:extension base="ИС5:ТипСтажевыйПериод2017">
+														<xs:sequence>
+															<xs:element name="КатегорияЗЛ" minOccurs="0">
+																<xs:annotation>
+																	<xs:documentation>Код категории застрахованного лица «БЕЗР» (для застрахованного лица, признанного в установленном законодательством Российской Федерации порядке безработным)</xs:documentation>
+																</xs:annotation>
+																<xs:simpleType>
+																	<xs:restriction base="ИС5:ТипКатегорияЗЛ">
+																		<xs:enumeration value="БЕЗР" />
+																	</xs:restriction>
+																</xs:simpleType>
+															</xs:element>
+														</xs:sequence>
+													</xs:extension>
+												</xs:complexContent>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="ДатаУвольнения" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>Сведения об увольнении застрахованного лица 31 декабря. Заполняется в виде даты: «XXXX-12-31» (31 декабря), где ХХХХ - год отчетного периода</xs:documentation>
+											</xs:annotation>
+											<xs:simpleType>
+												<xs:restriction base="xs:date">
+													<xs:pattern value="2\d{3}-12-31" />
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="СВ" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Сведения о начислении страховых взносов. Заполняется в случае если значение поля «Тип сведений» = 'Назначение пенсии'</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="НачисленыНаОПС" type="xs:boolean">
+											<xs:annotation>
+												<xs:documentation>Сведения о начислении страховых взносов на обязательное пенсионное страхование за период, указанный в графе "Период работы". Заполняется в случае если значение поля «Тип сведений» = 'Назначение пенсии'. Возможные значения:
+												 1 - да,
+												 0 - нет.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="НачисленыПоДТ" type="xs:boolean">
+											<xs:annotation>
+												<xs:documentation>Сведения о начислении страховых взносов по дополнительному тарифу за период, указанный в графе "Период работы". Заполняется в случае если значение поля «Тип сведений» = 'Назначение пенсии'. Возможные значения:
+												 1 - да,
+												 0 - нет.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="Уплата" minOccurs="0" maxOccurs="unbounded">
+								<xs:annotation>
+									<xs:documentation>Блок сведений об уплаченных пенсионных взносах в соответствии с пенсионными договорами досрочного негосударственного пенсионного обеспечения. Заполняется в случае если значение поля «Тип сведений» = 'Назначение пенсии'</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="Период" type="УТ2:ТипВременнойПериод">
+											<xs:annotation>
+												<xs:documentation>Период, за который предоставляются сведений об уплате пенсионных взносов</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="Уплачено" type="xs:boolean">
+											<xs:annotation>
+												<xs:documentation>Отметка об уплате. Возможные значения:
+												 1 - да,
+												 0 - нет.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element ref="Signature" xmlns="http://www.w3.org/2000/09/xmldsig#" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Электронная подпись (ЭП). Электронный документ, для которого законодательством Российской Федерации предусмотрена юридически значимая подпись, должен быть подписан усиленной квалифицированной электронной подписью в соответствии со спецификацией XMLDSig.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:all>
+		</xs:complexType>
+	</xs:element>
+	<xs:complexType name="ОтчетныйПериодСЗВ-СТАЖ">
+		<xs:annotation>
+			<xs:documentation>Отчетный период, за который представляются сведения СЗВ-СТАЖ.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Код" default="0">
+				<xs:annotation>
+					<xs:documentation>Код отчетного периода. Допустимое значение:
+												0 - год</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:integer">
+						<xs:enumeration value="0" />
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="Год">
+				<xs:annotation>
+					<xs:documentation>Год отчетного периода</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:gYear">
+						<xs:minInclusive value="2017" />
+						<xs:maxInclusive value="2022" />
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

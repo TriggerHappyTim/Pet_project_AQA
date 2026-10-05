@@ -19,7 +19,8 @@ public enum ReportFormType {
     SZVISH("СЗВ-ИСХ"),
     SZVDSO("СЗВ-ДСО"),
     ODV1("ОДВ-1"),
-    EFS1("ЕФС-1");
+    EFS1("ЕФС-1"),
+    F4FSS("4-ФСС");
 
     private final String displayName;
 

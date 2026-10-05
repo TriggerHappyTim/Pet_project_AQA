@@ -65,7 +65,7 @@ public class NavigationComponent extends BaseComponent {
      */
     public NavigationComponent openTab(String tabName) {
         logger.info("Переходим на вкладку '{}' в компоненте: {}", tabName, componentName);
-        SmartElement tab = ElementFactory.xpath("//*[starts-with(@class,'sidebar__item') and text() = '" + tabName + "']")
+        SmartElement tab = ElementFactory.xpath("//*[starts-with(@class,'sidebar__item')][normalize-space(.) = '" + tabName + "']")
                 .named("Вкладка '" + tabName + "'")
                 .waitClickable()
                 .build();

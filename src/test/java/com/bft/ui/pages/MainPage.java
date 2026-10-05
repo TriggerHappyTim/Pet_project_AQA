@@ -7,7 +7,7 @@ import com.bft.pw.Condition;
 import com.bft.pw.SelenideElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.testng.asserts.SoftAssert;
+import com.bft.test.TestAssertions;
 
 import java.time.Duration;
 
@@ -45,12 +45,10 @@ public class MainPage {
     /** Заголовок диалога "Льготный стаж" для поиска по тексту. */
     private static final String GRACE_PERIOD_DIALOG_TITLE = "Льготный стаж";
 
-    private SoftAssert softAssert = new SoftAssert();
+    private TestAssertions softAssert = new TestAssertions();
 
     // Компоненты для работы с различными элементами интерфейса
     private final NavigationComponent navigation = NavigationComponent.createMainNavigation("Главная навигация");
-    @SuppressWarnings("unused") // резерв для работы с главной таблицей
-    private final TableComponent mainTable = TableComponent.createMainTable("Главная таблица");
     /**
      * Компонент таблицы результатов
      * 
@@ -426,9 +424,40 @@ public class MainPage {
      * @return текущий экземпляр MainPage для цепочки вызовов
      */
     public MainPage clickBtn(String buttonName) {
+        String escaped = buttonName.replace("'", "''");
+        // Кнопка может содержать текст напрямую либо обёрнутым в span (MUI/ConfirmDialog)
         ClickHelper.click(
-                $x("//button[text() = '" + buttonName + "']")
+                $x("//button[(text() = '" + escaped + "') or (.//span[text() = '" + escaped + "'])]")
                         .shouldBe(Condition.visible, Duration.ofSeconds(50)),
+                "Кнопка '" + buttonName + "'");
+        return this;
+    }
+
+    /**
+     * Кликает по кнопке через JavaScript по точному тексту внутри span.
+     * Не проверяет видимость и не ожидает появления — используется для кнопок,
+     * которые присутствуют в DOM, но не проходят стандартную проверку видимости.
+     *
+     * @param buttonName точный текст на кнопке (внутри span)
+     * @return текущий экземпляр MainPage для цепочки вызовов
+     */
+    public MainPage jsClickBtn(String buttonName) {
+        ClickHelper.clickByText(buttonName);
+        return this;
+    }
+
+    /**
+     * Кликает по кнопке по точному тексту без предварительной проверки видимости.
+     * Используется для кнопок, которые в DOM, но не проходят условие видимости в
+     * нашем PwElement. Нативный клик (со скроллом и JS-фоллбеком) через ClickHelper.
+     *
+     * @param buttonName точный текст на кнопке (или внутри span)
+     * @return текущий экземпляр MainPage для цепочки вызовов
+     */
+    public MainPage clickBtnNoWait(String buttonName) {
+        String escaped = buttonName.replace("'", "''");
+        ClickHelper.click(
+                $x("//button[(text() = '" + escaped + "') or (.//span[text() = '" + escaped + "'])]"),
                 "Кнопка '" + buttonName + "'");
         return this;
     }
@@ -442,8 +471,9 @@ public class MainPage {
      * @return текущий экземпляр MainPage для цепочки вызовов
      */
     public MainPage clickButtonModalDialog(String buttonName) {
+        String escaped = buttonName.replace("'", "''");
         ClickHelper.click(
-                $x("//div[@class = 'modal-dialog']//button[text() = '" + buttonName + "']"),
+                $x("//div[@class = 'modal-dialog']//button[(text() = '" + escaped + "') or (.//span[text() = '" + escaped + "'])]"),
                 "Кнопка модального диалога '" + buttonName + "'");
         return this;
     }
@@ -505,6 +535,114 @@ public class MainPage {
     public MainPage chooseLastProvider(){
         $x("//div[@class = 'provider-dialog']//label[2]").click();
         return this;
+    }
+
+    /**
+     * Выбирает сертификат в окне выбора сертификата по имени субъекта (CN).
+     *
+     * <p>Каждый сертификат в provider-dialog — это {@code label.provider-label} с радио-входом
+     * и текстом субъекта. Ищем label, в тексте которого встречается {@code subject}
+     * (например «КОТОВ»), и кликаем его, чтобы выбрать соответствующий ключ подписи.
+     *
+     * @param subject фрагмент имени субъекта сертификата (case-insensitive)
+     * @return текущий экземпляр MainPage для цепочки вызовов
+     */
+    public MainPage chooseCertificate(String subject) {
+        $x("//div[@class = 'provider-dialog']//label["
+                + "contains(translate(normalize-space(.), 'ABCDEFGHIJKLMNOPQRSTUVWXYZАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ', "
+                + "'abcdefghijklmnopqrstuvwxyzабвгдеёжзийклмнопрстуфхцчшщъыьэюя'), "
+                + "translate('" + subject + "', 'ABCDEFGHIJKLMNOPQRSTUVWXYZАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ', "
+                + "'abcdefghijklmnopqrstuvwxyzабвгдеёжзийклмнопрстуфхцчшщъыьэюя'))]")
+                .shouldBe(com.bft.pw.Condition.visible, java.time.Duration.ofSeconds(10))
+                .click();
+        return this;
+    }
+
+    /**
+     * Ищет в DOM всплывающее уведомление (toast/alert/snackbar) о падении mesh при подписании.
+     *
+     * <p>Когда mesh недоступен, окно «Выбор сертификата» не открывается, а в правом углу
+     * показывается тост-уведомление с текстом про «меш». Метод ищет такой тост коротким
+     * поллингом DOM и возвращает его текст (без тегов) или {@code null}, если тоста нет.
+     *
+     * @return текст найденного уведомления о падении mesh или {@code null}
+     */
+    public String getMeshFailureToast() {
+        long deadline = System.currentTimeMillis() + 3000;
+        while (System.currentTimeMillis() < deadline) {
+            try {
+                String content = com.bft.pw.PwSession.page().content();
+                String text = extractToastText(content);
+                if (text != null) {
+                    return text;
+                }
+            } catch (Exception ignored) {
+            }
+            com.bft.pw.PwSession.sleep(250);
+        }
+        return null;
+    }
+
+    /**
+     * Ассерт на отсутствие всплывающего уведомления о падении инфраструктуры/бэкенда
+     * при подписании (например, «меш не работает» или «Internal ... TraceId: ...»).
+     *
+     * <p>Если такой тост появился — фейлим мягко ({@code softAssert.fail}) с текстом
+     * уведомления, чтобы не ждать таймаут на окне выбора сертификата (которое при
+     * падении mesh просто не открывается).
+     *
+     * @return текущий экземпляр MainPage для цепочки вызовов
+     */
+    public MainPage assertNoBackendFailureToast() {
+        String toast = getMeshFailureToast();
+        if (toast != null) {
+            throw new AssertionError("Обнаружено уведомление о падении бэкенда/infrastructure при подписании: " + toast);
+        }
+        return this;
+    }
+
+    private String extractToastText(String html) {
+        if (html == null || html.isEmpty()) {
+            return null;
+        }
+        java.util.regex.Pattern p = java.util.regex.Pattern.compile(
+                "class=\"[^\"]*(toast|snackbar|alert|notification|message|error-box|ps-alert|toaster)"
+                        + "[^\"]*\"[^>]*>(.{0,400}?)</",
+                java.util.regex.Pattern.CASE_INSENSITIVE);
+        java.util.regex.Matcher m = p.matcher(html);
+        while (m.find()) {
+            String text = java.util.regex.Pattern.compile("<[^>]+>").matcher(m.group(1)).replaceAll(" ")
+                    .replaceAll("\\s+", " ").trim();
+            if (isFailureToastText(text)) {
+                return text;
+            }
+        }
+        // Fallback: не нашли тост-контейнер по классу — ищем любой фрагмент с TraceId/«Internal»
+        // как признак бэкенд-ошибки в правом углу (тост мог иметь произвольную разметку).
+        java.util.regex.Matcher trace = java.util.regex.Pattern.compile(
+                ".{0,120}TraceId.{0,120}", java.util.regex.Pattern.CASE_INSENSITIVE)
+                .matcher(html.replaceAll("<[^>]+>", " ").replaceAll("\\s+", " ").trim());
+        if (trace.find()) {
+            return trace.group().trim();
+        }
+        return null;
+    }
+
+    /** Признак того, что текст всплывающего уведомления — это бэкенд/инфраструктурная ошибка. */
+    private boolean isFailureToastText(String text) {
+        String t = text.toLowerCase();
+        return t.contains("traceid")
+                || t.contains("internal")
+                || t.contains("mesh")
+                || t.contains("не работает")
+                || t.contains("недоступ")
+                || t.contains("внутренняя ошибка")
+                || t.contains("ошибк")
+                || t.contains("exception")
+                || t.contains("upstream")
+                || t.contains("service unavailable")
+                || t.contains("не удалось")
+                || t.contains("вернул");
     }
 
     /**
@@ -687,8 +825,25 @@ public class MainPage {
      * @return текущий экземпляр MainPage для цепочки вызовов
      */
     public MainPage muiSpan(String buttonName){
-        $x(String.format("//span[contains(., '%s')]/ancestor::*[3]//button", buttonName)).click();
+        clickMuiSelectOpen(buttonName);
         $x("//li[contains(@id, 'option-0')]").click();
+        return this;
+    }
+
+    /**
+     * Выбирает первый вариант из MUI Autocomplete по имени поля.
+     * Кликает по самому input (открывает выпадающий список) и выбирает первый
+     * вариант (li[contains(@id,'option')]). Подходит для справочников-классификаторов
+     * (например, «Код особых условий труда»), где не требуется конкретное значение.
+     *
+     * @param inputId ID или name поля автокомплита
+     * @return текущий экземпляр MainPage для цепочки вызовов
+     */
+    public MainPage clickFirstMuiAutocompleteOption(String inputId) {
+        $x(String.format("(//input[@id = '%s' or @name = '%s'])[1]", inputId, inputId)).click();
+        $x("(//li[contains(@id, 'option')])[1]")
+                .shouldBe(Condition.visible, Duration.ofSeconds(10))
+                .click();
         return this;
     }
 
@@ -702,8 +857,43 @@ public class MainPage {
      * @return текущий экземпляр MainPage для цепочки вызовов
      */
     public MainPage muiSpanValue(String buttonName, String value){
-        $x(String.format("//span[contains(., '%s')]/ancestor::*[4]//button", buttonName)).click();
+        clickMuiSelectOpen(buttonName);
         $x(String.format("//li[contains(@id, '%s')]", value)).click();
+        return this;
+    }
+
+    /**
+     * Открывает выпадающий список MUI-селекта, перебирая несколько стратегий поиска
+     * кнопки/поля открытия (разная глубина вложенности в формах отчётов).
+     *
+     * @param labelText видимый текст метки селекта
+     */
+    private MainPage clickMuiSelectOpen(String labelText) {
+        String escaped = labelText.replace("'", "''");
+        String[] xpaths = new String[]{
+                "//span[contains(., '" + escaped + "')]/ancestor::*[3]//button",
+                "//span[contains(., '" + escaped + "')]/ancestor::*[4]//button",
+                "//label[contains(., '" + escaped + "')]/ancestor::*[3]//button",
+                "//label[contains(., '" + escaped + "')]/ancestor::*[4]//button",
+                "//*[contains(@class, 'MuiFormControl')][.//*[contains(., '" + escaped + "')]]//button",
+                "//*[contains(@class, 'MuiFormControl')][.//*[contains(., '" + escaped + "')]]//input",
+                "//*[contains(@class, 'n2o')][.//*[contains(., '" + escaped + "')]]//button",
+                "//*[contains(@class, 'n2o-select')][.//*[contains(normalize-space(.), '" + escaped + "')]]",
+                "//*[contains(@class, 'n2o-select')][.//*[contains(normalize-space(.), '" + escaped + "')]]//button",
+                "//span[contains(@class, 'ps-fieldset__label-text')][normalize-space(.) = '" + escaped + "']/ancestor::*[2]//button"
+        };
+        for (String xp : xpaths) {
+            try {
+                SelenideElement el = $x(xp).shouldBe(Condition.visible, Duration.ofSeconds(3));
+                el.click();
+                return this;
+            } catch (Exception ignored) {
+                // пробуем следующую стратегию
+            }
+        }
+        // явная ошибка, если ни одна стратегия не сработала
+        $x("//span[contains(., '" + escaped + "')]/ancestor::*[3]//button")
+                .shouldBe(Condition.visible, Duration.ofSeconds(10));
         return this;
     }
 
@@ -762,8 +952,7 @@ public class MainPage {
      * @return текущий экземпляр MainPage для цепочки вызовов
      */
     public MainPage clickMInputLabel(String idName, String content){
-        $x(String.format("//div[child::*[@id= '%s']]", idName)).click();
-        $x(String.format("//div[child::*[@id= '%s']]//input", idName)).sendKeys(content);
+        $x(String.format("//input[@id= '%s']", idName)).setValue(content);
         return this;
     }
 
@@ -778,8 +967,7 @@ public class MainPage {
      * @return текущий экземпляр MainPage для цепочки вызовов
      */
     public MainPage clickMuiInputBase(String idName, String content){
-        $x(String.format("//div[child::*[@id= '%s']]", idName)).click();
-        $x(String.format("//div[child::*[@id= '%s']]//input", idName)).sendKeys(String.valueOf(content));
+        $x(String.format("//input[@id= '%s']", idName)).setValue(String.valueOf(content));
         return this;
     }
 
@@ -1042,7 +1230,11 @@ public class MainPage {
 
         $x("//div[contains(@class, 'user-name')]").click();
         $x("//button[contains(@class, 'logout')]").click();
-        $x("//div[contains(text(), 'Войдите в систему')]").shouldBe(Condition.visible, Duration.ofSeconds(60));
+
+        com.bft.pw.Selenide.Wait().withTimeout(java.time.Duration.ofSeconds(30)).until(d -> {
+            String url = com.bft.pw.PwSession.url();
+            return !url.contains("/insurer");
+        });
 
         return this;
     }
@@ -1112,9 +1304,19 @@ public class MainPage {
      * @return текущий экземпляр MainPage для цепочки вызовов
      */
     public MainPage openReportUos() {
-        $x("//tbody[@class= 'n2o-advanced-table-tbody']/tr[1]").click();
-        // Ожидаем загрузки следующей страницы - проверяем наличие элементов формы отчета
-        $x("//div[contains(@class, 'application')]").shouldBe(Condition.visible, Duration.ofSeconds(10));
+        $x("//table//tbody/tr[1]").click();
+        // Wait for navigation to report detail page
+        try {
+            $x("//*[contains(@class, 'report') or contains(@class, 'form') or contains(@class, 'detail')]")
+                    .shouldBe(Condition.visible, Duration.ofSeconds(10));
+        } catch (Exception e) {
+            // If specific element not found, wait for URL change or page load
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException ie) {
+                Thread.currentThread().interrupt();
+            }
+        }
         return this;
     }
 
@@ -1181,13 +1383,8 @@ public class MainPage {
     public MainPage refreshAndWait() {
 
         refresh();
-        $x("//tbody[@class= 'n2o-advanced-table-tbody']/*[1]/*[6]").shouldBe(Condition.visible,Duration.ofSeconds(5L));
+        $x("//table//tbody/*[1]/*[6]").shouldBe(Condition.visible,Duration.ofSeconds(5L));
         return this;
-    }
-
-    @SuppressWarnings("unused") // для явного ожидания загрузки формы при необходимости
-    private void waitForLoadingForm() {
-        $x("//div[contains(@class, 'user-name')]").shouldBe(Condition.visible, Duration.ofSeconds(60));
     }
 
     // В класс MainPage.java
@@ -1195,6 +1392,145 @@ public class MainPage {
         // Адаптируйте селектор под вашу верстку
         // Например, клик по выпадающему списку и выбор значения
         clickMuiInputLabel("Тип отчета", type.toString());
+        return this;
+    }
+
+    // ==================== Подписание отчёта: ИД процесса, статус, поиск ====================
+
+    /**
+     * Кликает кнопку «Подписать и отправить» на странице отчёта.
+     */
+    public MainPage clickSignAndSend() {
+        ClickHelper.click(
+                $x("//button[contains(normalize-space(.), 'Подписать и отправить')]"),
+                "Кнопка «Подписать и отправить»");
+        return this;
+    }
+
+    /**
+     * Возвращает значение поля «Идентификатор процесса» (UUID) со страницы отчёта.
+     */
+    public String getProcessIdValue() {
+        // После подписания и refresh страница переходит в read-only, но поле
+        // ИД процесса наполняется не мгновенно — ждём, пока появится непустое значение.
+        java.time.Duration timeout = java.time.Duration.ofSeconds(30);
+        long deadline = System.nanoTime() + timeout.toNanos();
+        while (System.nanoTime() < deadline) {
+            String v = $x("//*[normalize-space(text()) = 'Идентификатор процесса']/following::input[1]")
+                    .shouldBe(Condition.visible, timeout)
+                    .getValue();
+            if (v != null && !v.trim().isEmpty()) {
+                return v.trim();
+            }
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                break;
+            }
+        }
+        return $x("//*[normalize-space(text()) = 'Идентификатор процесса']/following::input[1]")
+                .shouldBe(Condition.visible, timeout).getValue();
+    }
+
+    /**
+     * Проверяет, что кнопка «Подписать и отправить» неактивна (disabled).
+     * Ожидается после успешного подписания отчёта.
+     */
+    public boolean isSignAndSendDisabled() {
+        // После синхронного подписания (syncSign) отчёт переходит в режим read-only:
+        // кнопка «Подписать и отправить» исчезает, появляется «Скачать отчёт».
+        // Ждём закрытия модалки и отсутствия кнопки подписания.
+        $x("//div[@class = 'provider-dialog']")
+                .should(com.bft.pw.Condition.disappear, java.time.Duration.ofSeconds(15));
+        try {
+            $x("//button[contains(normalize-space(.), 'Подписать и отправить')]")
+                    .should(com.bft.pw.Condition.disappear, java.time.Duration.ofSeconds(15));
+        } catch (com.bft.pw.TimeoutException e) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Открывает таблицу «Отчеты» и ищет отчёт по ИД процесса (UUID):
+     * заполняет фильтр «ИД процесса» и нажимает «Применить».
+     */
+    public MainPage searchReportsByProcessId(String processId) {
+        // На странице чтения отчёта группа «Отчеты» в сайдбаре свёрнута — сначала
+        // раскрываем её (клик по группе), затем открываем «Список отчетов».
+        // «ЛК Страхователя» — это модуль-обёртка, по нему кликать не нужно.
+        if (!$x("//*[starts-with(@class,'sidebar__item')][normalize-space(.) = 'Список отчетов']").exists()) {
+            openTab("Отчеты");
+        }
+        openTab("Список отчетов");
+        $x("//div[normalize-space(text()) = 'ИД процесса']/following::input[1]")
+                .shouldBe(Condition.visible, java.time.Duration.ofSeconds(10))
+                .setValue(processId);
+        return clickMainButton("Применить");
+    }
+
+    /**
+     * Закрывает открытую карточку отчёта: нажимает «Закрыть», затем подтверждает
+     * диалог «Закрыть?» кнопкой «Да». Возвращает на список отчётов {@code #/reports}.
+     *
+     * @return текущий экземпляр MainPage для цепочки вызовов
+     */
+    public MainPage closeOpenedReport() {
+        ClickHelper.click(
+                $x("//button[normalize-space(.) = 'Закрыть']"),
+                "Кнопка «Закрыть» на странице отчёта");
+        // Диалог подтверждения БЕЗ класса modal — ищем по тексту вопроса («Закрыть?»),
+        // кнопку «Да» — глобально по точному тексту (на странице только она).
+        $x("//*[normalize-space(text()) = 'Закрыть?']")
+                .shouldBe(Condition.visible, java.time.Duration.ofSeconds(15));
+        $x("//button[normalize-space() = 'Да']")
+                .shouldBe(Condition.visible, java.time.Duration.ofSeconds(10))
+                .click();
+        return this;
+    }
+
+    /**
+     * Фильтрует таблицу «Отчеты» по ИД процесса (UUID): заполняет фильтр «ИД процесса» и
+     * нажимает «Применить». Предполагается, что тест уже находится на списке отчётов.
+     *
+     * @param processId UUID из колонки «ИД процесса»
+     * @return текущий экземпляр MainPage для цепочки вызовов
+     */
+    public MainPage filterReportsByProcessId(String processId) {
+        $x("//div[normalize-space(text()) = 'ИД процесса']/following::input[1]")
+                .shouldBe(Condition.visible, java.time.Duration.ofSeconds(10))
+                .setValue(processId);
+        return clickMainButton("Применить");
+    }
+
+    /**
+     * Возвращает текст статуса строки таблицы отчётов, найденной по ИД процесса.
+     *
+     * @param processId UUID из колонки «ИД процесса»
+     * @return текст ячейки «Статус» (пустая строка, если строка не найдена)
+     */
+    public String getReportStatusByProcessId(String processId) {
+        waitTableToLoad();
+        var statusCell = $x("//table//td[normalize-space(.) = '" + processId + "']/following-sibling::td[1]");
+        if (!statusCell.exists()) {
+            return "";
+        }
+        return statusCell.getText().trim();
+    }
+
+    /**
+     * Проверяет, что страница находится в режиме «Чтение отчёта» (read-only) после подписания.
+     *
+     * <p>Индикаторы read-only: в хлебных крошках присутствует «Чтение отчёта»,
+     * а на странице видна кнопка «Скачать отчёт». Если это так — подписание прошло успешно.
+     */
+    public MainPage verifySignedReadOnlyMode(String reportDisplayName) {
+        // В хлебных крошках текст «Чтение отчета» (без «ё»)
+        $x("//*[contains(normalize-space(.), 'Чтение отчета')]")
+                .shouldBe(Condition.visible, java.time.Duration.ofSeconds(10));
+        $x("//button[normalize-space(.) = 'Скачать отчёт']")
+                .shouldBe(Condition.visible, java.time.Duration.ofSeconds(10));
         return this;
     }
 

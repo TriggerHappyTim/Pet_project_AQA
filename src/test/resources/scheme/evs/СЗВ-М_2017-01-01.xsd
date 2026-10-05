@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema version="2.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://пф.рф/ВС/СЗВ-М/2017-01-01" xmlns:СЗВМ="http://пф.рф/ВС/СЗВ-М/2017-01-01" xmlns:УТ="http://пф.рф/унифицированныеТипы/2014-01-01" xmlns:АФ="http://пф.рф/АФ" xmlns:АФ3="http://пф.рф/АФ/2017-01-01" targetNamespace="http://пф.рф/ВС/СЗВ-М/2017-01-01" elementFormDefault="qualified">
+	<xs:import namespace="http://пф.рф/унифицированныеТипы/2014-01-01" schemaLocation="УнифТипы_2014-01-01.xsd" />
+	<xs:import namespace="http://пф.рф/АФ" schemaLocation="ТипыОбщие.xsd" />
+	<xs:import namespace="http://пф.рф/АФ/2017-01-01" schemaLocation="ТипыАФ_2017-01-01.xsd" />
+	<xs:import namespace="http://www.w3.org/2000/09/xmldsig#" schemaLocation="xmldsig_core_schema.xsd" />
+	<xs:annotation>
+		<xs:documentation>СЗВ-М Сведения о застрахованных лицах</xs:documentation>
+	</xs:annotation>
+	<xs:element name="ЭДПФР">
+		<xs:annotation>
+			<xs:documentation>Корневой элемент. Электронный документ СЗВ-М (Сведения о застрахованных лицах). Содержит сведения самого документа и служебную информацию об электронном документе.</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:all>
+				<xs:element name="СЗВ-М">
+					<xs:annotation>
+						<xs:documentation>Сведения о застрахованных лицах</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="ТипФормы">
+								<xs:annotation>
+									<xs:documentation>Тип формы: 1 - исходная, 2 - дополняющая, 3 - отменяющая</xs:documentation>
+								</xs:annotation>
+								<xs:simpleType>
+									<xs:restriction base="xs:positiveInteger">
+										<xs:enumeration value="1" />
+										<xs:enumeration value="2" />
+										<xs:enumeration value="3" />
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="Страхователь">
+								<xs:annotation>
+									<xs:documentation>Реквизиты страхователя</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="РегНомер" type="ТипРегНомер">
+											<xs:annotation>
+												<xs:documentation>Регистрационный номер страхователя, который присваивается СФР</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="НаименованиеКраткое" type="УТ:ТипКрИмяОрг">
+											<xs:annotation>
+												<xs:documentation>Краткое наименование организации</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="ИНН" type="УТ:ТипИНН">
+											<xs:annotation>
+												<xs:documentation>Идентификационный номер налогоплательщика</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="КПП" type="УТ:ТипКПП" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>Код причины постановки на учет</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="ОтчетныйПериод">
+								<xs:annotation>
+									<xs:documentation>Период, за который представляются сведения</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="Месяц" type="УТ:ТипМесяц">
+											<xs:annotation>
+												<xs:documentation>Месяц, за который представляются сведения</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="КалендарныйГод">
+											<xs:annotation>
+												<xs:documentation>Календарный год к которому относится месяц, за который представляются сведения</xs:documentation>
+											</xs:annotation>
+											<xs:simpleType>
+												<xs:restriction base="xs:gYear">
+													<xs:minInclusive value="2016" />
+													<xs:maxInclusive value="2022" />
+													<xs:pattern value="\d{4}" />
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="СписокЗЛ" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Список застрахованных лиц</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="ЗЛ" maxOccurs="unbounded">
+											<xs:annotation>
+												<xs:documentation>Сведения о застрахованном лице</xs:documentation>
+											</xs:annotation>
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="ФИО" type="УТ:ТипФИО">
+														<xs:annotation>
+															<xs:documentation>Фамилия, имя, отчество застрахованного лица</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+													<xs:element name="СНИЛС" type="УТ:ТипСтраховойНомер">
+														<xs:annotation>
+															<xs:documentation>Страховой номер индивидуального лицевого счета</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+													<xs:element name="ИНН" type="УТ:ТипИНН_ФЛ" minOccurs="0">
+														<xs:annotation>
+															<xs:documentation>Идентификационный номер налогоплательщика</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+												</xs:sequence>
+												<xs:attribute name="НомерПП" type="xs:positiveInteger" use="required">
+													<xs:annotation>
+														<xs:documentation>Номер по порядку</xs:documentation>
+													</xs:annotation>
+												</xs:attribute>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="ДатаЗаполнения" type="xs:date">
+								<xs:annotation>
+									<xs:documentation>Дата заполнения формы</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="СлужебнаяИнформация" type="АФ3:ТипСлужебнаяИнформация">
+					<xs:annotation>
+						<xs:documentation>Служебная информация об электронном документе</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element ref="Signature" xmlns="http://www.w3.org/2000/09/xmldsig#" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Электронная подпись (ЭП). Электронный документ, для которого законодательством Российской Федерации предусмотрена юридически значимая подпись, должен быть подписан усиленной квалифицированной электронной подписью в соответствии со спецификацией XMLDSig</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:all>
+		</xs:complexType>
+	</xs:element>
+	<xs:simpleType name="ТипРегНомер">
+		<xs:annotation>
+			<xs:documentation>Тип, используемый для представления регистрационного номера страхователя, который присваивается СФР</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:pattern value="\d{3}-\d{3}-\d{6}"/>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

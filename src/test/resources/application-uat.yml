@@ -4,9 +4,23 @@ env:
   environment: uat
   frontRpuAddress: "https://rpu.test.ecp/rpu/pu/#/requestRegistry"
   frontEvsAddress: "https://evs-oi-portal-front.test.ecp/#/"
-  frontRpuLogin: "201OstrovskyDS"
-  frontRpuPassword: "P@ssw0rd1231"
+  frontRpuLogin: "201RogovaSV"
+  frontRpuPassword: "P@ssw0rd1232"
   evsRpuLogin: "133-900-785 49"
   evsRpuPassword: "Egisso13?"
   evsUserCardEPGU: "ОРГАНИЗАЦИЯ -1546025669"
+
+ps:
+  graphql-mesh:
+    url: 'http://localhost:20266'
+
+telegram:
+  bot-token: ''
+  chat-id: ''
+
+# Jira TMS integration (env vars: TMS_URL, TMS_TOKEN, TMS_TEST_RUN_ID)
+tms:
+  url: ''
+  test-run-id: ''
+  project-id: ''
 

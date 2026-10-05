@@ -1,0 +1,358 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:УТ2="http://пф.рф/УТ/2017-08-21" version="2.0" elementFormDefault="qualified">
+  <xs:import namespace="http://пф.рф/УТ/2017-08-21" schemaLocation="УнифТипы_2017-08-21.xsd"/>
+  <xs:annotation>
+    <xs:documentation>Общие типы данных для информационного обмена "Электронные трудовые книжки"</xs:documentation>
+    <xs:documentation>Подключать к схеме используя конструкцию xs:include</xs:documentation>
+  </xs:annotation>
+  <xs:group name="ГрМероприятиеОтменяемое">
+    <xs:annotation>
+      <xs:documentation>Группа сведений о мероприятии кадрового учета, которое отменяется</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="UUID" type="УТ2:ТипGUID">
+        <xs:annotation>
+          <xs:documentation>UUID отменяемого мероприятия</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ДатаМероприятия" type="xs:date">
+        <xs:annotation>
+          <xs:documentation>Дата мероприятия, подлежащего отмене</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ДатаОтмены" type="xs:date">
+        <xs:annotation>
+          <xs:documentation>Дата отмены мероприятия</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="Вид">
+        <xs:annotation>
+          <xs:documentation>Вид сведений. Возможные значения:
+						1 - ПРИЕМ;
+						2 - ПЕРЕВОД;
+						3 - ПЕРЕИМЕНОВАНИЕ;
+						4 - УСТАНОВЛЕНИЕ (ПРИСВОЕНИЕ);
+						5 - УВОЛЬНЕНИЕ;
+						6 - ЗАПРЕТ ЗАНИМАТЬ ДОЛЖНОСТЬ (ВИД ДЕЯТЕЛЬНОСТИ)
+						7 - ПРИОСТАНОВЛЕНИЕ
+						8 – ВОЗОБНОВЛЕНИЕ</xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="xs:positiveInteger">
+            <xs:minInclusive value="1"/>
+            <xs:maxInclusive value="8"/>
+            <xs:pattern value="[1-9]\d*"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="РаботаКС" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Сведения о работе в районах Крайнего Севера/работе в местностях, приравненных к районам Крайнего Севера</xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="xs:normalizedString">
+            <xs:maxLength value="3"/>
+            <xs:enumeration value="РКС"/>
+            <xs:enumeration value="МКС"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="ЯвляетсяСовместителем" type="xs:boolean" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Совместитель. Возможные значения:
+						1 или true – да, является совместителем;
+						0 или false – нет, не является совместителем.
+						Отсутствие элемента соответствует «нет»</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:group>
+  <xs:group name="ГрМероприятие">
+    <xs:annotation>
+      <xs:documentation>Группа сведений о мероприятии кадрового учета</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="UUID" type="УТ2:ТипGUID">
+        <xs:annotation>
+          <xs:documentation>UUID мероприятия</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="Дата" type="xs:date">
+        <xs:annotation>
+          <xs:documentation>Дата проведения мероприятия</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="Вид">
+        <xs:annotation>
+          <xs:documentation>Вид сведений. Возможные значения:
+						1 - ПРИЕМ;
+						2 - ПЕРЕВОД;
+						3 - ПЕРЕИМЕНОВАНИЕ;
+						4 - УСТАНОВЛЕНИЕ (ПРИСВОЕНИЕ);
+						5 - УВОЛЬНЕНИЕ;
+						6 - ЗАПРЕТ ЗАНИМАТЬ ДОЛЖНОСТЬ (ВИД ДЕЯТЕЛЬНОСТИ)
+						7 - ПРИОСТАНОВЛЕНИЕ
+						8 – ВОЗОБНОВЛЕНИЕ</xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="xs:positiveInteger">
+            <xs:minInclusive value="1"/>
+            <xs:maxInclusive value="8"/>
+            <xs:pattern value="[1-9]\d*"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="РаботаКС" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Сведения о работе в районах Крайнего Севера/работе в местностях, приравненных к районам Крайнего Севера</xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="xs:normalizedString">
+            <xs:maxLength value="3"/>
+            <xs:enumeration value="РКС"/>
+            <xs:enumeration value="МКС"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="Сведения" type="УТ2:ТипНепустаяСтрока" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Иные сведения о мероприятии</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="Должность" type="УТ2:ТипНепустаяСтрока" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Должность, специальность, профессия, квалификация. Обязательно указывается для записей вида: ПРИЕМ, ПЕРЕВОД, УСТАНОВЛЕНИЕ (ПРИСВОЕНИЕ), ПРИОСТАНОВЛЕНИЕ, ВОЗОБНОВЛЕНИЕ</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ЯвляетсяСовместителем" type="xs:boolean" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Совместитель. Возможные значения:
+						1 или true – да, является совместителем;
+						0 или false – нет, не является совместителем.
+						Отсутствие элемента соответствует «нет»</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="СтруктурноеПодразделение" type="УТ2:ТипНепустаяСтрока" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Структурное подразделение, в которое принят сотрудник</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ВидПР" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Конкретный вид поручаемой работы</xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="УТ2:ТипНепустаяСтрока">
+            <xs:minLength value="1"/>
+            <xs:maxLength value="255"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="КодВФ" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Код выполняемой функции</xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:pattern value="\d{2}\.\d{3}\-[а-я|А-Я|a-z|A-Z]\-\d{1}"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="КодВФпоОКЗ" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Указывается кодовое обозначение занятия, соответствующее занимаемой должности (профессии), виду трудовой деятельности, осуществляемой на рабочем месте при исполнении трудовых функций (работ, обязанностей). Заполняется обязательно для кадровых мероприятий со значением «ПРИЕМ», «ПЕРЕВОД», «УВОЛЬНЕНИЕ», «ПРИОСТАНОВЛЕНИЕ», «ВОЗОБНОВЛЕНИЕ»</xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:pattern value="\d{4}\.\d{1}"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="ОснованиеУвольнения" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Сведения о нормативном документе, на основании которого проведено увольнение</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="ТипОснованияУвольнения">
+              <xs:annotation>
+                <xs:documentation>Тип документа, в соответствии с которым проведено расторжение трудового договора</xs:documentation>
+              </xs:annotation>
+              <xs:simpleType>
+                <xs:restriction base="xs:normalizedString">
+                  <xs:enumeration value="ТК РФ"/>
+                  <xs:enumeration value="ИНОЕ"/>
+                </xs:restriction>
+              </xs:simpleType>
+            </xs:element>
+            <xs:element name="НормативныйДокумент" type="УТ2:ТипНепустаяСтрока">
+              <xs:annotation>
+                <xs:documentation>Наименование нормативного документа. Если тип основания увольнения выбран "ТК РФ", обязательно указание значения "Трудовой кодекс Российской Федерации". Если тип основания увольнения выбран "ИНОЕ" - недопустимо указание "Трудовой кодекс Российской Федерации"</xs:documentation>
+              </xs:annotation>
+            </xs:element>
+            <xs:element name="Статья">
+              <xs:annotation>
+                <xs:documentation>Номер статьи нормативного правого акта Российской Федерации, в соответствии с которым проведено расторжение трудового договора</xs:documentation>
+              </xs:annotation>
+              <xs:simpleType>
+                <xs:restriction base="УТ2:ТипНепустаяСтрока">
+                  <xs:maxLength value="10"/>
+                </xs:restriction>
+              </xs:simpleType>
+            </xs:element>
+            <xs:element name="Часть" minOccurs="0">
+              <xs:annotation>
+                <xs:documentation>Часть статьи нормативного правого акта Российской Федерации, в соответствии с которым проведено расторжение трудового договора</xs:documentation>
+              </xs:annotation>
+              <xs:simpleType>
+                <xs:restriction base="УТ2:ТипНепустаяСтрока">
+                  <xs:maxLength value="10"/>
+                </xs:restriction>
+              </xs:simpleType>
+            </xs:element>
+            <xs:element name="Пункт" minOccurs="0">
+              <xs:annotation>
+                <xs:documentation>Пункт статьи нормативного правого акта Российской Федерации, в соответствии с которым проведено расторжение трудового договора</xs:documentation>
+              </xs:annotation>
+              <xs:simpleType>
+                <xs:restriction base="УТ2:ТипНепустаяСтрока">
+                  <xs:maxLength value="10"/>
+                </xs:restriction>
+              </xs:simpleType>
+            </xs:element>
+            <xs:element name="Подпункт" minOccurs="0">
+              <xs:annotation>
+                <xs:documentation>Подпункт статьи нормативного правого акта Российской Федерации, в соответствии с которым проведено расторжение трудового договора</xs:documentation>
+              </xs:annotation>
+              <xs:simpleType>
+                <xs:restriction base="УТ2:ТипНепустаяСтрока">
+                  <xs:maxLength value="10"/>
+                </xs:restriction>
+              </xs:simpleType>
+            </xs:element>
+            <xs:element name="Абзац" minOccurs="0">
+              <xs:annotation>
+                <xs:documentation>Абзац статьи нормативного правого акта Российской Федерации, в соответствии с которым проведено расторжение трудового договора</xs:documentation>
+              </xs:annotation>
+              <xs:simpleType>
+                <xs:restriction base="УТ2:ТипНепустаяСтрока">
+                  <xs:maxLength value="10"/>
+                </xs:restriction>
+              </xs:simpleType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="Причина" type="УТ2:ТипНепустаяСтрока" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Причина увольнения</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ДатаС" type="xs:date" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Дата начала</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ДатаПо" type="xs:date" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Дата окончания</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="Основание" minOccurs="1" maxOccurs="2">
+        <xs:annotation>
+          <xs:documentation>Сведения о документе-основании для мероприятия. Может быть один или два блока</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="Наименование" type="УТ2:ТипНепустаяСтрока">
+              <xs:annotation>
+                <xs:documentation>Наименование документа-основания</xs:documentation>
+              </xs:annotation>
+            </xs:element>
+            <xs:element name="Дата" type="xs:date">
+              <xs:annotation>
+                <xs:documentation>Дата документа "ОТ"</xs:documentation>
+              </xs:annotation>
+            </xs:element>
+            <xs:element name="Номер" type="УТ2:ТипНепустаяСтрока">
+              <xs:annotation>
+                <xs:documentation>Номер документа</xs:documentation>
+              </xs:annotation>
+            </xs:element>
+            <xs:element name="Серия" type="УТ2:ТипНепустаяСтрока" minOccurs="0">
+              <xs:annotation>
+                <xs:documentation>Серия документа</xs:documentation>
+              </xs:annotation>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:group>
+  <xs:complexType name="ТипРаботодатель">
+    <xs:annotation>
+      <xs:documentation>Тип для представления сведений о страхователе</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element ref="УТ2:РегНомер">
+        <xs:annotation>
+          <xs:documentation>Регистрационный номер в СФР</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="НаименованиеОрганизации" type="УТ2:ТипНепустаяСтрока">
+        <xs:annotation>
+          <xs:documentation>Полное наименование работодателя</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:group ref="УТ2:ГрНН">
+        <xs:annotation>
+          <xs:documentation>ИНН и КПП работодателя</xs:documentation>
+        </xs:annotation>
+      </xs:group>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ТипРаботодательРегНомер">
+    <xs:annotation>
+      <xs:documentation>Тип для представления сведений о страхователе</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:group ref="УТ2:ГрРН">
+        <xs:annotation>
+          <xs:documentation>Регистрационный номер в СФР</xs:documentation>
+        </xs:annotation>
+      </xs:group>
+      <xs:element name="НаименованиеОрганизации" type="УТ2:ТипНепустаяСтрока">
+        <xs:annotation>
+          <xs:documentation>Полное наименование работодателя</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:group ref="УТ2:ГрНН">
+        <xs:annotation>
+          <xs:documentation>ИНН и КПП работодателя</xs:documentation>
+        </xs:annotation>
+      </xs:group>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ТипРаботодательРегНомер2">
+    <xs:annotation>
+      <xs:documentation>Тип для представления сведений о страхователе</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:group ref="УТ2:ГрРН">
+        <xs:annotation>
+          <xs:documentation>Регистрационный номер в СФР</xs:documentation>
+        </xs:annotation>
+      </xs:group>
+      <xs:element name="НаименованиеОрганизации" type="УТ2:ТипНепустаяСтрока">
+        <xs:annotation>
+          <xs:documentation>Полное наименование работодателя</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:group ref="УТ2:ГрНН2">
+        <xs:annotation>
+          <xs:documentation>ИНН и КПП работодателя</xs:documentation>
+        </xs:annotation>
+      </xs:group>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>

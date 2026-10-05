@@ -1,6 +1,6 @@
 package com.bft.strategy;
 
-import org.testng.asserts.SoftAssert;
+import com.bft.test.TestAssertions;
 
 /**
  * Стратегия валидации результатов теста
@@ -11,27 +11,27 @@ public interface ValidationStrategy<T> {
     /**
      * Выполняет основные проверки
      */
-    void validate(T actualResult, T expectedResult, SoftAssert softAssert);
+    void validate(T actualResult, T expectedResult, TestAssertions softAssert);
 
     /**
      * Выполняет дополнительные проверки
      */
-    void validateAdditionalConditions(T result, SoftAssert softAssert);
+    void validateAdditionalConditions(T result, TestAssertions softAssert);
 
     /**
      * Проверяет бизнес-правила
      */
-    void validateBusinessRules(T result, SoftAssert softAssert);
+    void validateBusinessRules(T result, TestAssertions softAssert);
 
     /**
      * Проверяет производительность
      */
-    void validatePerformance(long executionTime, SoftAssert softAssert);
+    void validatePerformance(long executionTime, TestAssertions softAssert);
 
     /**
      * Проверяет корректность данных
      */
-    void validateDataIntegrity(T result, SoftAssert softAssert);
+    void validateDataIntegrity(T result, TestAssertions softAssert);
 
     /**
      * Возвращает тип стратегии валидации

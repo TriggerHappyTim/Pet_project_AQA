@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema version="2.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" xmlns="http://пф.рф/СЗВ-ТД/2020-09-26" xmlns:УТ2="http://пф.рф/УТ/2017-08-21" xmlns:АФ5="http://пф.рф/АФ/2018-12-07" targetNamespace="http://пф.рф/СЗВ-ТД/2020-09-26">
+	<xs:import namespace="http://пф.рф/УТ/2017-08-21" schemaLocation="../УнифТипы_2017-08-21.xsd"/>
+	<xs:import namespace="http://пф.рф/АФ/2018-12-07" schemaLocation="../ТипыАФ_2018-12-07.xsd"/>
+	<xs:import namespace="http://www.w3.org/2000/09/xmldsig#" schemaLocation="../xmldsig_core_schema.xsd"/>
+	<xs:include schemaLocation="ТипыЭТК_2020-09-26.xsd"/> 
+	<xs:annotation>
+		<xs:documentation>Сведения о трудовой деятельности зарегистрированного лица</xs:documentation>
+	</xs:annotation>
+	<xs:element name="ЭДПФР">
+		<xs:annotation>
+			<xs:documentation>Корневой элемент. Содержит сведения самого документа и служебную информацию об электронном документе.</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:all>
+				<xs:element name="СЗВ-ТД">
+					<xs:annotation>
+						<xs:documentation>Сведения о трудовой деятельности зарегистрированного лица</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Работодатель" type="ТипРаботодательРегНомер2">
+								<xs:annotation>
+									<xs:documentation>Блок сведений о страхователе, предоставившем форму</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="РаботодательЗаКоторого" type="ТипРаботодательРегНомер2" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Блок сведений о работодателе, правопреемником которого является страхователь</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="ЗЛ" maxOccurs="unbounded">
+								<xs:annotation>
+									<xs:documentation>Блок сведений о зарегистрированном лице</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element ref="УТ2:ФИО">
+											<xs:annotation>
+												<xs:documentation>ФИО зарегистрированного лица</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:choice>
+											<xs:annotation>
+												<xs:documentation>Сведения о дате рождения зарегистрированного лица</xs:documentation>
+											</xs:annotation>
+											<xs:element name="ДатаРождения" type="xs:date">
+												<xs:annotation>
+													<xs:documentation>Дата рождения зарегистрированного лица</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="ДатаРожденияОсобая" type="УТ2:ТипДатаОсобая">
+												<xs:annotation>
+													<xs:documentation>Дата рождения зарегистрированного лица без указания месяца и/или дня месяца рождения</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:choice>
+										<xs:element ref="УТ2:СНИЛС">
+											<xs:annotation>
+												<xs:documentation>СНИЛС зарегистрированного лица</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="Заявления" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>Блок сведений о заявлениях</xs:documentation>
+											</xs:annotation>
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="ЗаявлениеОПродолжении" minOccurs="0">
+														<xs:annotation>
+															<xs:documentation>Заявление о продолжении ведения трудовой книжки</xs:documentation>
+														</xs:annotation>
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="Дата" type="xs:date" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Дата подачи заявления</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+																<xs:element name="СтатусЗаявленияОПродолжении">
+																	<xs:annotation>
+																		<xs:documentation>Статус заявления. Возможные значения:
+																			1 – подано;
+																			2 – отменено</xs:documentation>
+																	</xs:annotation>
+																	<xs:simpleType>
+																		<xs:restriction base="xs:integer">
+																			<xs:minInclusive value="1" />
+																			<xs:maxInclusive value="2" />
+																		</xs:restriction>
+																	</xs:simpleType>
+																</xs:element>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="ЗаявлениеОПредоставлении" minOccurs="0">
+														<xs:annotation>
+															<xs:documentation>Заявление о представлении сведений о трудовой деятельности</xs:documentation>
+														</xs:annotation>
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="Дата" type="xs:date" minOccurs="0">
+																	<xs:annotation>
+																		<xs:documentation>Дата подачи заявления</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+																<xs:element name="СтатусЗаявленияОПредоставлении">
+																	<xs:annotation>
+																		<xs:documentation>Статус заявления. Возможные значения:
+																			1 – подано;
+																			2 – отменено</xs:documentation>
+																	</xs:annotation>
+																	<xs:simpleType>
+																		<xs:restriction base="xs:integer">
+																			<xs:minInclusive value="1" />
+																			<xs:maxInclusive value="2" />
+																		</xs:restriction>
+																	</xs:simpleType>
+																</xs:element>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="ТрудоваяДеятельность" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>Блок сведений о мероприятиях кадрового учета, сгруппированных по зарегистрированному лицу</xs:documentation>
+											</xs:annotation>
+											<xs:complexType>
+												<xs:sequence>
+													<xs:choice maxOccurs="unbounded">
+														<xs:annotation>
+															<xs:documentation>Сведения о мероприятиях или об отменяемых мероприятиях кадрового учета. Может быть указано несколько блоков</xs:documentation>
+														</xs:annotation>
+														<xs:element name="Мероприятие">
+															<xs:annotation>
+																<xs:documentation>Блок сведений о мероприятии кадрового учета. Может быть указано несколько блоков</xs:documentation>
+															</xs:annotation>
+															<xs:complexType>
+																<xs:sequence>
+																	<xs:group ref="ГрМероприятие" />
+																</xs:sequence>
+															</xs:complexType>
+														</xs:element>
+														<xs:element name="МероприятиеОтменяемое">
+															<xs:annotation>
+																<xs:documentation>Сведения об отменяемом мероприятии кадрового учета. Может быть указано несколько блоков</xs:documentation>
+															</xs:annotation>
+															<xs:complexType>
+																<xs:sequence>
+																	<xs:group ref="ГрМероприятиеОтменяемое" />
+																</xs:sequence>
+															</xs:complexType>
+														</xs:element>
+													</xs:choice>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="ДатаЗаполнения" type="xs:date">
+								<xs:annotation>
+									<xs:documentation>Дата заполнения сведений</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Руководитель" type="УТ2:ТипДолжностноеЛицо">
+								<xs:annotation>
+									<xs:documentation>Сведения о руководителе (уполномоченном представителе страхователя)</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="СлужебнаяИнформация" type="АФ5:ТипСлужебнаяИнформацияЭП">
+					<xs:annotation>
+						<xs:documentation>Служебная информация об электронном документе</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element ref="Signature" xmlns="http://www.w3.org/2000/09/xmldsig#" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Электронная подпись (ЭП). Электронный документ, для которого законодательством Российской Федерации предусмотрена юридически значимая подпись, должен быть подписан усиленной квалифицированной электронной подписью в соответствии со спецификацией XMLDSig</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:all>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

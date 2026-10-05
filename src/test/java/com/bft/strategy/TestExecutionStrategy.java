@@ -1,6 +1,6 @@
 package com.bft.strategy;
 
-import org.testng.asserts.SoftAssert;
+import com.bft.test.TestAssertions;
 
 /**
  * Стратегия выполнения теста
@@ -21,7 +21,7 @@ public interface TestExecutionStrategy<T> {
     /**
      * Выполняет проверки после выполнения
      */
-    void validate(TestContext context, SoftAssert softAssert);
+    void validate(TestContext context, TestAssertions softAssert);
 
     /**
      * Выполняет очистку после теста

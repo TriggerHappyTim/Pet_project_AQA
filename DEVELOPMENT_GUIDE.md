@@ -367,15 +367,20 @@ public void testUserRegistrationWithDifferentData(User user) {
     assertUserRegistered(user);
 }
 
-@DataProvider(name = "userDataProvider")
-public Object[][] userDataProvider() {
-    return new Object[][] {
-        { UserBuilder.createDefault() },
-        { UserBuilder.createAdmin() },
-        { UserBuilder.createRandom() },
-        { UserBuilder.createDefault().withEmail("invalid-email") },
-        { UserBuilder.createDefault().withFirstName("") }
-    };
+@ParameterizedTest
+@MethodSource("userDataProvider")
+public void registerUser(UserBuilder userBuilder) {
+    // ... test body
+}
+
+static Stream<Arguments> userDataProvider() {
+    return Stream.of(
+        Arguments.of(UserBuilder.createDefault()),
+        Arguments.of(UserBuilder.createAdmin()),
+        Arguments.of(UserBuilder.createRandom()),
+        Arguments.of(UserBuilder.createDefault().withEmail("invalid-email")),
+        Arguments.of(UserBuilder.createDefault().withFirstName(""))
+    );
 }
 ```
 
@@ -420,12 +425,12 @@ public class UserFixture {
 public class UserManagementTest extends BaseTest {
     private UserFixture userFixture;
 
-    @BeforeMethod
+    @BeforeEach
     public void setup() {
         userFixture = new UserFixture(userService);
     }
 
-    @AfterMethod
+    @AfterEach
     public void cleanup() {
         if (userFixture != null) {
             userFixture.cleanup();

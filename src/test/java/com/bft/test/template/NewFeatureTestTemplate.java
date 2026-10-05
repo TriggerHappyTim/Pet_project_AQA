@@ -13,7 +13,7 @@ import io.qameta.allure.Feature;
 import io.qameta.allure.Severity;
 import io.qameta.allure.SeverityLevel;
 import io.qameta.allure.Story;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Шаблон нового UI-теста.
@@ -27,9 +27,8 @@ import org.testng.annotations.Test;
  *   <li>Добавьте {@code @Test}-метод с понятным именем и корректной группой (см. README_new_tests.md).</li>
  * </ol>
  *
- * <p>Класс находится в пакете {@code com.bft.test.template}, который НЕ входит в
- * {@code src/test/resources/testng.xml}, поэтому примеры ниже не выполняются автоматически.
- * Они приведены только для справки.
+ * <p>Класс находится в пакете {@code com.bft.test.template} — примеры ниже не выполняются
+ * автоматически. Они приведены только для справки.
  *
  * @author QA Automation Team
  */
@@ -43,9 +42,7 @@ public class NewFeatureTestTemplate extends UITestBase {
     /*
      * Пример готового теста. Раскомментируйте и адаптируйте под свой сценарий:
      *
-     * @Test(groups = {"web", "smoke"},
-     *         testName = "#XX Название сценария",
-     *         description = "Краткое описание сценария")
+     * @Test
      * @AllureId("MODULE-001")
      * @Story("Название истории")
      * @Description("Детальное описание того, что проверяет тест")

@@ -16,14 +16,12 @@
 import com.bft.test.helpers.TestSetupHelper;
 import com.bft.config.TestStrategyType;
 
-@BeforeMethod
+@BeforeEach
 public void setup() {
     // Гарантирует инициализацию конфигурации
     TestSetupHelper.ensureConfigurationInitialized(TestStrategyType.UI);
-    
-    // Гарантирует инициализацию SoftAssert
-    softAssert = TestSetupHelper.ensureSoftAssert(softAssert);
 }
+```
 
 // Проверка типа окружения
 if (TestSetupHelper.isUIEnvironment()) {
@@ -79,22 +77,8 @@ LoginHelper.logout();
 ```java
 import com.bft.test.helpers.PageObjectHelper;
 
-private CryptoProDemoPage cryptoProPage;
-
-@BeforeMethod
-public void initializePageObject() {
-    // Инициализация с проверкой URL
-    cryptoProPage = PageObjectHelper.initializePageObjectWithUrlCheck(
-        cryptoProPage,
-        DEMO_PAGE_URL,
-        new String[]{"cryptopro", "cades"},
-        () -> new CryptoProDemoPage(softAssert),
-        "CryptoProDemoPage"
-    );
-}
-
 // Проверка инициализации перед использованием
-PageObjectHelper.requirePageObjectInitialized(cryptoProPage, "CryptoProDemoPage");
+PageObjectHelper.requirePageObjectInitialized(myPage, "MyPage");
 ```
 
 ---

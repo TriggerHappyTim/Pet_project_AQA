@@ -57,9 +57,6 @@ public class UITestStrategy {
         if (!headless) {
             PwSession.driver().manage().window().maximize();
         }
-        if (System.getProperty("os.name").toLowerCase().contains("win")) {
-            addSitesToCryptoProTrusted();
-        }
     }
 
     /**
@@ -67,30 +64,5 @@ public class UITestStrategy {
      */
     public void afterTest() {
         PwSession.close();
-    }
-
-    private void addSitesToCryptoProTrusted() {
-        String[] trustedSites = {
-                "https://cryptopro.ru",
-                "https://cryptopro.ru/sites/default/files/products/cades/demopage/"
-        };
-        for (String site : trustedSites) {
-            addSiteToCryptoProTrusted(site);
-        }
-    }
-
-    private void addSiteToCryptoProTrusted(String url) {
-        try {
-            String command = String.format(
-                    "reg add \"HKCU\\Software\\Crypto Pro\\ETOKEN\\Settings\\TrustedSites\" " +
-                            "/v \"%s\" /d \"%s\" /f", url, url);
-            Process process = Runtime.getRuntime().exec(command);
-            int exitCode = process.waitFor();
-            if (exitCode == 0) {
-                log.debug("Добавлен доверенный сайт: {}", url);
-            }
-        } catch (Exception e) {
-            log.trace("Ошибка добавления сайта в доверенные (это не критично): {}", e.getMessage());
-        }
     }
 }

@@ -88,7 +88,6 @@ services:
       - SE_VNC_NO_PASSWORD=1
     volumes:
       - /dev/shm:/dev/shm
-      - ./src/test/resources/CryptoPro Chrome 1.2.13.0.crx:/home/seluser/CryptoPro.crx:ro
     ports:
       - "7900:7900"
     networks:
@@ -110,7 +109,6 @@ services:
       - SE_VNC_NO_PASSWORD=1
     volumes:
       - /dev/shm:/dev/shm
-      - ./src/test/resources/cryptopro.ru.xpi:/home/seluser/cryptopro.xpi:ro
     ports:
       - "7901:7901"
     networks:

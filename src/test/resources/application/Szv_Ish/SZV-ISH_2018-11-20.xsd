@@ -1,0 +1,675 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema version="2.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://пф.рф/ВС/СЗВ-ИСХ/2018-11-20" xmlns:ВС2="http://пф.рф/ВС/типы/2017-10-23" xmlns:АФ4="http://пф.рф/АФ/2017-08-21" xmlns:УТ2="http://пф.рф/УТ/2017-08-21" xmlns:РВ2="http://пф.рф/ВС/РВ/типы/2017-12-27" xmlns:ИС4="http://пф.рф/ВС/ИС/типы/2018-11-20" targetNamespace="http://пф.рф/ВС/СЗВ-ИСХ/2018-11-20" xmlns:СЗВ-ИСХ="http://пф.рф/ВС/СЗВ-ИСХ/2018-11-20" elementFormDefault="qualified">
+	<xs:import namespace="http://пф.рф/УТ/2017-08-21" schemaLocation="../../../УнифТипы_2017-08-21.xsd" />
+	<xs:import namespace="http://пф.рф/АФ/2017-08-21" schemaLocation="../../../ТипыАФ_2017-08-21.xsd" />
+	<xs:import namespace="http://пф.рф/ВС/типы/2017-10-23" schemaLocation="../../ТипыВС_2017-10-23.xsd" />
+	<xs:import namespace="http://пф.рф/ВС/РВ/типы/2017-12-27" schemaLocation="../РСВ/ТипыРВ_2017-12-27.xsd" />
+	<xs:import namespace="http://пф.рф/ВС/ИС/типы/2018-11-20" schemaLocation="ТипыИС_2018-11-20.xsd" />
+	<xs:import namespace="http://www.w3.org/2000/09/xmldsig#" schemaLocation="../../../xmldsig_core_schema.xsd" />
+	<xs:annotation>
+		<xs:documentation>СЗВ-ИСХ Сведения о заработке (вознаграждении) доходе, сумме выплат и иных вознаграждений, начисленных и уплаченных страховых взносах, о периодах трудовой и иной деятельности, засчитываемых в страховой стаж застрахованного лица</xs:documentation>
+	</xs:annotation>
+	<xs:element name="ЭДПФР">
+		<xs:annotation>
+			<xs:documentation>Корневой элемент. Электронный документ СЗВ-ИСХ (Сведения о заработке (вознаграждении) доходе, сумме выплат и иных вознаграждений, начисленных и уплаченных страховых взносах, о периодах трудовой и иной деятельности, засчитываемых в страховой стаж застрахованного лица). Содержит сведения самого документа и служебную информацию об электронном документе.</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="СлужебнаяИнформация" type="АФ4:ТипСлужебнаяИнформацияППЭД">
+					<xs:annotation>
+						<xs:documentation>Служебная информация об электронном документе</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="ОДВ-1">
+					<xs:annotation>
+						<xs:documentation>Форма ОДВ-1 (ОДВ-1)</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Тип">
+								<xs:annotation>
+									<xs:documentation>Тип сведений ОДВ-1. Возможные значения:
+									0 - исходная</xs:documentation>
+								</xs:annotation>
+								<xs:simpleType>
+									<xs:restriction base="xs:integer">
+										<xs:enumeration value="0" />
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="Страхователь" type="ИС4:ТипСтраховательИСРегНомер2">
+								<xs:annotation>
+									<xs:documentation>Данные о страхователе (плательщике страховых взносов)</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="ОтчетныйПериод" type="ОтчетныйПериодСЗВ-ИСХ">
+								<xs:annotation>
+									<xs:documentation>Отчетный период, за который подаются сведения.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="КоличествоЗЛ" type="xs:positiveInteger">
+								<xs:annotation>
+									<xs:documentation>Количество застрахованных лиц, на которых представлены сведения СЗВ-ИСХ, чел.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Страховая" type="ИС4:ТипДанныеПоСтрахователю" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Сведения о суммах начислений и уплаты страховых взносов на страховую пенсию, и задолженности по ним на начало и конец отчетного периода. Заполняется только для отчетных периодов с 2002 по 2013 годы. Для прочих отчетных периодов не заполняется.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Накопительная" type="ИС4:ТипДанныеПоСтрахователю" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Сведения о суммах начислений и уплаты страховых взносов на накопительную пенсию, и задолженности по ним на начало и конец отчетного периода. Заполняется только для отчетных периодов с 2002 по 2013 годы. Для прочих отчетных периодов не заполняется.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="ТарифСВ" type="ИС4:ТипДанныеПоСтрахователю" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Сведения о суммах начислений и уплаты страховых взносов по тарифу страховых взносов, и задолженности по ним на начало и конец отчетного периода. Заполняется только для отчетных периодов с 2014 года. Для прочих отчетных периодов не заполняется.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Уплата" type="ИС4:ТипУплата" minOccurs="0" maxOccurs="unbounded">
+								<xs:annotation>
+									<xs:documentation>Блок данных расшифровки графы «Уплачено» по периодам, за которые была произведена уплата страховых взносов, за конкретный год.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="ОснованияДНП" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Блок сведений об основании для отражения данных о периодах работы застрахованного лица в условиях, дающих право на досрочное назначение пенсии в соответствии со статьей 30 и статьей 31 Федерального закона от 28.12.2013 № 400–ФЗ «О страховых пенсиях».</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="Основание" maxOccurs="unbounded">
+											<xs:annotation>
+												<xs:documentation>Блок сведений об основании для отражения данных о периодах работы застрахованного лица в условиях, дающих право на досрочное назначение пенсии в соответствии со статьей 30 и статьей 31 Федерального закона от 28.12.2013 № 400–ФЗ «О страховых пенсиях».</xs:documentation>
+											</xs:annotation>
+											<xs:complexType>
+												<xs:sequence>
+													<xs:group ref="ИС4:ГрОснованиеДНП">
+														<xs:annotation>
+															<xs:documentation>Группа элементов со сведениями об основании для отражения данных о периодах работы застрахованного лица в условиях, дающих право на досрочное назначение пенсии в соответствии со статьей 30 и статьей 31 Федерального закона от 28.12.2013 № 400–ФЗ «О страховых пенсиях».</xs:documentation>
+														</xs:annotation>
+													</xs:group>
+													<xs:element name="ОУТ" maxOccurs="unbounded">
+														<xs:annotation>
+															<xs:documentation>Сведения об особых условиях труда: код особых условий труда или код основания досрочного назначения пенсии и код профессии в соответствии со Списками 1 и 2 производств, работ, профессий, должностей и показателей, дающих право на льготное обеспечение, утвержденными Постановлением Кабинета Министров СССР от 26.01.1991 № 10</xs:documentation>
+														</xs:annotation>
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="Код">
+																	<xs:annotation>
+																		<xs:documentation>Код особых условий труда или код основания условия досрочного назначения пенсии</xs:documentation>
+																	</xs:annotation>
+																	<xs:simpleType>
+																		<xs:restriction base="xs:normalizedString">
+																			<xs:enumeration value="ЗП12А" />
+																			<xs:enumeration value="27-1" />
+																			<xs:enumeration value="ЗП12Б" />
+																			<xs:enumeration value="27-2" />
+																			<xs:enumeration value="ЗП12В" />
+																			<xs:enumeration value="27-3" />
+																			<xs:enumeration value="ЗП12Г" />
+																			<xs:enumeration value="27-4" />
+																			<xs:enumeration value="ЗП12Д" />
+																			<xs:enumeration value="27-5" />
+																			<xs:enumeration value="ЗП12Е" />
+																			<xs:enumeration value="27-6" />
+																			<xs:enumeration value="ЗП12Ж" />
+																			<xs:enumeration value="27-7" />
+																			<xs:enumeration value="ЗП12З" />
+																			<xs:enumeration value="27-8" />
+																			<xs:enumeration value="ЗП12И" />
+																			<xs:enumeration value="27-9" />
+																			<xs:enumeration value="ЗП12К" />
+																			<xs:enumeration value="27-10" />
+																			<xs:enumeration value="ЗП12Л" />
+																			<xs:enumeration value="ЗП12М" />
+																			<xs:enumeration value="28-ОС" />
+																			<xs:enumeration value="27-ОС" />
+																			<xs:enumeration value="ЗП12О" />
+																			<xs:enumeration value="28-ПЖ" />
+																			<xs:enumeration value="27-ПЖ" />
+																			<xs:enumeration value="СЕВ26" />
+																			<xs:enumeration value="28-СЕВ" />
+																			<xs:enumeration value="ЗП78ГР" />
+																			<xs:enumeration value="27-11ГР" />
+																			<xs:enumeration value="ЗП78ВП" />
+																			<xs:enumeration value="27-11ВП" />
+																			<xs:enumeration value="ЗП78ФЛ" />
+																			<xs:enumeration value="27-12" />
+																			<xs:enumeration value="ЗП78СС" />
+																			<xs:enumeration value="28-СП" />
+																			<xs:enumeration value="27-СП" />
+																			<xs:enumeration value="ЗП80ПД" />
+																			<xs:enumeration value="28-ПД" />
+																			<xs:enumeration value="27-ПД" />
+																			<xs:enumeration value="ЗП80РК" />
+																			<xs:enumeration value="28-ПДРК" />
+																			<xs:enumeration value="27-ПДРК" />
+																			<xs:enumeration value="ЗП81ГД" />
+																			<xs:enumeration value="28-ГД" />
+																			<xs:enumeration value="27-ГД" />
+																			<xs:enumeration value="ЗП81СМ" />
+																			<xs:enumeration value="28-СМ" />
+																			<xs:enumeration value="27-СМ" />
+																			<xs:enumeration value="ХИРУРГД" />
+																			<xs:enumeration value="28-ГДХР" />
+																			<xs:enumeration value="27-ГДХР" />
+																			<xs:enumeration value="ХИРУРСМ" />
+																			<xs:enumeration value="28-СМХР" />
+																			<xs:enumeration value="27-СМХР" />
+																			<xs:enumeration value="ТВОРЧ15" />
+																			<xs:enumeration value="ТВОРЧ20" />
+																			<xs:enumeration value="ТВОРЧ25" />
+																			<xs:enumeration value="ТВОРЧ30" />
+																			<xs:enumeration value="САМОЛЕТ" />
+																			<xs:enumeration value="СПЕЦАВ" />
+																			<xs:enumeration value="СПАСАВ" />
+																			<xs:enumeration value="УЧЛЕТ" />
+																			<xs:enumeration value="ВЫСШПИЛ" />
+																			<xs:enumeration value="НОРМАПР" />
+																			<xs:enumeration value="НОРМСП" />
+																			<xs:enumeration value="РЕАКТИВН" />
+																			<xs:enumeration value="ЛЕТРАБ" />
+																			<xs:enumeration value="ЛЕТИСП" />
+																			<xs:enumeration value="ОПЫТИСП" />
+																			<xs:enumeration value="ИСПКЛС1" />
+																			<xs:enumeration value="ИТСИСП" />
+																			<xs:enumeration value="ИТСМАВ" />
+																			<xs:enumeration value="ИНСПЕКТ" />
+																			<xs:enumeration value="УВД" />
+																			<xs:enumeration value="27-14" />
+																			<xs:enumeration value="ИТС" />
+																			<xs:enumeration value="27-15" />
+																		</xs:restriction>
+																	</xs:simpleType>
+																</xs:element>
+																<xs:element name="ПозицияСписка" minOccurs="0" type="УТ2:ТипНепустаяСтрока">
+																	<xs:annotation>
+																		<xs:documentation>Код профессии в соответствии со Списками 1 и 2 производств, работ, профессий, должностей и показателей, дающих право на льготное обеспечение, утвержденными Постановлением Кабинета Министров СССР от 26.01.1991 № 10</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:group ref="ИС4:ГрИтогоДНП">
+											<xs:annotation>
+												<xs:documentation>Общее количество рабочих мест и фактически работающих в особых условиях труда по штату</xs:documentation>
+											</xs:annotation>
+										</xs:group>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="Руководитель">
+								<xs:annotation>
+									<xs:documentation>Должность и ФИО руководителя организации-страхователя</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="Должность" type="УТ2:ТипНепустаяСтрока">
+											<xs:annotation>
+												<xs:documentation>Наименование должности руководителя организации-страхователя</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="ФИО" type="УТ2:ТипФИО">
+											<xs:annotation>
+												<xs:documentation>ФИО руководителя организации-страхователя</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="ДатаЗаполнения" type="xs:date">
+								<xs:annotation>
+									<xs:documentation>Дата заполнения документа</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="СЗВ-ИСХ" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:documentation>Сведения о заработке (вознаграждении) доходе, сумме выплат и иных вознаграждений, начисленных и уплаченных страховых взносах, о периодах трудовой и иной деятельности, засчитываемых в страховой стаж застрахованного лица</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Страхователь" type="ИС4:ТипСтраховательИСРегНомер2">
+								<xs:annotation>
+									<xs:documentation>Данные о страхователе (плательщике страховых взносов).</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="ФИО" type="УТ2:ТипФИО">
+								<xs:annotation>
+									<xs:documentation>Фамилия, имя, отчество застрахованного лица, на которого представляются данные, без сокращений, в соответствии с документом, удостоверяющим личность</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="СНИЛС" type="УТ2:ТипСтраховойНомер">
+								<xs:annotation>
+									<xs:documentation>СНИЛС застрахованного лица, указывается страховой номер индивидуального лицевого счета застрахованного лица в системе персонифицированного учета СФР</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="ДатаУвольнения" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Сведения об увольнении застрахованного лица 31 декабря. Заполняется в виде даты: «XXXX-12-31» (31 декабря), где ХХХХ - год отчетного периода</xs:documentation>
+								</xs:annotation>
+								<xs:simpleType>
+									<xs:restriction base="xs:date">
+										<xs:pattern value="2\d{3}-12-31" />
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="Договор" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Тип, дата и номер договора.</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="Тип">
+											<xs:annotation>
+												<xs:documentation>Тип договора. Возможные значения:
+																	1 - трудовой,
+																	2 - гражданско-правовой.</xs:documentation>
+											</xs:annotation>
+											<xs:simpleType>
+												<xs:restriction base="xs:integer">
+													<xs:enumeration value="1" />
+													<xs:enumeration value="2" />
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="Реквизиты" type="УТ2:ТипРеквизитыДокумента" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>Номер договора и дата заключения договора. Заполняются при корректировке данных за периоды до 2001 года включительно.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="КодДТ" type="ИС4:ТипКодДТ" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Код дополнительного тарифа. Возможные значения:
+									АВИА - член летного экипажа воздушного судна гражданской авиации</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="ОтчетныйПериод" type="ОтчетныйПериодСЗВ-ИСХ">
+								<xs:annotation>
+									<xs:documentation>Отчетный период, за который подаются сведения.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Выплаты" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Блок сведений о сумме выплат и иных вознаграждений, начисленных в пользу физического лица по месяцам отчетного периода. За отчетные периоды 2002-2009 гг. не заполняется</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="Период" minOccurs="0" maxOccurs="unbounded">
+											<xs:annotation>
+												<xs:documentation>Суммы за последние 6 месяцев (для отчетных периодов 2010 года), или за последние 3 месяца (для отчетных периодов с 2011 года) отчетного периода</xs:documentation>
+											</xs:annotation>
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="Месяц" type="ИС4:ТипМесяцИС">
+														<xs:annotation>
+															<xs:documentation>Месяц отчетного периода.</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+													<xs:element name="Категория" type="КатегорияДо2017">
+														<xs:annotation>
+															<xs:documentation>Код категории застрахованного лица</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+													<xs:group ref="ГрВыплата">
+														<xs:annotation>
+															<xs:documentation>Сведения о сумме выплат и иных вознаграждений, начисленных в пользу физического лица за указанный месяц отчетного периода</xs:documentation>
+														</xs:annotation>
+													</xs:group>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="Всего">
+											<xs:annotation>
+												<xs:documentation>Всего за отчетный период</xs:documentation>
+											</xs:annotation>
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="Категория" type="КатегорияДо2017" minOccurs="0">
+														<xs:annotation>
+															<xs:documentation>Код категории застрахованного лица</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+													<xs:group ref="ГрВыплата">
+														<xs:annotation>
+															<xs:documentation>Итого суммы выплат и иных вознаграждений, начисленных в пользу физического лица за все указанные месяцы отчетного периода. Код категории застрахованного лица не заполняется, если коды категории застрахованного лица менялись в течение отчетного период</xs:documentation>
+														</xs:annotation>
+													</xs:group>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="Начисления" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Блок сведений о начисленных страховых взносах.</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:choice>
+										<xs:annotation>
+											<xs:documentation>В зависимости от отчетного периода, за который представляются сведения, заполняется те или иные поля</xs:documentation>
+										</xs:annotation>
+										<xs:sequence>
+											<xs:annotation>
+												<xs:documentation>Сведения о начисленных страховых взносах за отчетные периоды по 2000 год включительно</xs:documentation>
+											</xs:annotation>
+											<xs:element name="СВстрахователя" type="УТ2:ТипДеньги">
+												<xs:annotation>
+													<xs:documentation>Страховые взносы, уплачиваемые страхователем, указывается сумма начисленных страховых взносов, уплачиваемых работодателем по установленному для него тарифу</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="СВизЗаработка" type="УТ2:ТипДеньги">
+												<xs:annotation>
+													<xs:documentation>Страховые взносы, уплачиваемые из заработка застрахованного лица, указывается сумма начисленных страховых взносов, уплачиваемых по тарифу, установленному для работающих граждан, включая наемных работников по гражданско-правовым договорам, предметом которых являются выполнение работ и оказание услуг, а также авторским договорам</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+										<xs:sequence>
+											<xs:annotation>
+												<xs:documentation>Сведения о начисленных страховых взносах за отчетный период 2001 г.</xs:documentation>
+											</xs:annotation>
+											<xs:element name="СВпоТарифу" type="УТ2:ТипДеньги">
+												<xs:annotation>
+													<xs:documentation>Сумма начисленных страховых взносов по тарифу</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+										<xs:sequence>
+											<xs:annotation>
+												<xs:documentation>Сведения о начисленных страховых взносах за отчетные периоды с 2002 по 2013 годы. За отчетные периоды 2010 года – указываются суммы за последние 6 месяцев отчетного периода, а по отчетным периодам с 2011 года – за последние три месяца отчетного периода.</xs:documentation>
+											</xs:annotation>
+											<xs:element name="СВпоДопТарифу" type="УТ2:ТипДеньги">
+												<xs:annotation>
+													<xs:documentation>Сумма начисленных страховых взносов по дополнительному тарифу</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="Страховая" type="УТ2:ТипДеньги">
+												<xs:annotation>
+													<xs:documentation>Сумма начисленных страховых взносов на страховую пенсию</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="Накопительная" type="УТ2:ТипДеньги">
+												<xs:annotation>
+													<xs:documentation>Сумма начисленных страховых взносов накопительную пенсию</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+										<xs:sequence>
+											<xs:annotation>
+												<xs:documentation>Сведения о начисленных страховых взносах за отчетные периоды с 2014 года</xs:documentation>
+											</xs:annotation>
+											<xs:element name="СВпоТарифуНеПревышающие" type="УТ2:ТипДеньги">
+												<xs:annotation>
+													<xs:documentation>По тарифу страховых взносов на сумму выплат и иных вознаграждений, входящих в базу, не превышающую предельную. Указывается сумма за последние три месяца отчетного периода</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+										</xs:sequence>
+									</xs:choice>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="Уплата" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Сведения об уплаченных страховых взносах (для отчетных периодов 2010-2013 гг.). Заполняется в случае предоставления сведений за отчетные периоды 2010-2013 гг. Указываются данные о суммах страховых взносов, уплаченных в последние три месяца отчетного периода, в рублях и копейках (для отчетных периодов 2010 года – в последние 6 месяцев отчетного периода). Учитываются суммы авансовых платежей. Сумма излишне уплаченных (взысканных) страховых взносов не учитываются</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="Страховая" type="УТ2:ТипДеньги">
+											<xs:annotation>
+												<xs:documentation>Сумма уплаченных взносов на страховую пенсию</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="Накопительная" type="УТ2:ТипДеньги">
+											<xs:annotation>
+												<xs:documentation>Сумма уплаченных взносов на накопительную пенсию</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="ВыплатыДТ" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Блок сведений о сумме выплат и иных вознаграждений в пользу физического лица, занятого на соответствующих видах работ, с которых начислены страховые взносы по дополнительному тарифу. Заполняется в случае уплаты страховых взносов по дополнительному тарифу, начисленных на суммы выплат и иных вознаграждений застрахованных лиц, занятых на видах работ, указанных в пунктах 1-18 части 1 статьи 30 Федерального закона от 28.12.2013 № 400-ФЗ</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="Всего">
+											<xs:annotation>
+												<xs:documentation>Всего сумма выплат и иных вознаграждений, начисленных в пользу физического лица, занятого на соответствующих видах работ, с которых начислены страховые взносы по дополнительному тарифу за последние три месяца отчетного периода</xs:documentation>
+											</xs:annotation>
+											<xs:complexType>
+												<xs:sequence>
+													<xs:group ref="ИС4:ГрВыплатаДопТариф">
+														<xs:annotation>
+															<xs:documentation>Сумма выплат и иных вознаграждений, начисленных в пользу физического лица, на соответствующих видах работ, с которых начислены страховые взносы по дополнительному тарифу за последние три месяца отчетного периода</xs:documentation>
+														</xs:annotation>
+													</xs:group>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="Период" maxOccurs="unbounded">
+											<xs:annotation>
+												<xs:documentation>Блок сведений о сумме выплат и иных вознаграждений в пользу физического лица, занятого на соответствующих видах работ, с которых начислены страховые взносы по дополнительному тарифу за конкретный месяц отчетного периода</xs:documentation>
+											</xs:annotation>
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="Месяц" type="ИС4:ТипМесяцИС">
+														<xs:annotation>
+															<xs:documentation>Код месяца отчетного периода.</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+													<xs:element name="КодСОУТ" type="РВ2:ТипКодСпециальнойОценкиУсловийТруда">
+														<xs:annotation>
+															<xs:documentation>Код специальной оценки условий труда</xs:documentation>
+														</xs:annotation>
+													</xs:element>
+													<xs:group ref="ИС4:ГрВыплатаДопТариф">
+														<xs:annotation>
+															<xs:documentation>Сумма выплат и иных вознаграждений, начисленных в пользу физического лица, на соответствующих видах работ, с которых начислены страховые взносы по дополнительному тарифу за конкретный месяц отчетного периода</xs:documentation>
+														</xs:annotation>
+													</xs:group>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="СтажевыйПериод" type="ИС4:ТипСтажевыйПериодИС" minOccurs="0" maxOccurs="unbounded">
+								<xs:annotation>
+									<xs:documentation>Блок сведений о периодах работы застрахованного лица</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element ref="Signature" xmlns="http://www.w3.org/2000/09/xmldsig#" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Электронная подпись (ЭП). Электронный документ, для которого законодательством Российской Федерации предусмотрена юридически значимая подпись, должен быть подписан усиленной квалифицированной электронной подписью в соответствии со спецификацией XMLDSig.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+		<xs:unique name="УникальныйСНИЛСФИО">
+			<xs:annotation>
+				<xs:documentation>Сочетание СНИЛС + ФИО в документе не должно повторяться</xs:documentation>
+			</xs:annotation>
+			<xs:selector xpath="СЗВ-ИСХ:СЗВ-ИСХ" />
+			<xs:field xpath="СЗВ-ИСХ:ФИО/УТ2:Фамилия" />
+			<xs:field xpath="СЗВ-ИСХ:ФИО/УТ2:Имя" />
+			<xs:field xpath="СЗВ-ИСХ:ФИО/УТ2:Отчество" />
+			<xs:field xpath="СЗВ-ИСХ:СНИЛС" />
+		</xs:unique>
+	</xs:element>
+	<xs:group name="ГрВыплата">
+		<xs:annotation>
+			<xs:documentation>Группа элементов для представления строки таблицы "Сведения о сумме выплат и иных вознаграждений, начисленных в пользу физического лица". Содержит сведения о коде категории ЗЛ, суммах выплат и иных вознаграждений, начисленных в пользу физического лица</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="СуммаВыплат" type="УТ2:ТипДеньги">
+				<xs:annotation>
+					<xs:documentation>Сумма заработка (вознаграждения), дохода, выплат и иных вознаграждений, начисленных в пользу застрахованного лица:
+					- для отчетных периодов за 1996-2001 гг. - сумма общих начислений, учитываемых при назначении пенсии;
+					- для отчетных периодов с 2010 года - сумма выплат и иных вознаграждений, начисленных плательщиками страховых взносов в пользу физического лица в рамках трудовых отношений, в том числе трудовых договоров, и гражданско-правовых договоров, предметом которых является выполнение работ, оказание услуг, а также по договорам авторского заказа, договорам об отчуждении исключительного права на произведения науки, литературы, искусства, издательским лицензионным договорам, лицензионным договорам о предоставлении права использования произведения науки, литературы, искусства</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="НеПревышающие" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Сумма заработка (вознаграждения), дохода, выплат и иных вознаграждений, на которую начислены страховые взносы на ОПС, входящих в базу для начисления страховых взносов, не превышающую предельную</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Всего" type="УТ2:ТипДеньги" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Сумма всего. Для отчетных периодов за 1996-2001 гг. указывается сумма общих начислений, учитываемых при назначении пенсии, за вычетом начислений по больничным листкам (листкам нетрудоспособности) и стипендиям</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="ПоГПД" type="УТ2:ТипДеньги" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Сумма по гражданско-правовым договорам</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Превышающие" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Сумма заработка (вознаграждения), дохода, выплат и иных вознаграждений, на которую начислены страховые взносы на ОПС, входящих в базу для начисления страховых взносов, превышающую предельную</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Всего" type="УТ2:ТипДеньги" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Сумма всего</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="ПоГПД" type="УТ2:ТипДеньги" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Сумма по гражданско-правовым договорам</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:group>
+	<xs:complexType name="ОтчетныйПериодСЗВ-ИСХ">
+		<xs:annotation>
+			<xs:documentation>Отчетный период, за который подаются сведения СЗВ-ИСХ.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Код" type="ИС4:ТипКодОтчетногоПериодаИС">
+				<xs:annotation>
+					<xs:documentation>Код отчетного периода.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Год">
+				<xs:annotation>
+					<xs:documentation>Год отчетного периода</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:gYear">
+						<xs:minInclusive value="1996" />
+						<xs:maxInclusive value="2016" />
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="КатегорияДо2017">
+		<xs:annotation>
+			<xs:documentation>Тип для кодов категории застрахованного лица, действовавших по 2016 год включительно</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="ИС4:ТипКатегорияЗЛ">
+			<xs:pattern value="[А-Я]+" />
+			<xs:enumeration value="ИД" />
+			<xs:enumeration value="ДС" />
+			<xs:enumeration value="АУ" />
+			<xs:enumeration value="ИПИВ" />
+			<xs:enumeration value="НРИВ" />
+			<xs:enumeration value="НРИН" />
+			<xs:enumeration value="СХИН" />
+			<xs:enumeration value="АВИА" />
+			<xs:enumeration value="АВСХ" />
+			<xs:enumeration value="АВОВ" />
+			<xs:enumeration value="ДТ" />
+			<xs:enumeration value="НТ" />
+			<xs:enumeration value="НР" />
+			<xs:enumeration value="НРОВ" />
+			<xs:enumeration value="ФХ" />
+			<xs:enumeration value="ФХИВ" />
+			<xs:enumeration value="АД" />
+			<xs:enumeration value="АДИВ" />
+			<xs:enumeration value="СХ" />
+			<xs:enumeration value="СХИВ" />
+			<xs:enumeration value="СХОВ" />
+			<xs:enumeration value="ИП" />
+			<xs:enumeration value="НРЕД" />
+			<xs:enumeration value="ИПЕД" />
+			<xs:enumeration value="СДП" />
+			<xs:enumeration value="ДП" />
+			<xs:enumeration value="БЕЗР" />
+			<xs:enumeration value="ОЗОИ" />
+			<xs:enumeration value="ЕСХН" />
+			<xs:enumeration value="УСЕН" />
+			<xs:enumeration value="ФЛ" />
+			<xs:enumeration value="ХМН" />
+			<xs:enumeration value="ООИ" />
+			<xs:enumeration value="ХО" />
+			<xs:enumeration value="ТВЭЗ" />
+			<xs:enumeration value="ОДИТ" />
+			<xs:enumeration value="СМИ" />
+			<xs:enumeration value="ПНЭД" />
+			<xs:enumeration value="ИЦС" />
+			<xs:enumeration value="АСБ" />
+			<xs:enumeration value="ЧЭС" />
+			<xs:enumeration value="ИНЖУ" />
+			<xs:enumeration value="КРС" />
+			<xs:enumeration value="ТОР" />
+			<xs:enumeration value="СПВЛ" />
+			<xs:enumeration value="ВЖИЖ" />
+			<xs:enumeration value="ВЖНР" />
+			<xs:enumeration value="ВЖСХ" />
+			<xs:enumeration value="ВЖЕН" />
+			<xs:enumeration value="ВЖМН" />
+			<xs:enumeration value="ВЖОИ" />
+			<xs:enumeration value="ВЖХО" />
+			<xs:enumeration value="ВЖТЗ" />
+			<xs:enumeration value="ВЖИТ" />
+			<xs:enumeration value="ВЖСИ" />
+			<xs:enumeration value="ВЖЭД" />
+			<xs:enumeration value="ВЖЦС" />
+			<xs:enumeration value="ВЖСБ" />
+			<xs:enumeration value="ВЖЭС" />
+			<xs:enumeration value="ВЖКС" />
+			<xs:enumeration value="ВЖТР" />
+			<xs:enumeration value="ВЖВЛ" />
+			<xs:enumeration value="ВПИЖ" />
+			<xs:enumeration value="ВПНР" />
+			<xs:enumeration value="ВПСХ" />
+			<xs:enumeration value="ВПЕН" />
+			<xs:enumeration value="ВПМН" />
+			<xs:enumeration value="ВПОИ" />
+			<xs:enumeration value="ВПХО" />
+			<xs:enumeration value="ВПТЗ" />
+			<xs:enumeration value="ВПИТ" />
+			<xs:enumeration value="ВПСИ" />
+			<xs:enumeration value="ВПЭД" />
+			<xs:enumeration value="ВПЦС" />
+			<xs:enumeration value="ВПСБ" />
+			<xs:enumeration value="ВПЭС" />
+			<xs:enumeration value="ВПКС" />
+			<xs:enumeration value="ВПТР" />
+			<xs:enumeration value="ВПВЛ" />
+			<xs:enumeration value="ИНВ" />
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

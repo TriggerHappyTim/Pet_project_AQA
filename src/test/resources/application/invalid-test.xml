@@ -1,0 +1,4 @@
+这只是测试文件，不是有效的XML
+<invalid-root>
+    <missing-required-fields/>
+</invalid-root>

@@ -327,8 +327,7 @@ public int getPriority() {
 - `CryptoProValidationStrategy` — валидация плагина через UI
 
 ### Тесты с использованием стратегий
-- `ExampleTest` — демонстрация использования
-- `CryptoProCertificateTest` — интеграция стратегий в тесты
+- `ReportXmlUploadTest` — smoke тест загрузки XML
 
 ## Расширение функциональности
 

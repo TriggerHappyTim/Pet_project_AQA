@@ -11,7 +11,8 @@ import io.qameta.allure.Feature;
 import io.qameta.allure.Severity;
 import io.qameta.allure.SeverityLevel;
 import io.qameta.allure.Story;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 /**
  * Тесты для ЛК Архивной организации
@@ -27,15 +28,15 @@ import org.testng.annotations.Test;
  *   <li>Полный E2E поток: РПУ -> ЕВС</li>
  * </ul>
  */
+@Tag("archive")
+@Tag("web")
 @Epic("ЛК Архивной организации")
 @Feature("Реестр запросов в архивы")
 public class ArchivesTest extends UITestBase {
 
     // ========== РПУ ==========
 
-    @Test(groups = {"web", "archive", "rpu", "regression"},
-          testName = "#1 Создание запроса в РПУ",
-          description = "Создание и отправка запроса в архив через РПУ")
+    @Test
     @AllureId("ARCH-001")
     @Story("Создание запроса в РПУ")
     @Description("Полный цикл создания запроса в РПУ: авторизация, заполнение формы (сведения о запросе, гражданине, организации, период работы, тема), сохранение, подписание, отправка")
@@ -59,9 +60,7 @@ public class ArchivesTest extends UITestBase {
 
     // ========== ЕВС ==========
 
-    @Test(groups = {"web", "archive", "evs", "smoke"},
-          testName = "#2 Добавление исполнителя в реестр",
-          description = "Добавление исполнителя в ЛК Архивной организации и поиск через фильтры")
+    @Test
     @AllureId("ARCH-002")
     @Story("Добавление исполнителя")
     @Description("Авторизация в ЕВС архивной организации, добавление нового исполнителя в реестр, заполнение формы (ФИО, телефон, подразделение), поиск через фильтры")
@@ -75,9 +74,7 @@ public class ArchivesTest extends UITestBase {
         steps.searchPerformer("Котов Олег Олегович");
     }
 
-    @Test(groups = {"web", "archive", "evs", "regression"},
-          testName = "#3 Обработка запроса в ЕВС",
-          description = "Поиск запроса, назначение исполнителя, заполнение ответа и подписание в ЕВС")
+    @Test
     @AllureId("ARCH-003")
     @Story("Обработка запроса в ЕВС")
     @Description("Авторизация в ЕВС, переход в реестр запросов, поиск запроса, назначение исполнителя, выбор ответа, заполнение периода работы и загранкомандировки, ввод ответа, подписание")
@@ -99,9 +96,7 @@ public class ArchivesTest extends UITestBase {
 
     // ========== E2E ==========
 
-    @Test(groups = {"web", "archive", "e2e", "regression"},
-          testName = "#5 Полный бизнес-процесс РПУ -> ЕВС",
-          description = "Полный бизнес-процесс от создания запроса в РПУ до подписания в ЕВС")
+    @Test
     @AllureId("ARCH-005")
     @Story("Полный бизнес-процесс РПУ -> ЕВС")
     @Description("E2E сценарий: создание запроса в РПУ (заполнение всех полей, подписание, отправка), затем авторизация в ЕВС архивной организации для обработки запроса")

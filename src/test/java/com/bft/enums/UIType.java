@@ -29,8 +29,8 @@ public enum UIType {
     /** RPU Test окружение (портал) */
     RPU_TEST("https://portal.test.ecp/rpu/#/?location=rpu"),
 
-    /** RPU UAT окружение */
-    RPU_UAT("https://rpu-common-bo.uat.ecp/#/"),
+    /** RPU UAT окружение (единый портал РПУ test-контура; прежний rpu-common-bo.uat.ecp отдавал HTTP 500) */
+    RPU_UAT("https://portal.test.ecp/rpu/#/?location=rpu"),
 
     /** UOS Test окружение */
     UOS_TEST("https://front-uos-service.test.ecp/"),

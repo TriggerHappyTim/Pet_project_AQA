@@ -263,7 +263,7 @@ public class TableComponent extends BaseComponent {
      */
     public static TableComponent createResultsTable(String tableName) {
         return new TableComponent(
-            By.xpath("//tbody[@class= 'n2o-advanced-table-tbody']"),
+            By.xpath("//table//tbody"),
             "Таблица результатов '" + tableName + "'"
         );
     }
@@ -282,7 +282,7 @@ public class TableComponent extends BaseComponent {
      */
     public TableComponent waitForLoad() {
         logger.info("Ожидаем загрузки таблицы: {}", componentName);
-        ElementFactory.xpath("//tbody[@class= 'n2o-advanced-table-tbody']/*[1]/*[6]")
+        ElementFactory.xpath("//table//tbody/*[1]/*[6]")
                 .named("Первый элемент таблицы")
                 .waitVisible()
                 .build();

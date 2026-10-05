@@ -5,7 +5,7 @@ import com.bft.pw.WebDriverRunner;
 import com.bft.pw.PwDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.testng.asserts.SoftAssert;
+import com.bft.test.TestAssertions;
 
 import java.util.function.Supplier;
 

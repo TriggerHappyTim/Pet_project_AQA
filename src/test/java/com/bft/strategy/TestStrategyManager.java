@@ -1,7 +1,7 @@
 package com.bft.strategy;
 
 import com.bft.config.TestStrategyType;
-import org.testng.asserts.SoftAssert;
+import com.bft.test.TestAssertions;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -49,7 +49,7 @@ public class TestStrategyManager {
     /**
      * Выполняет тест с автоматическим выбором стратегии
      */
-    public <T> TestExecutionStrategy.TestContext executeTest(String testName, SoftAssert softAssert) {
+    public <T> TestExecutionStrategy.TestContext executeTest(String testName, TestAssertions softAssert) {
         TestExecutionStrategy.TestContext context = new TestExecutionStrategy.TestContext(testName);
 
         // Выбираем подходящую стратегию выполнения
@@ -80,7 +80,7 @@ public class TestStrategyManager {
      * @return контекст выполнения теста
      */
     public <T> TestExecutionStrategy.TestContext executeTestWithStrategy(
-            String testName, ExecutionStrategyType executionType, SoftAssert softAssert) {
+            String testName, ExecutionStrategyType executionType, TestAssertions softAssert) {
         
         @SuppressWarnings("unchecked")
         TestExecutionStrategy<T> strategy = (TestExecutionStrategy<T>) executionStrategies.get(executionType);
@@ -106,12 +106,12 @@ public class TestStrategyManager {
     /**
      * Выполняет тест с указанной стратегией (устаревший метод с TestStrategyType)
      * 
-     * @deprecated Используйте {@link #executeTestWithStrategy(String, ExecutionStrategyType, SoftAssert)}
-     * или {@link #executeTestWithFullSetup(String, ExecutionStrategyType, DataPreparationStrategy.DataPreparationType, ValidationStrategy.ValidationType, SoftAssert)}
+     * @deprecated Используйте {@link #executeTestWithStrategy(String, ExecutionStrategyType, TestAssertions)}
+     * или {@link #executeTestWithFullSetup(String, ExecutionStrategyType, DataPreparationStrategy.DataPreparationType, ValidationStrategy.ValidationType, TestAssertions)}
      */
     @Deprecated
     public <T> TestExecutionStrategy.TestContext executeTestWithStrategy(
-            String testName, TestStrategyType strategyType, SoftAssert softAssert) {
+            String testName, TestStrategyType strategyType, TestAssertions softAssert) {
         // Преобразуем TestStrategyType в ExecutionStrategyType (базовое маппирование)
         ExecutionStrategyType executionType = mapTestStrategyToExecutionType(strategyType);
         return executeTestWithStrategy(testName, executionType, softAssert);
@@ -125,7 +125,7 @@ public class TestStrategyManager {
             ExecutionStrategyType executionType,
             DataPreparationStrategy.DataPreparationType dataType,
             ValidationStrategy.ValidationType validationType,
-            SoftAssert softAssert) {
+            TestAssertions softAssert) {
 
         // Получаем стратегии
         @SuppressWarnings("unchecked")
@@ -242,7 +242,6 @@ public class TestStrategyManager {
         TestStrategyManager manager = new TestStrategyManager();
 
         // Регистрируем стандартные стратегии
-        manager.registerExecutionStrategy(new CryptoProValidationStrategy());
         // ЗАКОММЕНТИРОВАНО: API тесты не используются
         // manager.registerExecutionStrategy(new ApiTestExecutionStrategy("/health", "GET", 200));
 

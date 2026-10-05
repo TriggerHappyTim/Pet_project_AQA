@@ -7,9 +7,15 @@ ps:
       url: 172.18.38.9:9092
   mdm:
     mdm-grpc-url: '172.18.32.153'
+  graphql-mesh:
+    url: 'http://localhost:20266'
+
+telegram:
+  bot-token: ''
+  chat-id: ''
 
 env:
   schemaRs: _INT
   schemaRpu: INT_
-  springProfiles: test
+  springProfiles: int
   environment: int

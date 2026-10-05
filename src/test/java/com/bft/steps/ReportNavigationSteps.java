@@ -5,7 +5,6 @@ import com.bft.security.masking.SecureLogger;
 import com.bft.ui.pages.MainPage;
 import com.bft.pw.Condition;
 import io.qameta.allure.Step;
-import org.springframework.stereotype.Component;
 
 import static com.bft.enums.TimeoutConstants.DEFAULT_WAIT;
 import static com.bft.enums.TimeoutConstants.SHORT_WAIT;
@@ -14,7 +13,6 @@ import static com.bft.pw.Selenide.$x;
 /**
  * Шаги для навигации к разделу отчетов и создания черновика.
  */
-@Component
 public class ReportNavigationSteps {
 
     private final SecureLogger logger = SecureLogger.getLogger(getClass());
@@ -32,14 +30,6 @@ public class ReportNavigationSteps {
         addReports();
         selectReportType(reportType);
         addNewReport();
-    }
-
-    @Step("Переход в реестр запросов (Архив)")
-    public void openArchiveRequestsRegistry() {
-        new MainPage()
-                .openTab("ЛК Архивной Организации")
-                .openTab("Реестр запросов")
-                .openTab("Управление запросами");
     }
 
     @Step(value = "Добавление отчета")
@@ -94,6 +84,14 @@ public class ReportNavigationSteps {
                 .shouldBe(Condition.visible, DEFAULT_WAIT);
         new MainPage()
                 .clickSpanButton("Продолжить")
+                .clickBtn("Да");
+        $x("//body").shouldBe(Condition.visible, SHORT_WAIT);
+    }
+
+    @Step(value = "Продолжить (клик без ожидания видимости)")
+    public void createContinueViaJs() {
+        new MainPage()
+                .clickBtnNoWait("Продолжить")
                 .clickBtn("Да");
         $x("//body").shouldBe(Condition.visible, SHORT_WAIT);
     }

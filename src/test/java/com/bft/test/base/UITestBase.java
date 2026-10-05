@@ -1,11 +1,10 @@
 package com.bft.test.base;
 
 import com.bft.config.TestConfig;
-import com.bft.config.UITestStrategy;
 import com.bft.pw.PwSession;
 import io.qameta.allure.Allure;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 
 import java.time.Duration;
 
@@ -36,27 +35,41 @@ public abstract class UITestBase extends BaseTest {
     /** Таймаут ожидания загрузки страницы */
     private static final Duration PAGE_LOAD_TIMEOUT = Duration.ofSeconds(15);
 
-    /** Признак однократной настройки браузера с расширением КриптоПРО */
-    private static volatile boolean cryptoProConfigured = false;
+    /**
+     * Гарантирует живую Playwright-сессию перед каждым тестом.
+     *
+     * <p>История: при миграции на JUnit 5 настройка браузера выпала из жизненного
+     * цикла (раньше её выполняла цепочка стратегий TestNG), из-за чего все UI-тесты
+     * падали с «Playwright session is not configured». Здесь она восстановлена явно.
+     *
+     * <p>{@link PwSession#configure} идемпотентен: если сессия уже поднята,
+     * повторный вызов ничего не делает. {@link #teardownUITestMethod()} закрывает
+     * сессию после каждого теста — так каждый тест получает чистый контекст.
+     */
+    @BeforeEach
+    protected void ensurePlaywrightSession() {
+        try {
+            PwSession.configure(new TestConfig());
+            PwSession.resetSigningData();
+            // Запись шагов (trace): -Devs.trace=true → zip со скриншотами и снимками DOM в Allure
+            if (Boolean.parseBoolean(System.getProperty("evs.trace",
+                    System.getenv().getOrDefault("EVS_TRACE", "false")))) {
+                PwSession.startTracing();
+            }
+        } catch (Exception e) {
+            logger.error("Не удалось настроить Playwright-сессию: {}", e.getMessage(), e);
+            throw e;
+        }
+    }
 
     /**
      * Дополнительная настройка перед каждым UI тестом.
      *
      * <p>Может быть переопределён в наследниках (вызов {@code super.setupUITestMethod()}).
-     * По умолчанию один раз настраивает Playwright через {@link UITestStrategy}
-     * (Chrome + расширение КриптоПРО) и логирует начало теста.
+     * По умолчанию логирует начало теста.
      */
-    @BeforeMethod
+    @BeforeEach
     protected void setupUITestMethod() {
-        if (!cryptoProConfigured) {
-            try {
-                new UITestStrategy(new TestConfig()).configureSelenide();
-                cryptoProConfigured = true;
-                logger.info("Браузер настроен с расширением КриптоПРО");
-            } catch (Exception e) {
-                logger.warn("Не удалось настроить браузер с расширением КриптоПРО: {}", e.getMessage());
-            }
-        }
         logger.info("Подготовка UI теста: {}", getClass().getSimpleName());
     }
 
@@ -65,14 +78,24 @@ public abstract class UITestBase extends BaseTest {
      * получал свежий браузер и изолированное состояние приложения.
      * Повторяет поведение Selenide по умолчанию ({@code holdBrowserOpen=false}).
      */
-    @AfterMethod
+    @AfterEach
     protected void teardownUITestMethod() {
+        try {
+            // Сохраняем trace-запись шагов, если она велась
+            java.nio.file.Path trace = PwSession.stopTracing(
+                    getClass().getSimpleName() + "-" + System.currentTimeMillis() % 100000);
+            if (trace != null && java.nio.file.Files.exists(trace)) {
+                Allure.addAttachment("Playwright trace (zip)", "application/zip",
+                        java.nio.file.Files.newInputStream(trace), ".zip");
+            }
+        } catch (Exception e) {
+            logger.warn("Не удалось сохранить trace: {}", e.getMessage());
+        }
         try {
             PwSession.close();
         } catch (Exception e) {
             logger.warn("Ошибка при закрытии Playwright-сессии: {}", e.getMessage());
         }
-        cryptoProConfigured = false;
     }
 
     /**

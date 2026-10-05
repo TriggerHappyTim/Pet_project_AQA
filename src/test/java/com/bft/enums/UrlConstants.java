@@ -4,15 +4,11 @@ package com.bft.enums;
  * Константы URL для тестов EVS Testing Framework.
  * <p>
  * Централизованное хранение всех URL, используемых в тестах.
- * Поддерживает как статические адреса (КриптоПРО), так и динамические,
- * зависящие от выбранного окружения (ЕВС, РПУ, УОС).
+ * Поддерживает динамические адреса, зависящие от выбранного окружения (ЕВС, РПУ, УОС).
  *
  * <p>Пример использования:
  * <pre>{@code
  * import static com.bft.enums.UrlConstants.*;
- *
- * // Статический URL
- * Selenide.open(CRYPTOPRO_DEMO_PAGE_URL);
  *
  * // Динамический URL (автоматически подтянется из UITypeSelector)
  * Selenide.open(EVS_BASE_URL);
@@ -23,24 +19,6 @@ package com.bft.enums;
  * @see UITypeSelector
  */
 public final class UrlConstants {
-
-    // ========== КриптоПРО (Статические) ==========
-
-    /**
-     * URL демо-страницы КриптоПРО для проверки электронной подписи.
-     */
-    public static final String CRYPTOPRO_DEMO_PAGE_URL =
-            "https://cryptopro.ru/sites/default/files/products/cades/demopage/cades_bes_sample.html";
-
-    /**
-     * Базовый URL сайта КриптоПРО.
-     */
-    public static final String CRYPTOPRO_BASE_URL = "https://cryptopro.ru";
-
-    /**
-     * URL страницы продуктов КриптоПРО.
-     */
-    public static final String CRYPTOPRO_PRODUCTS_URL = "https://cryptopro.ru/products";
 
     // ========== Основные системы (Динамические) ==========
     // Значения определяются на лету через UITypeSelector в зависимости от свойств запуска (-Denv...)

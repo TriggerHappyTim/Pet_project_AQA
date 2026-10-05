@@ -3,26 +3,32 @@
 [![Java](https://img.shields.io/badge/Java-11-orange)](https://openjdk.java.net/)
 [![Maven](https://img.shields.io/badge/Maven-3.6%2B-blue)](https://maven.apache.org/)
 [![Playwright](https://img.shields.io/badge/Playwright-1.49.0-green)](https://playwright.dev/java/)
-[![TestNG](https://img.shields.io/badge/TestNG-7.8.0-red)](https://testng.org/)
+[![JUnit 5](https://img.shields.io/badge/JUnit_5-5.10.2-green)](https://junit.org/junit5/)
 [![Allure](https://img.shields.io/badge/Allure-2.22.2-purple)](https://docs.qameta.io/allure/)
 
 ## 📋 Описание
 
-**EVS Testing Framework** — фреймворк для автоматизированного UI-тестирования системы ЕВС (Единая Вычислительная Система). Построен на Java 11 + TestNG + Playwright + Allure. Поддерживает два ЛК: **ЛК Страхователя** и **ЛК Архивной организации**.
+**EVS Testing Framework** — фреймворк для автоматизированного UI-тестирования системы ЕВС (Единая Вычислительная Система). Построен на Java 11 + JUnit 5 + Playwright + Allure. Поддерживает два ЛК: **ЛК Страхователя** и **ЛК Архивной организации**.
 
 ### 🎯 Основные возможности
 
 - **Многоуровневая архитектура** с четким разделением ответственности
 - **12 переиспользуемых UI-компонентов** (Button, Input, Select, Checkbox, Table и др.)
 - **Page Object + Steps** — два уровня абстракции для UI
-- **138 Java файлов** (1 main + 137 test), 15 тестовых классов по отчетам
 - **Интеграция с Allure** для отчетности, скриншоты при падениях
 - **3 браузера** — Chrome, Firefox, Yandex (локально и удаленно через Selenoid)
 - **Безопасность** — CredentialManager, SecureLogger, маскировка данных
 - **Мониторинг** — отслеживание медленных и нестабильных тестов
 - **GitLab CI/CD** с выбором ЛК, группы тестов, контура и браузера
+- **Сервисный слой полного стека**: подписание ЭЦП через GraphQL, Kafka-события,
+  БД (Phoenix), gRPC health-check, Telegram-уведомления, Jira TMS, визуальная регрессия
 
-> **Примечание**: API тесты (RestAssured) и Jira/Zephyr интеграция подготовлены, но **закомментированы** — не используются в текущей версии.
+> 🎓 **Новичок?** Начните с [BEGINNERS_GUIDE.md](BEGINNERS_GUIDE.md) — подробный учебник
+> «с нуля до первого теста», включая построчный разбор теста и все настройки.
+>
+> 🛠 **Пишете тесты?** Практическое руководство: [NEW_TESTS_GUIDE.md](NEW_TESTS_GUIDE.md) —
+> пошаговое добавление тестов, чек-лист нового ЛК (8 шагов), подключение
+> GraphQL / БД / Kafka / Jira TMS с командами проверки.
 
 ## 🏗️ Архитектура
 
@@ -43,7 +49,7 @@
 │                    (Configuration, Security)               │
 ├─────────────────────────────────────────────────────────────┤
 │                    Внешние инструменты                      │
-│                    (Playwright, TestNG, Allure)              │
+│                    (Playwright, JUnit 5, Allure)              │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -64,14 +70,10 @@ src/test/java/com/bft/
 │   ├── pages/                       # Page Objects (BasePage, LoginPage, MainPage)
 │   ├── component/                   # 12 переиспользуемых UI-компонентов
 │   └── core/                        # BasePage, SmartElement, WaitStrategies
-├── gui/                         # Legacy Page Objects (используются в Steps)
-│   ├── LoginPage.java, MainPage.java, BasePage.java, CryptoProDemoPage.java
 ├── LK_Insurence/                # Тесты ЛК Страхователя (14 файлов)
 │   ├── ReportXmlUploadTest.java     # Универсальный smoke XML-загрузки
-│   ├── CryptoProCertificateTest.java
-│   ├── EFS_1/, SZV_M/, SZV_TD/, SZV_ISH/, SZV_DSO/
-│   ├── SZV_K/, SZV_STAJ/, SZV_KORR/, ODV_1/
-│   └── CredentialsTest.java, TestConfigurationTest.java, ExampleTest.java
+│   ├── EFS_1/, SZV_M/, SZV_TD/, SZV_ISH/
+│   └── CredentialsTest.java
 ├── LK_Archive/                  # Тесты ЛК Архивной организации
 │   └── ArchivesTest.java            # 5 тестов (РПУ → ЕВС → подписание)
 ├── security/                    # Безопасность (13 файлов)
@@ -90,25 +92,52 @@ src/test/java/com/bft/
 │   ├── BaseTestExecutionStrategy.java
 │   └── CryptoProValidationStrategy.java
 ├── test/                        # Тестовая инфраструктура (16 файлов)
-│   ├── base/                        # UITestBase, DataDrivenTestBase
+│   ├── base/                        # UITestBase, BaseTest
 │   ├── annotations/                 # @TestType, @TestPriority, @Requirement и др.
+│   ├── examples/                    # 🎓 Обучающие примеры (@Disabled, см. BEGINNERS_GUIDE.md)
 │   ├── logging/                     # TestLogger, AllureIntegration
 │   ├── helpers/                     # TestSetupHelper, LoginHelper, SmartWaits
 │   ├── negative/                    # NegativeTestCases
 │   ├── retry/                       # RetryAnalyzer
-│   └── examples/                    # ImprovedTestExamples
+├── service/                       # Сервисный слой полного стека
+│   ├── graphql/                     # Подписание ЭЦП через GraphQL/Camunda (без КриптоПРО)
+│   │   ├── GraphQLClient.java         # REST-обёртка graphql-mesh
+│   │   ├── SignRequest.java           # Шаблоны mutations
+│   │   └── SignService(+Impl).java    # API-подписание (evs.sign.mode=api|ui)
+│   ├── db/                          # Прямой доступ к БД (Apache Phoenix)
+│   │   ├── DbConfig.java              # -Ddb.url=...
+│   │   └── DbClient.java              # Параметризованные SELECT/UPDATE + Allure
+│   ├── kafka/                       # Асинхронные события
+│   │   ├── KafkaConfig.java           # -Dkafka.servers=...
+│   │   └── KafkaEventConsumer.java    # waitForMessage / readRecent
+│   └── grpc/                        # Внутренние сервисы ЕВС
+│       ├── GrpcConfig.java            # Реестр эндпоинтов (порты CI port-forward)
+│       ├── GrpcChannelFactory.java    # Каналы plaintext/TLS
+│       └── GrpcHealthCheck.java       # Connectivity-проверки без стабов
 ├── testdata/                    # TestData builders (3 файла)
 │   ├── TestDataBuilder.java, UserTestDataBuilder.java, ReportTestDataBuilder.java
 ├── monitoring/                  # Мониторинг (2 файла)
 │   ├── PerformanceMonitor.java, FlakyTestDetector.java
+├── helpers/                     # Утилиты
+│   ├── TelegramNotifier.java        # Уведомления о результатах в Telegram
+│   ├── VisualComparator.java        # Визуальная регрессия (эталоны в resources/screens/)
+│   ├── InfrastructureCheck.java     # Pre-flight проверки сервисов
+│   └── ConfigReader.java, StandardWaits.java, DataFiller.java ...
+├── integration/
+│   ├── tms/                         # Jira TMS: автообновление статусов по @TmsLink
+│   │   ├── TmsConfig.java, TmsClient.java, TmsStatusMapper.java
+│   └── ...                          # (исторический skeleton Zephyr — не активен)
 ├── enums/                       # Перечисления (6 файлов)
 │   ├── UIType.java, UITypeSelector.java, ReportType.java
 │   ├── ReportFormType.java, ReportXmlResource.java, TabType.java
 ├── constants/                   # Константы (2 файла)
 │   ├── TimeoutConstants.java, UrlConstants.java
-├── steps/                       # Бизнес-шаги
+├── steps/                       # Бизнес-шаги (5 файлов)
+│   ├── AuthSteps.java
+│   ├── ReportNavigationSteps.java
+│   ├── ReportDataEntrySteps.java
+│   ├── ArchiveSteps.java
 │   └── SzvReportsSteps.java
-├── integration/                 # Jira/Zephyr/Allure (14 файлов, закомментировано)
 ├── browser/factory/             # Фабрики браузеров (6 файлов)
 │   ├── ChromeBrowserFactory, FirefoxBrowserFactory, YandexBrowserFactory
 └── utils/                       # Утилиты (3 файла)
@@ -135,8 +164,11 @@ cd evs-testing-framework
 # 2. Установить зависимости
 mvn clean install
 
-# 3. Запустить простой тест
-mvn test -Dtest=CryptoProCertificateTest#verifyCryptoProPluginLoaded
+# 3. Запустить простой тест (smoke: XML-загрузка отчёта)
+mvn test -Dtest=ReportXmlUploadTest
+
+# Или один метод конкретного класса:
+mvn test -Dtest=ArchivesTest#createRequestInRPU
 
 # 4. Сгенерировать отчет Allure
 mvn allure:serve
@@ -173,38 +205,24 @@ docker run --network evs-testing-network evs-testing-framework
 ### Простой UI тест
 
 ```java
-@Epic("КриптоПРО")
-@Feature("Электронная подпись")
-public class CryptoProCertificateTest extends UITestBase {
-
-    private CryptoProDemoPage cryptoProPage;
-
-    @BeforeMethod
-    public void initializePageObject() {
-        cryptoProPage = new CryptoProDemoPage(softAssert);
-    }
+@Epic("ЕВС")
+@Feature("Загрузка XML отчета")
+@Tag("smoke")
+@Tag("xml-upload")
+public class ReportXmlUploadTest extends BaseTest {
 
     @Test
-    @Story("Проверка загрузки плагина")
-    @Description("Проверка что плагин КриптоПРО загружен")
-    public void verifyCryptoProPluginLoaded() {
-        arrangeActAssert(
-            // Arrange
-            () -> logger.info("Подготовка проверки плагина"),
-
-            // Act
-            () -> cryptoProPage.openPageAndVerify("Демо-страница КриптоПРО"),
-
-            // Assert
-            (softAssert) -> {
-                softAssert.assertTrue(cryptoProPage.verifyExtensionLoaded(),
-                    "Расширение должно быть загружено");
-                softAssert.assertTrue(cryptoProPage.verifyPluginLoaded(),
-                    "Плагин должен быть загружен");
-            },
-
-            "Проверка загрузки плагина КриптоПРО"
-        );
+    @Story("Загрузка XML-файла отчета")
+    @Description("Проверка загрузки XML-файла отчета через UI")
+    public void uploadReportXml() {
+        ReportNavigationSteps reportNavSteps = new ReportNavigationSteps();
+        ReportDataEntrySteps dataEntrySteps = new ReportDataEntrySteps();
+        
+        reportNavSteps.addReports();
+        reportNavSteps.selectReportType(ReportFormType.SZV_M);
+        reportNavSteps.addNewReport();
+        
+        assertNotNull("Страница загрузки XML должна открыться");
     }
 }
 ```
@@ -249,23 +267,23 @@ ReportData report = ReportTestDataBuilder.createDefault()
 ### Мониторинг производительности и нестабильных тестов
 
 ```java
-public class MyTest extends UITestBase {
+public class MyTest extends BaseTest {
     private static final PerformanceMonitor monitor = PerformanceMonitor.getInstance();
     private static final FlakyTestDetector detector = FlakyTestDetector.getInstance();
     
-    @BeforeMethod
-    public void setup(ITestResult result) {
-        monitor.startTest(result);
+    @BeforeEach
+    public void setup(TestInfo testInfo) {
+        monitor.startTest(testInfo);
     }
     
-    @AfterMethod
-    public void teardown(ITestResult result) {
-        monitor.endTest(result);
-        detector.recordTestResult(result);
+    @AfterEach
+    public void teardown(TestInfo testInfo) {
+        monitor.endTest(testInfo);
+        detector.recordTestResult(testInfo);
     }
     
-    @AfterSuite
-    public void printStatistics() {
+    @AfterAll
+    public static void printStatistics() {
         monitor.printStatistics();
         detector.reportFlakyTests();
     }
@@ -532,7 +550,7 @@ mvn allure:report -Dallure.results.directory=allure-results
 | Технология | Версия | Назначение |
 |-----------|--------|------------|
 | Java | 11 | Язык |
-| TestNG | 7.8.0 | Тестовый фреймворк |
+| JUnit 5 | 5.10.2 | Тестовый фреймворк |
 | Playwright | 1.49.0 | UI-автоматизация |
 | Allure | 2.22.2 | Отчетность |
 | Spring Boot | 2.6.14 | Базовый фреймворк |

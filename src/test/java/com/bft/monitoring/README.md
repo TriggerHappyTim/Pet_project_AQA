@@ -13,18 +13,18 @@
 public class MyTest extends UITestBase {
     private static final PerformanceMonitor monitor = PerformanceMonitor.getInstance();
     
-    @BeforeMethod
-    public void setup(ITestResult result) {
-        monitor.startTest(result);
+    @BeforeEach
+    public void setup(TestInfo testInfo) {
+        monitor.startTest(testInfo);
     }
     
-    @AfterMethod
-    public void teardown(ITestResult result) {
-        monitor.endTest(result);
+    @AfterEach
+    public void teardown(TestInfo testInfo) {
+        monitor.endTest(testInfo);
     }
     
-    @AfterSuite
-    public void printStatistics() {
+    @AfterAll
+    public static void printStatistics() {
         monitor.printStatistics();
     }
 }
@@ -45,13 +45,13 @@ public class MyTest extends UITestBase {
 public class MyTest extends UITestBase {
     private static final FlakyTestDetector detector = FlakyTestDetector.getInstance();
     
-    @AfterMethod
-    public void trackTest(ITestResult result) {
-        detector.recordTestResult(result);
+    @AfterEach
+    public void trackTest(TestInfo testInfo) {
+        detector.recordTestResult(testInfo);
     }
     
-    @AfterSuite
-    public void reportFlakyTests() {
+    @AfterAll
+    public static void reportFlakyTests() {
         detector.reportFlakyTests();
     }
 }
@@ -72,9 +72,9 @@ public class MyTest extends UITestBase {
 - `FLAKY_THRESHOLD` - порог успешности для определения нестабильного теста (по умолчанию: 0.95 = 95%)
 - `MIN_EXECUTIONS` - минимальное количество выполнений для определения нестабильности (по умолчанию: 5)
 
-## Интеграция с TestNG
+## Интеграция с JUnit 5
 
-Оба класса используют `ITestResult` из TestNG для отслеживания тестов.
+Оба класса используют `TestInfo` из JUnit 5 для отслеживания тестов.
 Уникальный идентификатор теста: `className#methodName`.
 
 ## Логирование

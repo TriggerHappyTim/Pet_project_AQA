@@ -10,7 +10,6 @@ package com.bft.strategy;
  */
 public enum ExecutionStrategyType {
     // UI стратегии
-    UI_CRYPTO_PRO_VALIDATION("UI CryptoPro Validation"),
     UI_FORM_SUBMISSION("UI Form Submission"),
     UI_NAVIGATION("UI Navigation"),
 

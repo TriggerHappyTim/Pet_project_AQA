@@ -2,7 +2,7 @@ package com.bft.strategy;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.testng.asserts.SoftAssert;
+import com.bft.test.TestAssertions;
 
 /**
  * Базовый класс для стратегий выполнения тестов
@@ -55,7 +55,7 @@ public abstract class BaseTestExecutionStrategy<T> implements TestExecutionStrat
     }
 
     @Override
-    public void validate(TestContext context, SoftAssert softAssert) {
+    public void validate(TestContext context, TestAssertions softAssert) {
         logger.info("Валидация результатов теста '{}' стратегией: {}", context.getTestName(), strategyName);
         try {
             performValidation(context, softAssert);
@@ -110,7 +110,7 @@ public abstract class BaseTestExecutionStrategy<T> implements TestExecutionStrat
     /**
      * Выполняет специфическую валидацию
      */
-    protected abstract void performValidation(TestContext context, SoftAssert softAssert);
+    protected abstract void performValidation(TestContext context, TestAssertions softAssert);
 
     /**
      * Выполняет специфическую очистку

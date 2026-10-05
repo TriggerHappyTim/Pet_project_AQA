@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema version="2.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://пф.рф/ВС/ОДВ-1/2017-12-25" xmlns:ВС2="http://пф.рф/ВС/типы/2017-10-23" xmlns:АФ4="http://пф.рф/АФ/2017-08-21" xmlns:УТ2="http://пф.рф/УТ/2017-08-21" xmlns:ИС2="http://пф.рф/ВС/ИС/типы/2017-09-11" targetNamespace="http://пф.рф/ВС/ОДВ-1/2017-12-25" elementFormDefault="qualified">
+	<xs:import namespace="http://пф.рф/УТ/2017-08-21" schemaLocation="УнифТипы_2017-08-21.xsd" />
+	<xs:import namespace="http://пф.рф/АФ/2017-08-21" schemaLocation="ТипыАФ_2017-08-21.xsd" />
+	<xs:import namespace="http://пф.рф/ВС/типы/2017-10-23" schemaLocation="ТипыВС_2017-10-23.xsd" />
+	<xs:import namespace="http://пф.рф/ВС/ИС/типы/2017-09-11" schemaLocation="ТипыИС_2017-09-11.xsd" />
+	<xs:import namespace="http://www.w3.org/2000/09/xmldsig#" schemaLocation="xmldsig_core_schema.xsd" />
+	<xs:annotation>
+		<xs:documentation>ОДВ-1 Сведения о страховом стаже застрахованного лица</xs:documentation>
+	</xs:annotation>
+	<xs:element name="ЭДПФР">
+		<xs:annotation>
+			<xs:documentation>Корневой элемент. Электронный документ ОДВ-1 (Сведения о страховом стаже застрахованного лица). Содержит сведения самого документа и служебную информацию об электронном документе.</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:all>
+				<xs:element name="СлужебнаяИнформация" type="АФ4:ТипСлужебнаяИнформацияППЭД">
+					<xs:annotation>
+						<xs:documentation>Служебная информация об электронном документе.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="ОДВ-1">
+					<xs:annotation>
+						<xs:documentation>Форма ОДВ-1 (ОДВ-1).</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Тип">
+								<xs:annotation>
+									<xs:documentation>Тип сведений ОДВ-1. Возможные значения:
+										1 - корректирующая,
+										2 - отменяющая.</xs:documentation>
+								</xs:annotation>
+								<xs:simpleType>
+									<xs:restriction base="ИС2:ТипТипОДВ-1">
+										<xs:enumeration value="1" />
+										<xs:enumeration value="2" />
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="Страхователь" type="ИС2:ТипСтраховательИСРегНомер2">
+								<xs:annotation>
+									<xs:documentation>Данные о страхователе (плательщике страховых взносов).</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="ОтчетныйПериод">
+								<xs:annotation>
+									<xs:documentation>Отчетный период, за который представляются сведения.</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="Код" type="ИС2:ТипКодОтчетногоПериодаИС">
+											<xs:annotation>
+												<xs:documentation>Код отчетного периода.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="Год">
+											<xs:annotation>
+												<xs:documentation>Год отчетного периода</xs:documentation>
+											</xs:annotation>
+											<xs:simpleType>
+												<xs:restriction base="xs:gYear">
+													<xs:minInclusive value="1996" />
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="ОснованияДНП" minOccurs="0" maxOccurs="unbounded">
+								<xs:annotation>
+									<xs:documentation>Блок сведений об основании для отражения данных о периодах работы застрахованного лица в условиях, дающих право на досрочное назначение пенсии в соответствии со статьей 30 и статьей 31 Федерального закона от 28.12.2013 № 400–ФЗ «О страховых пенсиях».</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="Основание" maxOccurs="unbounded">
+											<xs:annotation>
+												<xs:documentation>Блок сведений об основании для отражения данных о периодах работы застрахованного лица в условиях, дающих право на досрочное назначение пенсии в соответствии со статьей 30 и статьей 31 Федерального закона от 28.12.2013 № 400–ФЗ «О страховых пенсиях».</xs:documentation>
+											</xs:annotation>
+											<xs:complexType>
+												<xs:sequence>
+													<xs:group ref="ИС2:ГрОснованиеДНП">
+														<xs:annotation>
+															<xs:documentation>Группа элементов со сведениями об основании для отражения данных о периодах работы застрахованного лица в условиях, дающих право на досрочное назначение пенсии в соответствии со статьей 30 и статьей 31 Федерального закона от 28.12.2013 № 400–ФЗ «О страховых пенсиях».</xs:documentation>
+														</xs:annotation>
+													</xs:group>
+													<xs:element name="ОУТ" maxOccurs="unbounded">
+														<xs:annotation>
+															<xs:documentation>Сведения об особых условиях труда: код особых условий труда или код основания досрочного назначения пенсии и код профессии в соответствии со Списками 1 и 2 производств, работ, профессий, должностей и показателей, дающих право на льготное обеспечение, утвержденными Постановлением Кабинета Министров СССР от 26.01.1991 № 10</xs:documentation>
+														</xs:annotation>
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="Код">
+																	<xs:annotation>
+																		<xs:documentation>Код особых условий труда или код основания условия досрочного назначения пенсии</xs:documentation>
+																	</xs:annotation>
+																	<xs:simpleType>
+																		<xs:restriction base="xs:normalizedString">
+																			<xs:enumeration value="ЗП12А" />
+																			<xs:enumeration value="27-1" />
+																			<xs:enumeration value="ЗП12Б" />
+																			<xs:enumeration value="27-2" />
+																			<xs:enumeration value="ЗП12В" />
+																			<xs:enumeration value="27-3" />
+																			<xs:enumeration value="ЗП12Г" />
+																			<xs:enumeration value="27-4" />
+																			<xs:enumeration value="ЗП12Д" />
+																			<xs:enumeration value="27-5" />
+																			<xs:enumeration value="ЗП12Е" />
+																			<xs:enumeration value="27-6" />
+																			<xs:enumeration value="ЗП12Ж" />
+																			<xs:enumeration value="27-7" />
+																			<xs:enumeration value="ЗП12З" />
+																			<xs:enumeration value="27-8" />
+																			<xs:enumeration value="ЗП12И" />
+																			<xs:enumeration value="27-9" />
+																			<xs:enumeration value="ЗП12К" />
+																			<xs:enumeration value="27-10" />
+																			<xs:enumeration value="ЗП12Л" />
+																			<xs:enumeration value="ЗП12М" />
+																			<xs:enumeration value="28-ОС" />
+																			<xs:enumeration value="27-ОС" />
+																			<xs:enumeration value="ЗП12О" />
+																			<xs:enumeration value="28-ПЖ" />
+																			<xs:enumeration value="27-ПЖ" />
+																			<xs:enumeration value="СЕВ26" />
+																			<xs:enumeration value="28-СЕВ" />
+																			<xs:enumeration value="ЗП78ГР" />
+																			<xs:enumeration value="27-11ГР" />
+																			<xs:enumeration value="ЗП78ВП" />
+																			<xs:enumeration value="27-11ВП" />
+																			<xs:enumeration value="ЗП78ФЛ" />
+																			<xs:enumeration value="27-12" />
+																			<xs:enumeration value="ЗП78СС" />
+																			<xs:enumeration value="28-СП" />
+																			<xs:enumeration value="27-СП" />
+																			<xs:enumeration value="ЗП80ПД" />
+																			<xs:enumeration value="28-ПД" />
+																			<xs:enumeration value="27-ПД" />
+																			<xs:enumeration value="ЗП80РК" />
+																			<xs:enumeration value="28-ПДРК" />
+																			<xs:enumeration value="27-ПДРК" />
+																			<xs:enumeration value="ЗП81ГД" />
+																			<xs:enumeration value="28-ГД" />
+																			<xs:enumeration value="27-ГД" />
+																			<xs:enumeration value="ЗП81СМ" />
+																			<xs:enumeration value="28-СМ" />
+																			<xs:enumeration value="27-СМ" />
+																			<xs:enumeration value="ХИРУРГД" />
+																			<xs:enumeration value="28-ГДХР" />
+																			<xs:enumeration value="27-ГДХР" />
+																			<xs:enumeration value="ХИРУРСМ" />
+																			<xs:enumeration value="28-СМХР" />
+																			<xs:enumeration value="27-СМХР" />
+																			<xs:enumeration value="ТВОРЧ15" />
+																			<xs:enumeration value="ТВОРЧ20" />
+																			<xs:enumeration value="ТВОРЧ25" />
+																			<xs:enumeration value="ТВОРЧ30" />
+																			<xs:enumeration value="САМОЛЕТ" />
+																			<xs:enumeration value="СПЕЦАВ" />
+																			<xs:enumeration value="СПАСАВ" />
+																			<xs:enumeration value="УЧЛЕТ" />
+																			<xs:enumeration value="ВЫСШПИЛ" />
+																			<xs:enumeration value="НОРМАПР" />
+																			<xs:enumeration value="НОРМСП" />
+																			<xs:enumeration value="РЕАКТИВН" />
+																			<xs:enumeration value="ЛЕТРАБ" />
+																			<xs:enumeration value="ЛЕТИСП" />
+																			<xs:enumeration value="ОПЫТИСП" />
+																			<xs:enumeration value="ИСПКЛС1" />
+																			<xs:enumeration value="ИТСИСП" />
+																			<xs:enumeration value="ИТСМАВ" />
+																			<xs:enumeration value="ИНСПЕКТ" />
+																			<xs:enumeration value="УВД" />
+																			<xs:enumeration value="27-14" />
+																			<xs:enumeration value="ИТС" />
+																			<xs:enumeration value="27-15" />
+																		</xs:restriction>
+																	</xs:simpleType>
+																</xs:element>
+																<xs:element name="ПозицияСписка" minOccurs="0" type="УТ2:ТипНепустаяСтрока">
+																	<xs:annotation>
+																		<xs:documentation>Код профессии в соответствии со Списками 1 и 2 производств, работ, профессий, должностей и показателей, дающих право на льготное обеспечение, утвержденными Постановлением Кабинета Министров СССР от 26.01.1991 № 10</xs:documentation>
+																	</xs:annotation>
+																</xs:element>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:group ref="ИС2:ГрИтогоДНП">
+											<xs:annotation>
+												<xs:documentation>Общее количество рабочих мест и фактически работающих в особых условиях труда по штату</xs:documentation>
+											</xs:annotation>
+										</xs:group>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="Руководитель">
+								<xs:annotation>
+									<xs:documentation>Должность и ФИО руководителя организации-страхователя</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="Должность" type="УТ2:ТипНепустаяСтрока">
+											<xs:annotation>
+												<xs:documentation>Наименование должности руководителя организации-страхователя</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="ФИО" type="УТ2:ТипФИО">
+											<xs:annotation>
+												<xs:documentation>ФИО руководителя организации-страхователя.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="ДатаЗаполнения" type="xs:date">
+								<xs:annotation>
+									<xs:documentation>Дата заполнения документа.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element ref="Signature" xmlns="http://www.w3.org/2000/09/xmldsig#" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Электронная подпись (ЭП). Электронный документ, для которого законодательством Российской Федерации предусмотрена юридически значимая подпись, должен быть подписан усиленной квалифицированной электронной подписью в соответствии со спецификацией XMLDSig.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:all>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

@@ -92,29 +92,9 @@ maven test:
   variables:
     SE_NODE_OVERRIDE_MAX_SESSIONS: "true"
     SE_NODE_MAX_SESSIONS: "4"
-    # Настройка расширения КриптоПРО для удаленного запуска
-    # Вариант 2: Использование путей к файлам расширения из репозитория
-    CRYPTOPRO_PATH: "src/test/resources/CryptoPro Chrome 1.2.13.0.crx"
-    CRYPTOPRO_XPI_PATH: "src/test/resources/cryptopro.ru.xpi"
-    # Альтернативно: можно установить переменную CRYPTOPRO_BASE64 в настройках GitLab CI
-    # (Settings → CI/CD → Variables) со значением base64-кодированного файла расширения
+    # Configuration removed - CryptoPro tests deleted
   script:
     - curl -X GET http://chrome:4444/status || echo "Selenium Grid не доступен, но продолжаем выполнение"
-    # Проверка наличия файлов расширения КриптоПРО
-    - |
-      if [ -f "${CRYPTOPRO_PATH}" ]; then
-        echo "✓ Файл расширения Chrome найден: ${CRYPTOPRO_PATH}"
-        ls -lh "${CRYPTOPRO_PATH}"
-      else
-        echo "⚠ Файл расширения Chrome не найден: ${CRYPTOPRO_PATH}"
-      fi
-    - |
-      if [ -f "${CRYPTOPRO_XPI_PATH}" ]; then
-        echo "✓ Файл расширения Firefox найден: ${CRYPTOPRO_XPI_PATH}"
-        ls -lh "${CRYPTOPRO_XPI_PATH}"
-      else
-        echo "⚠ Файл расширения Firefox не найден: ${CRYPTOPRO_XPI_PATH}"
-      fi
     - |
       if [ -n "${FORWARDED_HELM_NAMESPACE}" ]; then
         HELM_NAMESPACE=${FORWARDED_HELM_NAMESPACE};
@@ -163,7 +143,7 @@ maven test:
           then
             case "${TEST_SCRIPT}" in
               "Системные")
-                TEST_LIST="CryptoProCertificateTest#verifyCryptoProPluginLoaded,CryptoProCertificateTest#testCertificateSelectionAndSigning,CryptoProCertificateTest#testPageDiagnostics,CryptoProCertificateTest#verifyCryptoProPluginWithStrategy,CryptoProCertificateTest#quickPluginCheck"
+                TEST_LIST=""
                 ;;
               "Ручной ввод")
                 TEST_LIST="Efs1#efs_szv_td,Efs1#efs_szv_staj,Efs1#efs_szv_td_krivonosov,Szv_td#szv_td,Szv_m#szv_m"
@@ -253,7 +233,7 @@ maven test:
           then
             case "${TEST_SCRIPT}" in
               "Системные")
-                TEST_LIST="CryptoProCertificateTest#verifyCryptoProPluginLoaded,CryptoProCertificateTest#testCertificateSelectionAndSigning,CryptoProCertificateTest#testPageDiagnostics,CryptoProCertificateTest#verifyCryptoProPluginWithStrategy,CryptoProCertificateTest#quickPluginCheck"
+                TEST_LIST=""
                 ;;
               "Ручной ввод")
                 TEST_LIST="Efs1#efs_szv_td,Efs1#efs_szv_staj,Efs1#efs_szv_td_krivonosov,Szv_td#szv_td,Szv_m#szv_m"

@@ -6,6 +6,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
 /**
@@ -47,14 +49,19 @@ public class PropertiesCredentialProvider implements CredentialProvider {
     }
 
     /**
-     * Загружает properties из classpath
+     * Загружает properties из classpath.
+     *
+     * <p>ВАЖНО: читаем через Reader в UTF-8. Вариант {@code props.load(InputStream)}
+     * по спецификации java.util.Properties декодирует файл как ISO-8859-1,
+     * из-за чего кириллические значения (например, названия организаций на ЕПГУ)
+     * превращаются в нечитаемый мусор и тесты/шаги авторизации падают.
      */
     private Properties loadProperties() {
         Properties props = new Properties();
 
         try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(propertiesFile)) {
             if (inputStream != null) {
-                props.load(inputStream);
+                props.load(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
             } else {
                 // Если файл не найден, создаем пустые properties
                 log.debug("Properties file '{}' not found in classpath. Using empty properties.", propertiesFile);

@@ -130,24 +130,6 @@ public final class TimeoutConstants {
     public static final Duration REPORT_PROCESSING_WAIT = Duration.ofSeconds(120);
     
     /**
-     * Таймаут загрузки КриптоПРО плагина (15 секунд)
-     * Используется для ожидания инициализации криптопровайдера
-     */
-    public static final Duration CRYPTO_PLUGIN_WAIT = Duration.ofSeconds(15);
-    
-    /**
-     * Таймаут для операций с сертификатами (20 секунд)
-     * Используется для выбора и загрузки сертификатов
-     */
-    public static final Duration CERTIFICATE_WAIT = Duration.ofSeconds(20);
-    
-    /**
-     * Таймаут для операций подписания (30 секунд)
-     * Используется для ожидания создания электронной подписи
-     */
-    public static final Duration SIGNATURE_WAIT = Duration.ofSeconds(30);
-    
-    /**
      * Таймаут для авторизации через ЕПГУ (70 секунд)
      * Используется для ожидания загрузки страницы ЕПГУ и обработки авторизации
      */

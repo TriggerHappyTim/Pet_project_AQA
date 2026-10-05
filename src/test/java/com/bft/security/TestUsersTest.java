@@ -2,11 +2,13 @@ package com.bft.security;
 
 import com.bft.security.EnvironmentCredentialProvider.UserCredentials;
 import io.qameta.allure.AllureId;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import io.qameta.allure.Description;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
-import static org.testng.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Unit-тесты для enum TestUsers
@@ -14,23 +16,24 @@ import static org.testng.Assert.*;
  * Проверяет корректность работы с различными тестовыми пользователями,
  * получение credentials и организаций.
  */
+@Tag("smoke")
 public class TestUsersTest {
     
     private CredentialManager credentialManager;
     
-    @BeforeMethod
+    @BeforeEach
     public void setUp() {
         // Сбросить синглтон и создать новый экземпляр
         CredentialManager.reset();
         credentialManager = CredentialManager.getInstance();
     }
     
-    @AfterMethod
+    @AfterEach
     public void tearDown() {
         CredentialManager.reset();
     }
     
-    @Test(groups = {"unit", "security"})
+    @Test
     public void testKrivonosovUserCredentials() {
         // Given
         TestUsers user = TestUsers.KRIVONOSOV_ALEXANDER;
@@ -46,9 +49,8 @@ public class TestUsersTest {
         assertEquals(user.getFullName(), "Кривоносов Александр Петрович", "Неверное ФИО");
     }
     
-    @Test(groups = {"unit", "security"}, 
-          testName = "#3 testBezdomniyUserCredentials",
-          description = "Проверка credentials пользователя Бездомный")
+    @Test
+    @Description("Проверка credentials пользователя Бездомный")
     @AllureId("USERS-003")
     public void testBezdomniyUserCredentials() {
         // Given
@@ -65,9 +67,8 @@ public class TestUsersTest {
         assertEquals(user.getFullName(), "Бездомный Иван Николаевич", "Неверное ФИО");
     }
     
-    @Test(groups = {"unit", "security"}, 
-          testName = "#8 testBabkinaUserCredentials",
-          description = "Проверка credentials пользователя Бабкина")
+    @Test
+    @Description("Проверка credentials пользователя Бабкина")
     @AllureId("USERS-008")
     public void testBabkinaUserCredentials() {
         // Given
@@ -85,7 +86,7 @@ public class TestUsersTest {
         assertEquals(user.getFullName(), "Бабкина Вера Васильевна", "Неверное ФИО");
     }
     
-    @Test(groups = {"unit", "security"})
+    @Test
     public void testDefaultUserCredentials() {
         // Given
         TestUsers user = TestUsers.DEFAULT_USER;
@@ -100,9 +101,8 @@ public class TestUsersTest {
         assertEquals(user.getFullName(), "Тестовый пользователь по умолчанию", "Неверное ФИО");
     }
     
-    @Test(groups = {"unit", "security"}, 
-          testName = "#6 testGetCredentialsObject",
-          description = "Проверка получения объекта credentials")
+    @Test
+    @Description("Проверка получения объекта credentials")
     @AllureId("USERS-006")
     public void testGetCredentialsObject() {
         // Given
@@ -118,7 +118,7 @@ public class TestUsersTest {
         assertTrue(credentials.isValid(), "Credentials должны быть валидны");
     }
     
-    @Test(groups = {"unit", "security"})
+    @Test
     public void testHasCredentials() {
         // Given
         TestUsers user = TestUsers.KRIVONOSOV_ALEXANDER;
@@ -130,9 +130,8 @@ public class TestUsersTest {
         assertTrue(hasCredentials, "У пользователя должны быть все обязательные credentials");
     }
     
-    @Test(groups = {"unit", "security"}, 
-          testName = "#4 testCredentialPrefix",
-          description = "Проверка префиксов credentials")
+    @Test
+    @Description("Проверка префиксов credentials")
     @AllureId("USERS-004")
     public void testCredentialPrefix() {
         // Given & When & Then
@@ -142,9 +141,8 @@ public class TestUsersTest {
         assertEquals(TestUsers.DEFAULT_USER.getCredentialPrefix(), "evs");
     }
     
-    @Test(groups = {"unit", "security"}, 
-          testName = "#9 testToString",
-          description = "Проверка метода toString()")
+    @Test
+    @Description("Проверка метода toString()")
     @AllureId("USERS-009")
     public void testToString() {
         // Given
@@ -158,7 +156,7 @@ public class TestUsersTest {
         assertTrue(result.contains(user.getFullName()), "toString() должен содержать ФИО");
     }
     
-    @Test(groups = {"unit", "security"})
+    @Test
     public void testAllUsersHaveUniqueCredentialPrefix() {
         // Given
         TestUsers[] allUsers = TestUsers.values();
@@ -176,9 +174,8 @@ public class TestUsersTest {
         }
     }
     
-    @Test(groups = {"unit", "security"}, 
-          testName = "#1 testAllUsersHaveFullName",
-          description = "Проверка наличия ФИО у всех пользователей")
+    @Test
+    @Description("Проверка наличия ФИО у всех пользователей")
     @AllureId("USERS-001")
     public void testAllUsersHaveFullName() {
         // Given

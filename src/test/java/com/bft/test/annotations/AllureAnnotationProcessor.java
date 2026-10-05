@@ -2,42 +2,49 @@ package com.bft.test.annotations;
 
 import io.qameta.allure.Allure;
 import io.qameta.allure.SeverityLevel;
+import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
+import org.junit.jupiter.api.extension.BeforeEachCallback;
+import org.junit.jupiter.api.extension.ExtensionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.testng.IInvokedMethod;
-import org.testng.IInvokedMethodListener;
-import org.testng.ITestResult;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Обработчик кастомных аннотаций для интеграции с Allure
  * Автоматически добавляет информацию из аннотаций в Allure отчеты
  */
-public class AllureAnnotationProcessor implements IInvokedMethodListener {
+public class AllureAnnotationProcessor implements BeforeEachCallback, AfterTestExecutionCallback {
 
     private static final Logger logger = LoggerFactory.getLogger(AllureAnnotationProcessor.class);
 
+    private final Map<String, Long> testStartTimes = new ConcurrentHashMap<>();
+
     @Override
-    public void beforeInvocation(IInvokedMethod method, ITestResult testResult) {
-        if (!method.isTestMethod()) {
+    public void beforeEach(ExtensionContext context) {
+        Optional<Method> testMethod = context.getTestMethod();
+        if (testMethod.isEmpty()) {
             return;
         }
 
         try {
-            processTestAnnotations(method.getTestMethod().getConstructorOrMethod().getMethod(), testResult.getInstance());
+            processTestAnnotations(testMethod.get(), context.getRequiredTestInstance());
+            testStartTimes.put(getTestId(context), System.currentTimeMillis());
         } catch (Exception e) {
             logger.warn("Ошибка обработки аннотаций для теста: {}", e.getMessage());
         }
     }
 
     @Override
-    public void afterInvocation(IInvokedMethod method, ITestResult testResult) {
-        // Дополнительная обработка после выполнения теста
-        if (method.isTestMethod()) {
-            attachExecutionMetadata(testResult);
+    public void afterTestExecution(ExtensionContext context) {
+        try {
+            attachExecutionMetadata(context);
+        } finally {
+            testStartTimes.remove(getTestId(context));
         }
     }
 
@@ -47,13 +54,8 @@ public class AllureAnnotationProcessor implements IInvokedMethodListener {
     private void processTestAnnotations(Method method, Object testInstance) {
         Class<?> testClass = testInstance.getClass();
 
-        // Обработка аннотаций класса
         processClassAnnotations(testClass);
-
-        // Обработка аннотаций метода
         processMethodAnnotations(method);
-
-        // Создание комплексного описания
         createComprehensiveDescription(method, testClass);
     }
 
@@ -61,7 +63,6 @@ public class AllureAnnotationProcessor implements IInvokedMethodListener {
      * Обработка аннотаций класса
      */
     private void processClassAnnotations(Class<?> testClass) {
-        // TestType аннотация
         Optional.ofNullable(testClass.getAnnotation(TestType.class))
             .ifPresent(annotation -> {
                 Allure.epic(annotation.value().getDisplayName());
@@ -70,14 +71,12 @@ public class AllureAnnotationProcessor implements IInvokedMethodListener {
                 }
             });
 
-        // TestPriority аннотация
         Optional.ofNullable(testClass.getAnnotation(TestPriority.class))
             .ifPresent(annotation -> {
                 SeverityLevel severity = mapPriorityToSeverity(annotation.value());
                 Allure.label("severity", severity.name().toLowerCase());
             });
 
-        // Requirement аннотация
         Optional.ofNullable(testClass.getAnnotation(Requirement.class))
             .ifPresent(annotation -> {
                 Allure.label("requirement", annotation.id());
@@ -87,7 +86,6 @@ public class AllureAnnotationProcessor implements IInvokedMethodListener {
                 Allure.label("requirement.status", annotation.status().name());
             });
 
-        // TestEnvironment аннотация
         Optional.ofNullable(testClass.getAnnotation(TestEnvironment.class))
             .ifPresent(annotation -> {
                 String envDescription = buildEnvironmentDescription(annotation);
@@ -99,7 +97,6 @@ public class AllureAnnotationProcessor implements IInvokedMethodListener {
      * Обработка аннотаций метода
      */
     private void processMethodAnnotations(Method method) {
-        // TestPriority аннотация метода (переопределяет класс)
         Optional.ofNullable(method.getAnnotation(TestPriority.class))
             .ifPresent(annotation -> {
                 SeverityLevel severity = mapPriorityToSeverity(annotation.value());
@@ -110,7 +107,6 @@ public class AllureAnnotationProcessor implements IInvokedMethodListener {
                 }
             });
 
-        // Requirement аннотация метода (переопределяет класс)
         Optional.ofNullable(method.getAnnotation(Requirement.class))
             .ifPresent(annotation -> {
                 Allure.label("requirement", annotation.id());
@@ -119,7 +115,6 @@ public class AllureAnnotationProcessor implements IInvokedMethodListener {
                 Allure.label("requirement.status", annotation.status().name());
             });
 
-        // AutomationAction аннотации
         Arrays.stream(method.getAnnotationsByType(AutomationAction.class))
             .forEach(annotation -> {
                 Allure.label("automation.action", annotation.value());
@@ -138,7 +133,6 @@ public class AllureAnnotationProcessor implements IInvokedMethodListener {
     private void createComprehensiveDescription(Method method, Class<?> testClass) {
         StringBuilder description = new StringBuilder();
 
-        // Добавление информации о типе теста
         Optional.ofNullable(testClass.getAnnotation(TestType.class))
             .ifPresent(annotation -> {
                 description.append("**Тип теста:** ").append(annotation.value().getDisplayName());
@@ -148,7 +142,6 @@ public class AllureAnnotationProcessor implements IInvokedMethodListener {
                 description.append("\n\n");
             });
 
-        // Добавление информации о приоритете
         Optional.ofNullable(method.getAnnotation(TestPriority.class))
             .ifPresent(annotation -> {
                 description.append("**Приоритет:** ").append(annotation.value().getDescription());
@@ -158,7 +151,6 @@ public class AllureAnnotationProcessor implements IInvokedMethodListener {
                 description.append("\n\n");
             });
 
-        // Добавление информации о требованиях
         Optional.ofNullable(method.getAnnotation(Requirement.class))
             .ifPresent(annotation -> {
                 description.append("**Требование:** ").append(annotation.name())
@@ -168,7 +160,6 @@ public class AllureAnnotationProcessor implements IInvokedMethodListener {
                 description.append("**Статус:** ").append(annotation.status().name()).append("\n\n");
             });
 
-        // Добавление информации об окружении
         Optional.ofNullable(testClass.getAnnotation(TestEnvironment.class))
             .ifPresent(annotation -> {
                 description.append("**Требования к окружению:**\n");
@@ -184,7 +175,6 @@ public class AllureAnnotationProcessor implements IInvokedMethodListener {
                 description.append("\n");
             });
 
-        // Установка описания в Allure
         if (description.length() > 0) {
             Allure.description(description.toString());
         }
@@ -193,34 +183,27 @@ public class AllureAnnotationProcessor implements IInvokedMethodListener {
     /**
      * Добавление метаданных выполнения
      */
-    private void attachExecutionMetadata(ITestResult testResult) {
+    private void attachExecutionMetadata(ExtensionContext context) {
         try {
-            long duration = testResult.getEndMillis() - testResult.getStartMillis();
+            String testId = getTestId(context);
+            Long startTime = testStartTimes.get(testId);
+            long duration = startTime != null ? System.currentTimeMillis() - startTime : 0;
             Allure.label("execution.duration", String.valueOf(duration));
 
-            String status;
-            switch (testResult.getStatus()) {
-                case ITestResult.SUCCESS:
-                    status = "passed";
-                    break;
-                case ITestResult.FAILURE:
-                    status = "failed";
-                    break;
-                case ITestResult.SKIP:
-                    status = "skipped";
-                    Throwable skipThrowable = testResult.getThrowable();
-                    String skipReason = (skipThrowable != null && skipThrowable.getMessage() != null) 
-                        ? skipThrowable.getMessage() : "Test was skipped";
-                    Allure.label("skip.reason", skipReason);
-                    break;
-                default:
-                    status = "unknown";
-            }
-            Allure.label("execution.status", status);
+            context.getExecutionException().ifPresent(throwable -> {
+                Allure.label("execution.status", "failed");
+                Allure.label("execution.error", throwable.getMessage() != null
+                    ? throwable.getMessage() : throwable.getClass().getSimpleName());
+            });
 
-            Method method = testResult.getMethod().getConstructorOrMethod().getMethod();
-            Allure.label("method.signature", method.toString());
-            Allure.label("class.name", testResult.getTestClass().getName());
+            if (context.getExecutionException().isEmpty()) {
+                Allure.label("execution.status", "passed");
+            }
+
+            context.getTestMethod().ifPresent(method -> {
+                Allure.label("method.signature", method.toString());
+                Allure.label("class.name", method.getDeclaringClass().getName());
+            });
 
         } catch (Exception e) {
             logger.debug("Ошибка добавления метаданных выполнения: {}", e.getMessage());
@@ -266,5 +249,9 @@ public class AllureAnnotationProcessor implements IInvokedMethodListener {
         }
 
         return env.toString();
+    }
+
+    private String getTestId(ExtensionContext context) {
+        return context.getRequiredTestClass().getName() + "#" + context.getRequiredTestMethod().getName();
     }
 }

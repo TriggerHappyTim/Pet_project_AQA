@@ -137,7 +137,10 @@ public class PwElement implements SelenideElement {
             return false;
         }
         try {
-            return locator.isVisible();
+            // Selenide-семантика: $x(...) описывает первый элемент коллекции.
+            // Playwright isVisible() на мульти-локаторе бросает strict mode violation,
+            // поэтому явно берём first().
+            return locator.first().isVisible();
         } catch (Exception e) {
             return false;
         }
@@ -149,7 +152,7 @@ public class PwElement implements SelenideElement {
             return false;
         }
         try {
-            return locator.isEnabled();
+            return locator.first().isEnabled();
         } catch (Exception e) {
             return false;
         }
@@ -292,6 +295,11 @@ public class PwElement implements SelenideElement {
             }
         }
         String expectedDesc = expected ? "satisfy" : "NOT satisfy";
+        try {
+            WebDriverRunner.saveSourceDump("shouldBe-" + expectedDesc + "-" + condition);
+        } catch (Exception ignored) {
+            // диагностический дамп не должен маскировать исходную ошибку
+        }
         throw new TimeoutException(String.format(
                 "Element %s did not %s condition '%s' within %s",
                 describe(), expectedDesc, condition, timeout));
@@ -301,8 +309,13 @@ public class PwElement implements SelenideElement {
 
     @Override
     public SelenideElement click() {
-        locator.click();
-        return this;
+        try {
+            locator.click();
+            return this;
+        } catch (Throwable t) {
+            WebDriverRunner.saveSourceDump("action-click-fail");
+            throw t;
+        }
     }
 
     @Override
@@ -319,8 +332,13 @@ public class PwElement implements SelenideElement {
 
     @Override
     public SelenideElement setValue(String text) {
-        locator.fill(text);
-        return this;
+        try {
+            locator.fill(text);
+            return this;
+        } catch (Throwable t) {
+            WebDriverRunner.saveSourceDump("action-fill-fail");
+            throw t;
+        }
     }
 
     @Override

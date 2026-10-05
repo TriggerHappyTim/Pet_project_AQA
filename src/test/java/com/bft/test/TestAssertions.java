@@ -1,122 +1,147 @@
 package com.bft.test;
 
-import com.bft.utils.DebugUtils; // Ваш класс утилит отладки
+import com.bft.utils.DebugUtils;
 import com.bft.pw.Selenide;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.testng.asserts.SoftAssert;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
 
 import static com.bft.pw.Condition.exist;
 
 /**
- * Обертка над SoftAssert для стандартизации проверок в UI тестах.
+ * Custom soft assertions for JUnit 5 (replaces TestNG SoftAssert).
  *
- * Преимущества:
- * 1. Гарантированный вызов assertAll() (через try-finally в тестах или явный вызов).
- * 2. Автоматический скриншот при первой ошибке.
- * 3. Единый формат сообщений об ошибках.
- * 4. Удобные методы для частых проверок (видимость, текст, наличие).
+ * Collects all assertion failures and reports them at once via {@link #assertAll()}.
+ * Automatically takes a screenshot on the first failure.
  */
-public class TestAssertions extends SoftAssert {
+public class TestAssertions {
 
     private static final Logger log = LoggerFactory.getLogger(TestAssertions.class);
 
-    // Флаг, чтобы сделать скриншот только один раз за прогон теста, даже если ошибок много
+    private final List<AssertionError> errors = new ArrayList<>();
     private boolean screenshotTaken = false;
 
     /**
-     * Стандартный конструктор.
+     * Verifies a condition is true, recording a failure if not.
      */
-    public TestAssertions() {
-        super();
-    }
-
-    /**
-     * Делегирует проверку родительскому методу, но при неудаче:
-     * 1. Логгирует ошибку.
-     * 2. Делает скриншот (если еще не был сделан).
-     */
-    @Override
     public void assertTrue(boolean condition, String message) {
         if (!condition) {
             handleFailure(message);
+            errors.add(new AssertionError(message));
         }
-        super.assertTrue(condition, message);
     }
 
-    @Override
+    /**
+     * Verifies a condition is false, recording a failure if not.
+     */
     public void assertFalse(boolean condition, String message) {
         if (condition) {
             handleFailure(message);
+            errors.add(new AssertionError(message));
         }
-        super.assertFalse(condition, message);
-    }
-
-    @Override
-    public void assertEquals(Object actual, Object expected, String message) {
-        if (!java.util.Objects.equals(actual, expected)) {
-            handleFailure(message + String.format(" (Ожидалось: '%s', Получено: '%s')", expected, actual));
-        }
-        super.assertEquals(actual, expected, message);
     }
 
     /**
-     * Проверка видимости элемента с кастомным сообщением.
+     * Verifies two objects are equal, recording a failure if not.
+     */
+    public void assertEquals(Object actual, Object expected, String message) {
+        if (!Objects.equals(actual, expected)) {
+            String fullMessage = message + String.format(" (Expected: '%s', Actual: '%s')", expected, actual);
+            handleFailure(fullMessage);
+            errors.add(new AssertionError(fullMessage));
+        }
+    }
+
+    /**
+     * Verifies two objects are not equal, recording a failure if they are.
+     */
+    public void assertNotEquals(Object actual, Object expected, String message) {
+        if (Objects.equals(actual, expected)) {
+            String fullMessage = message + String.format(" (Both values: '%s')", actual);
+            handleFailure(fullMessage);
+            errors.add(new AssertionError(fullMessage));
+        }
+    }
+
+    /**
+     * Verifies an object is not null, recording a failure if it is.
+     */
+    public void assertNotNull(Object actual, String message) {
+        if (actual == null) {
+            handleFailure(message);
+            errors.add(new AssertionError(message));
+        }
+    }
+
+    /**
+     * Records a failure with the given message immediately (like JUnit Assertions.fail).
+     */
+    public void fail(String message) {
+        handleFailure(message);
+        errors.add(new AssertionError(message));
+    }
+
+    /**
+     * Verifies element is visible on the page.
      */
     public void assertVisible(com.bft.pw.SelenideElement element, String elementName) {
-        String msg = "Элемент '" + elementName + "' должен быть видимым";
+        String msg = "Element '" + elementName + "' should be visible";
         try {
             element.shouldBe(com.bft.pw.Condition.visible);
-            super.assertTrue(true, msg); // Записываем как успех в softAssert
         } catch (AssertionError e) {
             handleFailure(msg);
-            super.fail(msg);
+            errors.add(new AssertionError(msg, e));
         }
     }
 
     /**
-     * Проверка отсутствия элемента на странице.
+     * Verifies element does not exist on the page.
      */
     public void assertNotExists(com.bft.pw.SelenideElement element, String elementName) {
-        String msg = "Элемент '" + elementName + "' не должен существовать на странице";
+        String msg = "Element '" + elementName + "' should not exist on the page";
         try {
             element.shouldNot(exist);
-            super.assertTrue(true, msg);
         } catch (AssertionError e) {
             handleFailure(msg);
-            super.fail(msg);
+            errors.add(new AssertionError(msg, e));
         }
     }
 
     /**
-     * Обрабатывает провал проверки: логирование и скриншот.
+     * Reports all collected assertion failures. Call this at the end of each test.
+     *
+     * @throws AssertionError if any assertions failed
      */
-    private void handleFailure(String message) {
-        log.error("❌ ПРОВЕРКА НЕ ПРОЙДЕНА: {}", message);
+    public void assertAll() {
+        try {
+            if (!errors.isEmpty()) {
+                AssertionError combined = new AssertionError(
+                        errors.size() + " assertion(s) failed. First: " + errors.get(0).getMessage());
+                errors.forEach(combined::addSuppressed);
+                throw combined;
+            }
+        } finally {
+            screenshotTaken = false;
+        }
+    }
 
+    private void handleFailure(String message) {
+        log.error("ASSERTION FAILED: {}", message);
         if (!screenshotTaken) {
             try {
                 String screenshotName = "failure_assert_" + System.currentTimeMillis();
                 Selenide.screenshot(screenshotName);
                 DebugUtils.savePageStateOnError("assert-failure-" + screenshotName, null);
                 screenshotTaken = true;
-                log.info("📸 Скриншот сохранен: {}", screenshotName);
+                log.info("Screenshot saved: {}", screenshotName);
             } catch (Exception e) {
-                log.warn("Не удалось сделать скриншот при провале ассерта: {}", e.getMessage());
+                log.warn("Failed to take screenshot on assertion failure: {}", e.getMessage());
             }
-        }
-    }
-
-    /**
-     * Переопределяем assertAll, чтобы сбросить флаг скриншота для следующего теста (если объект переиспользуется)
-     * Хотя лучше создавать новый экземпляр на каждый тест.
-     */
-    @Override
-    public void assertAll() {
-        try {
-            super.assertAll();
-        } finally {
-            screenshotTaken = false;
         }
     }
 }

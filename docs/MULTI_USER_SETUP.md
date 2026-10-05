@@ -113,18 +113,18 @@ public void testWithKrivonosov() {
 ### Пример 2: Параметризованный тест
 
 ```java
-@DataProvider(name = "users")
-public Object[][] users() {
-    return new Object[][] {
-        {TestUsers.KRIVONOSOV_ALEXANDER, "Кривоносов"},
-        {TestUsers.BEZDOMNIY_IVAN, "Бездомный"}
-    };
-}
-
-@Test(dataProvider = "users")
+@ParameterizedTest
+@MethodSource("users")
 public void testMultiUser(TestUsers user, String description) {
     steps.authorizeEVS(UIType.EVS_UAT_LKS, user);
     // ... остальная логика
+}
+
+static Stream<Arguments> users() {
+    return Stream.of(
+        Arguments.of(TestUsers.KRIVONOSOV_ALEXANDER, "Кривоносов"),
+        Arguments.of(TestUsers.BEZDOMNIY_IVAN, "Бездомный")
+    );
 }
 ```
 

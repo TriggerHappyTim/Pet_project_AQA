@@ -736,21 +736,21 @@ public interface DataMasker {
 public abstract class BaseTest {
 
     // Защищенные поля
-    protected SoftAssert softAssert;
+    protected TestAssertions assertions;
     protected TestLogger logger;
     protected TestContext testContext;
 
     // Жизненный цикл
-    @BeforeSuite
+    @BeforeAll
     public static void globalSetup()
 
-    @BeforeTest
+    @BeforeAll
     public void setupTest()
 
-    @AfterTest
+    @AfterAll
     public void teardownTest()
 
-    @AfterSuite
+    @AfterAll
     public static void globalTeardown()
 
     // Утилиты
@@ -769,7 +769,7 @@ public abstract class BaseTest {
 public abstract class UITestBase extends BaseTest {
 
     // Дополнительная настройка UI
-    @BeforeMethod
+    @BeforeEach
     public void setupUITestMethod()
 
     // Утилиты UI тестирования
@@ -778,28 +778,6 @@ public abstract class UITestBase extends BaseTest {
     protected void waitForPageLoad()
     protected void confirmAlert()
     protected void dismissAlert()
-}
-```
-
-### ApiTestBase
-
-Базовый класс для API тестов.
-
-```java
-public abstract class ApiTestBase extends BaseTest {
-
-    // HTTP клиент
-    protected RequestSpecification requestSpec;
-    protected ResponseSpecification responseSpec;
-
-    // Настройка API
-    @BeforeMethod
-    public void setupApiTestMethod()
-
-    // Утилиты API тестирования
-    protected boolean isApiEnvironment()
-    protected ValidatableResponse sendRequest(RequestSpecification request)
-    protected void validateResponse(ValidatableResponse response)
 }
 ```
 
@@ -1135,12 +1113,12 @@ public void userRegistrationTest() {
                 () -> page.submitForm());
         },
 
-        (softAssert) -> {
+        (assertions) -> {
             performCheck("Проверка успешной регистрации",
-                () -> softAssert.assertTrue(page.isSuccessMessageDisplayed()));
+                () -> assertions.assertTrue(page.isSuccessMessageDisplayed()));
 
             performCheck("Проверка создания пользователя",
-                () -> softAssert.assertTrue(userService.exists("ivan@example.com")));
+                () -> assertions.assertTrue(userService.exists("ivan@example.com")));
         },
 
         "Регистрация пользователя"
@@ -1161,7 +1139,7 @@ public void cryptoProValidationTest() {
         TestStrategyType.UI_CRYPTO_PRO_VALIDATION
     );
 
-    softAssert.assertTrue(result.isSuccess(),
+    assertions.assertTrue(result.isSuccess(),
         "Валидация КриптоПРО плагина должна пройти успешно");
 
     if (!result.isSuccess()) {
@@ -1188,10 +1166,10 @@ public void advancedFormTest() {
     agreementCheckbox.check();
 
     // Валидация перед отправкой
-    softAssert.assertTrue(nameField.isNotEmpty());
-    softAssert.assertTrue(regionSelect.isOptionSelected("Московская область"));
-    softAssert.assertTrue(agreementCheckbox.isChecked());
-    softAssert.assertTrue(submitButton.isEnabled());
+    assertions.assertTrue(nameField.isNotEmpty());
+    assertions.assertTrue(regionSelect.isOptionSelected("Московская область"));
+    assertions.assertTrue(agreementCheckbox.isChecked());
+    assertions.assertTrue(submitButton.isEnabled());
 
     submitButton.click();
 }
@@ -1373,9 +1351,9 @@ public class PerformanceMonitor {
     public static PerformanceMonitor getInstance()
 
     // Отслеживание теста
-    public void startTest(ITestResult result)
-    public void endTest(ITestResult result)
-    public long getTestDuration(ITestResult result)
+    public void startTest(TestInfo result)
+    public void endTest(TestInfo result)
+    public long getTestDuration(TestInfo result)
 
     // Статистика
     public double getAverageDuration()
@@ -1396,9 +1374,9 @@ public class FlakyTestDetector {
     public static FlakyTestDetector getInstance()
 
     // Отслеживание результатов
-    public void recordTestResult(ITestResult result)
-    public boolean isFlaky(ITestResult result)
-    public double getSuccessRate(ITestResult result)
+    public void recordTestResult(TestInfo result)
+    public boolean isFlaky(TestInfo result)
+    public double getSuccessRate(TestInfo result)
 
     // Отчеты
     public void reportFlakyTests()

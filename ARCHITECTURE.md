@@ -66,11 +66,6 @@ ui/                              # 18 файлов
     ├── element/                     # SmartElement, SmartElementList, ElementFactory
     └── wait/                        # WaitStrategy, WaitStrategies
 
-gui/                             # Legacy Page Objects (4 файла, активно используются)
-├── BasePage.java                # Базовый (WebDriver + SoftAssert)
-├── LoginPage.java               # Используется в SzvReportsSteps
-├── MainPage.java                # Используется в тестах
-└── CryptoProDemoPage.java       # Демо-страница КриптоПРО
 ```
 
 **Ответственность:**
@@ -168,12 +163,10 @@ strategy/                        # Стратегии тестирования (
 test/                            # 16 файлов
 ├── base/                        # Базовые классы тестов
 │   ├── UITestBase.java              # Базовый класс UI тестов (extends BaseTest)
-│   ├── ApiTestBase.java             # API тесты (закомментировано)
-│   └── DataDrivenTestBase.java      # Data-driven тесты (extends UITestBase)
+│   └── BaseTest.java                # Базовый класс всех тестов (корень com.bft)
 ├── annotations/                 # Кастомные аннотации (6 файлов)
 │   ├── TestType.java, TestPriority.java, TestEnvironment.java
 │   ├── Requirement.java, AutomationAction.java
-│   ├── ZephyrTest.java              # (закомментировано)
 │   └── AllureAnnotationProcessor.java
 ├── helpers/                     # Хелперы тестов (5 файлов)
 │   ├── TestSetupHelper.java, LoginHelper.java, PageObjectHelper.java
@@ -181,13 +174,9 @@ test/                            # 16 файлов
 ├── logging/                     # Логирование
 │   ├── TestLogger.java, AllureIntegration.java
 ├── negative/                    # Негативные тест-кейсы
-│   ├── NegativeTestCases.java       # UI негативные тесты
-│   └── ApiNegativeTestCases.java    # (закомментировано)
-├── retry/                       # Повторный запуск тестов
-│   ├── RetryAnalyzer.java, Retry.java
-└── examples/                    # Примеры (закомментированы)
-
-BaseTest.java                    # Базовый класс всех тестов (корень com.bft)
+│   └── NegativeTestCases.java       # UI негативные тесты
+└── retry/                       # Повторный запуск тестов
+    └── RetryAnalyzer.java           # JUnit 5 Extension
 ```
 
 **Ответственность:**
@@ -241,7 +230,11 @@ constants/
 
 ```
 steps/
-└── SzvReportsSteps.java      # Шаги для работы с отчетами СЗВ
+├── AuthSteps.java                   # Авторизация
+├── ReportNavigationSteps.java       # Навигация по отчетам
+├── ReportDataEntrySteps.java        # Заполнение отчетов
+├── ArchiveSteps.java                # Архивные операции
+└── SzvReportsSteps.java             # Шаги для СЗВ отчетов
 ```
 
 **Ответственность:**
@@ -294,20 +287,13 @@ utils/                           # 3 файла
 
 ```
 LK_Insurence/                    # ЛК Страхователя (14 файлов)
-├── ReportXmlUploadTest.java         # Универсальный smoke XML-загрузки (DataProvider)
-├── CryptoProCertificateTest.java    # Тесты электронной подписи
+├── ReportXmlUploadTest.java         # Универсальный smoke XML-загрузки
 ├── EFS_1/Efs1.java                  # Тесты ЕФС-1
 ├── SZV_M/Szv_m.java                # Тесты СЗВ-М
 ├── SZV_TD/Szv_td.java              # Тесты СЗВ-ТД
 ├── SZV_ISH/Szv_ish.java            # Тесты СЗВ-ИСХ
-├── SZV_DSO/Szv_dso.java            # Тесты СЗВ-ДСО
-├── SZV_K/Szv_k.java                # Тесты СЗВ-К
-├── SZV_STAJ/Szv_staj.java          # Тесты СЗВ-СТАЖ
-├── SZV_KORR/Szv_korr.java          # Тесты СЗВ-КОРР
-├── ODV_1/Odv1.java                  # Тесты ОДВ-1
 ├── CredentialsTest.java             # Тесты credentials
-├── TestConfigurationTest.java       # Тесты конфигурации
-└── ExampleTest.java                 # Примеры стратегий (закомментировано)
+└── TestConfigurationTest.java       # Тесты конфигурации
 
 LK_Archive/                      # ЛК Архивной организации (1 файл)
 └── ArchivesTest.java                # 5 тестов (РПУ → ЕВС → подписание)
@@ -318,7 +304,7 @@ LK_Archive/                      # ЛК Архивной организации 
 ### Инициализация теста
 
 ```
-TestNG Suite
+JUnit 5 Runner
     ↓
 BaseTest.setUp()
     ↓
@@ -624,20 +610,23 @@ manager.executeTestWithStrategy("test", TestStrategyType.NEW_STRATEGY);
 - Базовая конфигурация (`BaseTest`)
 - Минимальная безопасность
 
-### Версия 2.0 — Компонентная архитектура (текущая)
+### Версия 2.0 — Компонентная архитектура
 - 12 переиспользуемых UI-компонентов (`ui/component/`)
 - Strategy Pattern для тестирования
 - Расширенная безопасность (CredentialManager, SecureLogger)
 - TestData builders с Faker
 - Мониторинг (PerformanceMonitor, FlakyTestDetector)
 - Два ЛК: Страхователя и Архивной организации
-- 138 Java файлов, 15 тестовых классов
 - GitLab CI/CD с выбором ЛК, контура, браузера
 
-### Версия 3.0 — Планируется
-- OpenAPI интеграция (генерация моделей)
-- Раскомментирование Jira/Zephyr интеграции
-- Расширение тестового покрытия ЛК Архива
+### Версия 3.0 — Текущая
+- Миграция TestNG → JUnit 5 (junit-jupiter 5.10.2)
+- Кастомные аннотации + Extensions (`@DisabledOnEnvironment`, `@DisabledByInfrastructure`, `@DisabledByIssue`)
+- Auto-capture screenshots + page source на падениях (MakeScreenshotsExtension)
+- Централизованное логирование жизненного цикла тестов (TestResultWatcher)
+- InfrastructureCheck для проверки доступности сервисов
+- Тегирование тестов (`@Tag`) для CI/CD: smoke, web, archive, negative, xml-upload, efs
+- Удалены: CryptoPro классы, gui/ пакет, дублирующие тесты, мёртвый код
 
 ---
 

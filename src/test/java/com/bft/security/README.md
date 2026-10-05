@@ -162,8 +162,8 @@ export EPGU_PASSWORD="prod_password"
 ### 3. Валидируйте наличие credentials перед тестами
 
 ```java
-@BeforeClass
-public void validateCredentials() {
+@BeforeAll
+static void validateCredentials() {
     var credentials = CredentialManager.getInstance().getUserCredentials("epgu");
     assumeTrue(credentials.isValid(), "EPGU credentials must be configured");
 }

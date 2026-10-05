@@ -5,6 +5,7 @@ import com.bft.ui.core.wait.WaitStrategy;
 import com.bft.pw.Keys;
 import com.bft.pw.Actions;
 import com.bft.pw.SelenideElement;
+import com.bft.pw.WebDriverRunner;
 import io.qameta.allure.Step;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,11 +36,16 @@ public class SmartElement {
      * РџСЂРё РїРµСЂРµС…РІР°С‚Рµ РєР»РёРєР° РґСЂСѓРіРёРј СЌР»РµРјРµРЅС‚РѕРј РІС‹РїРѕР»РЅСЏРµС‚СЃСЏ JS-РєР»РёРє (СЃРј. {@link ClickHelper}).
      */
     @Step("РљР»РёРєР°РµРј РїРѕ СЌР»РµРјРµРЅС‚Сѓ: {name}")
-    public SmartElement click() {
-        logger.debug("РљР»РёРєР°РµРј РїРѕ СЌР»РµРјРµРЅС‚Сѓ: {}", name);
-        waitStrategy.waitFor(element, name);
-        ClickHelper.click(element, name);
-        logger.info("РЈСЃРїРµС€РЅРѕ РєР»РёРєРЅСѓР»Рё РїРѕ СЌР»РµРјРµРЅС‚Сѓ: {}", name);
+public SmartElement click() {
+        logger.debug("Кликаем по элементу: {}", name);
+        try {
+            waitStrategy.waitFor(element, name);
+            ClickHelper.click(element, name);
+        } catch (Throwable t) {
+            WebDriverRunner.saveSourceDump("SmartElement-click-" + name.replaceAll("[^\\w\\-а-яА-ЯёЁ ]", "_"));
+            throw t;
+        }
+        logger.info("Успешно кликнули по элементу: {}", name);
         return this;
     }
 

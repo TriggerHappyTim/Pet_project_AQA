@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema version="2.0" elementFormDefault="qualified" xmlns="http://пф.рф/АФ/2017-01-01" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:УТ="http://пф.рф/унифицированныеТипы/2014-01-01" targetNamespace="http://пф.рф/АФ/2017-01-01" xmlns:АФ="http://пф.рф/АФ">
+	<xs:import namespace="http://пф.рф/АФ" schemaLocation="ТипыОбщие.xsd" />
+	<xs:annotation>
+		<xs:documentation>Типы данных, расширяющие пространство имен http://пф.рф/АФ</xs:documentation>
+	</xs:annotation>
+	<xs:import namespace="http://пф.рф/унифицированныеТипы/2014-01-01" schemaLocation="УнифТипы_2014-01-01.xsd" />
+	<xs:complexType name="ТипСлужебнаяИнформация">
+		<xs:annotation>
+			<xs:documentation>Тип для представления служебной информации со сведениями о программе подготовки электронного документа.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="АФ:ТипСлужебнаяИнформация">
+				<xs:sequence>
+					<xs:element name="ПрограммаПодготовки" type="УТ:ТипНепустаяСтрока" minOccurs="1">
+						<xs:annotation>
+							<xs:documentation>Наименование программы подготовки электронного документа</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+</xs:schema>

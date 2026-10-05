@@ -1,6 +1,9 @@
 # REFACTORING_PLAN.md
 
-План рефакторинга тестового проекта AQA (Java + TestNG + Selenide + Allure).
+> **Исторический документ.** Все шаги выполнены. Текущая архитектура описана в
+> `ARCHITECTURE.md` и `README.md`. Проект мигрирован на JUnit 5.
+
+План рефакторинга тестового проекта AQA (Java + JUnit 5 + Selenide + Allure).
 
 ---
 

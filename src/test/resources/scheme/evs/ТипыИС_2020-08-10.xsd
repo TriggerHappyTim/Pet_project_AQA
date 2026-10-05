@@ -1,0 +1,1191 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://пф.рф/ВС/ИС/2020-08-10" xmlns:ВС2="http://пф.рф/ВС/типы/2017-10-23" xmlns:УТ2="http://пф.рф/УТ/2017-08-21" version="2.0" targetNamespace="http://пф.рф/ВС/ИС/2020-08-10" elementFormDefault="qualified">
+  <xs:import namespace="http://пф.рф/УТ/2017-08-21" schemaLocation="УнифТипы_2017-08-21.xsd"/>
+  <xs:import namespace="http://пф.рф/ВС/типы/2017-10-23" schemaLocation="ТипыВС_2017-10-23.xsd"/>
+  <xs:import namespace="http://www.w3.org/2000/09/xmldsig#" schemaLocation="xmldsig_core_schema.xsd"/>
+  <xs:annotation>
+    <xs:documentation>Общие типы данных для документов ОДВ-1, СЗВ-СТАЖ, СЗВ-КОРР и СЗВ-ИСХ</xs:documentation>
+    <xs:documentation>Рекомендуемый префикс для пространства имен http://пф.рф/ВС/ИС/2020-08-10 - ИС5</xs:documentation>
+  </xs:annotation>
+  <xs:complexType name="ТипСтраховательИС">
+    <xs:annotation>
+      <xs:documentation>Данные о страхователе (плательщике страховых взносов)</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element ref="УТ2:РегНомер">
+        <xs:annotation>
+          <xs:documentation>Регистрационный номер в СФР. Указывается регистрационный номер страхователя, присвоенный ему при регистрации в качестве страхователя по обязательному пенсионному страхованию</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:group ref="УТ2:ГрНН">
+        <xs:annotation>
+          <xs:documentation>ИНН и КПП страхователя в соответствии со свидетельством о постановке на учет в налоговом органе по месту нахождения на территории Российской Федерации</xs:documentation>
+        </xs:annotation>
+      </xs:group>
+      <xs:element name="Наименование" type="УТ2:ТипНепустаяСтрока">
+        <xs:annotation>
+          <xs:documentation>Наименование (краткое), указывается краткое наименование организации в соответствии с учредительными документами (допускается наименование в латинской транскрипции)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ТипСтраховательИСРегНомер">
+    <xs:annotation>
+      <xs:documentation>Данные о страхователе (плательщике страховых взносов)</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:group ref="УТ2:ГрРН">
+        <xs:annotation>
+          <xs:documentation>Регистрационный номер в СФР. Указывается регистрационный номер страхователя, присвоенный ему при регистрации в качестве страхователя по обязательному пенсионному страхованию</xs:documentation>
+        </xs:annotation>
+      </xs:group>
+      <xs:group ref="УТ2:ГрНН">
+        <xs:annotation>
+          <xs:documentation>ИНН и КПП страхователя в соответствии со свидетельством о постановке на учет в налоговом органе по месту нахождения на территории Российской Федерации</xs:documentation>
+        </xs:annotation>
+      </xs:group>
+      <xs:element name="Наименование" type="УТ2:ТипНепустаяСтрока">
+        <xs:annotation>
+          <xs:documentation>Наименование (краткое), указывается краткое наименование организации в соответствии с учредительными документами (допускается наименование в латинской транскрипции)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ТипСтраховательИСРегНомер2">
+    <xs:annotation>
+      <xs:documentation>Данные о страхователе (плательщике страховых взносов)</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:group ref="УТ2:ГрРН">
+        <xs:annotation>
+          <xs:documentation>Регистрационный номер в СФР. Указывается регистрационный номер страхователя, присвоенный ему при регистрации в качестве страхователя по обязательному пенсионному страхованию</xs:documentation>
+        </xs:annotation>
+      </xs:group>
+      <xs:group ref="УТ2:ГрНН2">
+        <xs:annotation>
+          <xs:documentation>ИНН и КПП страхователя в соответствии со свидетельством о постановке на учет в налоговом органе по месту нахождения на территории Российской Федерации</xs:documentation>
+        </xs:annotation>
+      </xs:group>
+      <xs:element name="Наименование" type="УТ2:ТипНепустаяСтрока">
+        <xs:annotation>
+          <xs:documentation>Наименование (краткое), указывается краткое наименование организации в соответствии с учредительными документами (допускается наименование в латинской транскрипции)</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:simpleType name="ТипКодОтчетногоПериодаИС">
+    <xs:annotation>
+      <xs:documentation>Код отчетного периода за все возможные периоды.
+				Для отчетных периодов 1996 года возможные значения:
+				3 - с 01.01.1996 по 30.09.1996,
+				4 - с 01.10.1996 по 31.12.1996,
+				0 - с 01.01.1996 по 31.12.1996,
+
+				для отчетных периодов 1997-2000 гг. возможные значения:
+				2 - с 01.01.гггг по 30.06.гггг,
+				4 - с 01.07.гггг по 31.12.гггг,
+				0 - с 01.01.гггг по 31.12.гггг,
+
+				для отчетных периодов 2001 г. возможные значения:
+				2 - с 01.01.гггг по 30.06.гггг,
+				4 - с 01.07.гггг по 31.12.гггг,
+				0 - с 01.01.гггг по 31.12.гггг,
+				5 - с 01.01.гггг по 31.03.гггг,
+				6 - с 01.04.гггг по 30.06.гггг,
+				7 - с 01.07.гггг по 30.09.гггг,
+				8 - с 01.10.гггг по 31.12.гггг,
+				1 - с 01.01.гггг по 30.09.гггг,
+				3 - с 01.04.гггг по 30.09.гггг,
+				9 - с 01.04.гггг по 31.12.гггг,
+
+				для отчетных периодов 2002-2009 гг. возможные значения:
+				0 - с 01.01.гггг по 31.12.гггг
+
+				для отчетных периодов 2010 г. возможные значения:
+				1 - 1 полугодие 2010,
+				2 - 2 полугодие 2010
+
+				для отчетных периодов 2011-2013 гг. возможные значения:
+				1 - с 01.01.гггг по 31.03.гггг
+				2 - с 01.04.гггг по 30.06.гггг
+				3 - с 01.07.гггг по 30.09.гггг
+				4 - с 01.10.гггг по 31.12.гггг
+
+				для отчетных периодов 2014-2016 гг. возможные значения:
+				3 - с 01.01.гггг по 31.03.гггг,
+				6 - с 01.04.гггг по 30.06.гггг,
+				9 - с 01.07.гггг по 30.09.гггг,
+				0 - с 01.10.гггг по 31.12.гггг
+
+				для отчетных периодов с 2017 года возможные значения:
+				0 - с 01.01.гггг по 31.12.гггг</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:integer">
+      <xs:minInclusive value="0"/>
+      <xs:maxInclusive value="9"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="ТипМесяцИС">
+    <xs:annotation>
+      <xs:documentation>Месяц отчетного периода. Возможные значения:
+			Янв - Январь,
+			Фев - Февраль,
+			Мрт - Март,
+			Апр - Апрель,
+			Май - Май,
+			Июн - Июнь,
+			Июл - Июль,
+			Авг - Август,
+			Сен - Сентябрь,
+			Окт - Октябрь,
+			Нбр - Ноябрь,
+			Дек - Декабрь</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:normalizedString">
+      <xs:enumeration value="Янв"/>
+      <xs:enumeration value="Фев"/>
+      <xs:enumeration value="Мрт"/>
+      <xs:enumeration value="Апр"/>
+      <xs:enumeration value="Май"/>
+      <xs:enumeration value="Июн"/>
+      <xs:enumeration value="Июл"/>
+      <xs:enumeration value="Авг"/>
+      <xs:enumeration value="Сен"/>
+      <xs:enumeration value="Окт"/>
+      <xs:enumeration value="Нбр"/>
+      <xs:enumeration value="Дек"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="ТипКатегорияЗЛ">
+    <xs:annotation>
+      <xs:documentation>Код категории застрахованного лица, в соответствии с «Классификатором параметров, используемых при заполнении сведений для ведения индивидуального (персонифицированного) учета».</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[А-Я]+"/>
+      <xs:enumeration value="ИД"/>
+      <xs:enumeration value="ДС"/>
+      <xs:enumeration value="АУ"/>
+      <xs:enumeration value="ИПИВ"/>
+      <xs:enumeration value="НРИВ"/>
+      <xs:enumeration value="НРИН"/>
+      <xs:enumeration value="СХИН"/>
+      <xs:enumeration value="АВИА"/>
+      <xs:enumeration value="АВСХ"/>
+      <xs:enumeration value="АВОВ"/>
+      <xs:enumeration value="ДТ"/>
+      <xs:enumeration value="НТ"/>
+      <xs:enumeration value="НР"/>
+      <xs:enumeration value="НРОВ"/>
+      <xs:enumeration value="ФХ"/>
+      <xs:enumeration value="ФХИВ"/>
+      <xs:enumeration value="АД"/>
+      <xs:enumeration value="АДИВ"/>
+      <xs:enumeration value="СХ"/>
+      <xs:enumeration value="СХИВ"/>
+      <xs:enumeration value="СХОВ"/>
+      <xs:enumeration value="ИП"/>
+      <xs:enumeration value="НРЕД"/>
+      <xs:enumeration value="ИПЕД"/>
+      <xs:enumeration value="СДП"/>
+      <xs:enumeration value="СДПЗГ"/>
+      <xs:enumeration value="ДП"/>
+      <xs:enumeration value="БЕЗР"/>
+      <xs:enumeration value="ОЗОИ"/>
+      <xs:enumeration value="ЕСХН"/>
+      <xs:enumeration value="УСЕН"/>
+      <xs:enumeration value="ФЛ"/>
+      <xs:enumeration value="ХМН"/>
+      <xs:enumeration value="ООИ"/>
+      <xs:enumeration value="ХО"/>
+      <xs:enumeration value="ТВЭЗ"/>
+      <xs:enumeration value="ОДИТ"/>
+      <xs:enumeration value="СМИ"/>
+      <xs:enumeration value="ПНЭД"/>
+      <xs:enumeration value="ИЦС"/>
+      <xs:enumeration value="АСБ"/>
+      <xs:enumeration value="ЧЭС"/>
+      <xs:enumeration value="ИНЖУ"/>
+      <xs:enumeration value="КРС"/>
+      <xs:enumeration value="ТОР"/>
+      <xs:enumeration value="КЛН"/>
+      <xs:enumeration value="СПВЛ"/>
+      <xs:enumeration value="ВЖИЖ"/>
+      <xs:enumeration value="ВЖНР"/>
+      <xs:enumeration value="ВЖСХ"/>
+      <xs:enumeration value="ВЖЕН"/>
+      <xs:enumeration value="ВЖМН"/>
+      <xs:enumeration value="ВЖОИ"/>
+      <xs:enumeration value="ВЖХО"/>
+      <xs:enumeration value="ВЖТЗ"/>
+      <xs:enumeration value="ВЖИТ"/>
+      <xs:enumeration value="ВЖСИ"/>
+      <xs:enumeration value="ВЖЭД"/>
+      <xs:enumeration value="ВЖЦС"/>
+      <xs:enumeration value="ВЖСБ"/>
+      <xs:enumeration value="ВЖЭС"/>
+      <xs:enumeration value="ВЖКС"/>
+      <xs:enumeration value="ВЖТР"/>
+      <xs:enumeration value="ВЖВЛ"/>
+      <xs:enumeration value="ВЖКЛ"/>
+      <xs:enumeration value="ВПИЖ"/>
+      <xs:enumeration value="ВПНР"/>
+      <xs:enumeration value="ВПСХ"/>
+      <xs:enumeration value="ВПЕН"/>
+      <xs:enumeration value="ВПМН"/>
+      <xs:enumeration value="ВПОИ"/>
+      <xs:enumeration value="ВПХО"/>
+      <xs:enumeration value="ВПТЗ"/>
+      <xs:enumeration value="ВПИТ"/>
+      <xs:enumeration value="ВПСИ"/>
+      <xs:enumeration value="ВПЭД"/>
+      <xs:enumeration value="ВПЦС"/>
+      <xs:enumeration value="ВПСБ"/>
+      <xs:enumeration value="ВПЭС"/>
+      <xs:enumeration value="ВПКС"/>
+      <xs:enumeration value="ВПТР"/>
+      <xs:enumeration value="ВПВЛ"/>
+      <xs:enumeration value="АНМ"/>
+      <xs:enumeration value="ВПАН"/>
+      <xs:enumeration value="ВЖАН"/>
+      <xs:enumeration value="МС"/>
+      <xs:enumeration value="ВПМС"/>
+      <xs:enumeration value="ВЖМС"/>
+      <xs:enumeration value="КВ"/>
+      <xs:enumeration value="ВПКВ"/>
+      <xs:enumeration value="ВЖКВ"/>
+      <xs:enumeration value="ОВ"/>
+      <xs:enumeration value="ИНВ"/>
+      <xs:enumeration value="ЭКБ"/>
+      <xs:enumeration value="ВЖЭК"/>
+      <xs:enumeration value="ВПЭК"/>
+      <xs:enumeration value="ИНТЦ"/>
+      <xs:enumeration value="ВЖТЦ"/>
+      <xs:enumeration value="ВПТЦ"/>
+      <xs:enumeration value="ОВЭД"/>
+      <xs:enumeration value="ВЖОВ"/>
+      <xs:enumeration value="ВПОВ"/>
+      <xs:enumeration value="ОСТ"/>
+      <xs:enumeration value="ВЖОС"/>
+      <xs:enumeration value="ВПОС"/>
+      <xs:enumeration value="АУСН"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="ТипДанныеПоСтрахователю">
+    <xs:annotation>
+      <xs:documentation>Тип, описывающий строку таблицы "Данные по страхователю в целом". Содержит сведения о суммах начислений и уплаты страховых взносов, и задолженности на начало и конец отчетного периода</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="ЗадолженностьНаНачало" type="УТ2:ТипДеньги">
+        <xs:annotation>
+          <xs:documentation>Задолженность на начало отчетного периода, руб. коп.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="Начислено" type="УТ2:ТипДеньги">
+        <xs:annotation>
+          <xs:documentation>Начислено страховых взносов, руб. коп.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="Уплачено" type="УТ2:ТипДеньги">
+        <xs:annotation>
+          <xs:documentation>Уплачено страховых взносов, руб. коп.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ЗадолженностьНаКонец" type="УТ2:ТипДеньги">
+        <xs:annotation>
+          <xs:documentation>Задолженность на конец отчетного периода, руб. коп.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ТипУплата">
+    <xs:annotation>
+      <xs:documentation>Тип для представления таблицы с расшифровкой графы «Уплачено» по периодам, за которые была произведена уплата страховых взносов, за конкретный год, формы ОДВ-1</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="Год" type="xs:gYear">
+        <xs:annotation>
+          <xs:documentation>Календарный год, за который была произведена уплата страховых взносов</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="Страховая" type="УТ2:ТипДеньги" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Сумма, которая была уплачена в календарном году на страховую пенсию, руб. коп.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="Накопительная" type="УТ2:ТипДеньги" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Сумма, которая была уплачена в календарном году на накопительную пенсию, руб. коп.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ТарифСВ" type="УТ2:ТипДеньги" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation>Сумма, которая была уплачена в календарном году по тарифу страховых взносов, руб. коп.</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:group name="ГрОснованиеДНП">
+    <xs:annotation>
+      <xs:documentation>Группа элементов со сведениями об основании для отражения данных о периодах работы застрахованного лица в условиях, дающих право на досрочное назначение пенсии в соответствии со статьями 30 и 31 Федерального закона от 28.12.2013 № 400–ФЗ «О страховых пенсиях».</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="Подразделение" type="УТ2:ТипНепустаяСтрока">
+        <xs:annotation>
+          <xs:documentation>Наименование структурного подразделения по штатному расписанию</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ПрофессияДолжность" type="УТ2:ТипНепустаяСтрока">
+        <xs:annotation>
+          <xs:documentation>Наименование профессии или должности по штатному расписанию</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="КоличествоШтат">
+        <xs:annotation>
+          <xs:documentation>Количество рабочих мест по штатному расписанию</xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="xs:decimal">
+            <xs:minExclusive value="0"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="КоличествоФакт" type="xs:positiveInteger">
+        <xs:annotation>
+          <xs:documentation>Фактическое количество работников</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="Описание" type="УТ2:ТипНепустаяСтрока">
+        <xs:annotation>
+          <xs:documentation>Характер фактически выполняемых работ (характер труда) и дополнительные условия труда</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="Документы" type="УТ2:ТипНепустаяСтрока">
+        <xs:annotation>
+          <xs:documentation>Наименование первичных документов, подтверждающих занятость в особых условиях труда</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:group>
+  <xs:group name="ГрИтогоДНП">
+    <xs:annotation>
+      <xs:documentation>Общее количество рабочих мест и фактически работающих в особых условиях труда по штату</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="ВсегоШтат">
+        <xs:annotation>
+          <xs:documentation>Общее количество рабочих мест в особых условиях труда по штату</xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="xs:decimal">
+            <xs:minExclusive value="0"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="ВсегоФакт" type="xs:positiveInteger">
+        <xs:annotation>
+          <xs:documentation>Количество фактически работающих в особых условиях труда</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:group>
+  <xs:group name="ГрВыплатаДопТариф">
+    <xs:annotation>
+      <xs:documentation>Сведения о сумме выплат и иных вознаграждений в пользу физического лица, занятого на соответствующих видах работ, с которых начислены страховые взносы по дополнительному тарифу</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="ДопТарифП1" type="УТ2:ТипДеньги">
+        <xs:annotation>
+          <xs:documentation>Сумма выплат и иных вознаграждений, начисленных в пользу физического лица, занятого на видах работ, указанных в пункте 1 части 1 статьи 30 Федерального закона от 28 декабря 2013 года № 400-ФЗ "О страховых пенсиях"</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ДопТарифП2_18" type="УТ2:ТипДеньги">
+        <xs:annotation>
+          <xs:documentation>Сумма выплат и иных вознаграждений, начисленных в пользу физического лица, занятого на видах работ, указанных в пунктах 2-18 части 1 статьи 30 Федерального закона от 28 декабря 2013 года № 400-ФЗ "О страховых пенсиях"</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:group>
+  <xs:simpleType name="ТипКодДТ">
+    <xs:annotation>
+      <xs:documentation>Код дополнительного тарифа. Возможные значения:
+			АВИА - член летного экипажа воздушного судна гражданской авиации</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:normalizedString">
+      <xs:enumeration value="АВИА"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="ТипСтажевыйПериодИС">
+    <xs:annotation>
+      <xs:documentation>Применяется для СЗВ-ИСХ. Блок сведений о стажевом периоде, с кодами оснований:
+					                        - территориальных условий труда,
+					                        - особых условий труда,
+					                        - основания исчисления страхового стажа,
+					                        - дополнительных сведений  исчисления страхового стажа,
+					                        - условия досрочного назначения пенсии
+				  применяемыми до 2017 года.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="Период" type="УТ2:ТипВременнойПериод">
+        <xs:annotation>
+          <xs:documentation>Дата начала и дата окончания стажа работы застрахованного лица</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ЛьготныйСтаж" minOccurs="0" maxOccurs="unbounded">
+        <xs:annotation>
+          <xs:documentation>Сведения о льготном стаже и особенностях учета стажа работы застрахованного лица</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="ТУ" minOccurs="0">
+              <xs:annotation>
+                <xs:documentation>Сведения о территориальных условиях труда</xs:documentation>
+              </xs:annotation>
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="Основание">
+                    <xs:annotation>
+                      <xs:documentation>Код основания территориальных условий труда, применяемых до 2017 года</xs:documentation>
+                    </xs:annotation>
+                    <xs:simpleType>
+                      <xs:restriction base="xs:normalizedString">
+                        <xs:maxLength value="4"/>
+                        <xs:enumeration value="РКС"/>
+                        <xs:enumeration value="МКС"/>
+                        <xs:enumeration value="РКСМ"/>
+                        <xs:enumeration value="МКСР"/>
+                        <xs:enumeration value="Ч31"/>
+                        <xs:enumeration value="Ч33"/>
+                        <xs:enumeration value="Ч34"/>
+                        <xs:enumeration value="Ч35"/>
+                        <xs:enumeration value="Ч36"/>
+                      </xs:restriction>
+                    </xs:simpleType>
+                  </xs:element>
+                  <xs:element name="Коэффициент" type="ТипКоэффициентТУ" minOccurs="0">
+                    <xs:annotation>
+                      <xs:documentation>Коэффициент территориальных условий труда</xs:documentation>
+                    </xs:annotation>
+                  </xs:element>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="ОУТ" minOccurs="0">
+              <xs:annotation>
+                <xs:documentation>Сведения об особых условиях труда</xs:documentation>
+              </xs:annotation>
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="Код">
+                    <xs:annotation>
+                      <xs:documentation>Код особых условий труда</xs:documentation>
+                    </xs:annotation>
+                    <xs:simpleType>
+                      <xs:restriction base="xs:normalizedString">
+                        <xs:enumeration value="ЗП12А"/>
+                        <xs:enumeration value="27-1"/>
+                        <xs:enumeration value="ЗП12Б"/>
+                        <xs:enumeration value="27-2"/>
+                        <xs:enumeration value="ЗП12В"/>
+                        <xs:enumeration value="27-3"/>
+                        <xs:enumeration value="ЗП12Г"/>
+                        <xs:enumeration value="27-4"/>
+                        <xs:enumeration value="ЗП12Д"/>
+                        <xs:enumeration value="27-5"/>
+                        <xs:enumeration value="ЗП12Е"/>
+                        <xs:enumeration value="27-6"/>
+                        <xs:enumeration value="ЗП12Ж"/>
+                        <xs:enumeration value="27-7"/>
+                        <xs:enumeration value="ЗП12З"/>
+                        <xs:enumeration value="27-8"/>
+                        <xs:enumeration value="ЗП12И"/>
+                        <xs:enumeration value="27-9"/>
+                        <xs:enumeration value="ЗП12К"/>
+                        <xs:enumeration value="27-10"/>
+                        <xs:enumeration value="ЗП12Л"/>
+                        <xs:enumeration value="ЗП12М"/>
+                        <xs:enumeration value="28-ОС"/>
+                        <xs:enumeration value="27-ОС"/>
+                        <xs:enumeration value="ЗП12О"/>
+                        <xs:enumeration value="28-ПЖ"/>
+                        <xs:enumeration value="27-ПЖ"/>
+                        <xs:enumeration value="СЕВ26"/>
+                        <xs:enumeration value="28-СЕВ"/>
+                      </xs:restriction>
+                    </xs:simpleType>
+                  </xs:element>
+                  <xs:element name="ПозицияСписка" minOccurs="0" type="УТ2:ТипНепустаяСтрока">
+                    <xs:annotation>
+                      <xs:documentation>Код профессии в соответствии со Списками 1 и 2 производств, работ, профессий, должностей и показателей, дающих право на льготное обеспечение, утвержденными Постановлением Кабинета Министров СССР от 26.01.1991 № 10</xs:documentation>
+                    </xs:annotation>
+                  </xs:element>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="ИС" minOccurs="0">
+              <xs:annotation>
+                <xs:documentation>Сведения об исчисляемом стаже</xs:documentation>
+              </xs:annotation>
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="Основание" minOccurs="0">
+                    <xs:annotation>
+                      <xs:documentation>Код основания ИС</xs:documentation>
+                    </xs:annotation>
+                    <xs:simpleType>
+                      <xs:restriction base="xs:normalizedString">
+                        <xs:maxLength value="7"/>
+                        <xs:enumeration value="СЕЗОН"/>
+                        <xs:enumeration value="ПОЛЕ"/>
+                        <xs:enumeration value="УИК104"/>
+                        <xs:enumeration value="ВОДОЛАЗ"/>
+                        <xs:enumeration value="ЛЕПРО"/>
+                      </xs:restriction>
+                    </xs:simpleType>
+                  </xs:element>
+                  <xs:group ref="ВС2:ГрВыработка">
+                    <xs:annotation>
+                      <xs:documentation>Группа элементов со сведениям о выработке</xs:documentation>
+                    </xs:annotation>
+                  </xs:group>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="ДопСведенияИС" minOccurs="0">
+              <xs:annotation>
+                <xs:documentation>Код дополнительных сведений  исчисления страхового стажа, применяемые до 2017 года (сведения об отпуске по уходу за ребенком, отпуске по беременности и родам, работе по договорам гражданско-правового характера, работе в рамках увеличенного расчетного периода, дополнительном отпуске для особых категорий застрахованных лиц, отпуске без сохранения содержания, периоде временной нетрудоспособности)</xs:documentation>
+              </xs:annotation>
+              <xs:simpleType>
+                <xs:restriction base="xs:normalizedString">
+                  <xs:maxLength value="10"/>
+                  <xs:enumeration value="ДЕТИ"/>
+                  <xs:enumeration value="ДЕКРЕТ"/>
+                  <xs:enumeration value="ДОГОВОР"/>
+                  <xs:enumeration value="УВПЕРИОД"/>
+                  <xs:enumeration value="ДЛОТПУСК"/>
+                  <xs:enumeration value="АДМИНИСТР"/>
+                  <xs:enumeration value="ВРНЕТРУД"/>
+                  <xs:enumeration value="ВАХТА"/>
+                  <xs:enumeration value="МЕСЯЦ"/>
+                  <xs:enumeration value="КВАЛИФ"/>
+                  <xs:enumeration value="ОБЩЕСТ"/>
+                  <xs:enumeration value="СДКРОВ"/>
+                  <xs:enumeration value="ОТСТРАН"/>
+                  <xs:enumeration value="ПРОСТОЙ"/>
+                  <xs:enumeration value="УЧОТПУСК"/>
+                  <xs:enumeration value="МЕДНЕТРУД"/>
+                  <xs:enumeration value="НЕОПЛДОГ"/>
+                  <xs:enumeration value="НЕОПЛАВТ"/>
+                  <xs:enumeration value="ДОПВЫХ"/>
+                  <xs:enumeration value="ДЛДЕТИ"/>
+                  <xs:enumeration value="ЧАЭС"/>
+                  <xs:enumeration value="НЕОПЛ"/>
+                  <xs:enumeration value="ДЕТИПРЛ"/>
+                </xs:restriction>
+              </xs:simpleType>
+            </xs:element>
+            <xs:element name="ВЛ" minOccurs="0">
+              <xs:annotation>
+                <xs:documentation>Сведения об условиях досрочного назначения пенсии</xs:documentation>
+              </xs:annotation>
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="Основание" minOccurs="0">
+                    <xs:annotation>
+                      <xs:documentation>Условия досрочного назначения пенсии: код основания</xs:documentation>
+                    </xs:annotation>
+                    <xs:simpleType>
+                      <xs:restriction base="xs:normalizedString">
+                        <xs:enumeration value="ЗП78ГР"/>
+                        <xs:enumeration value="27-11ГР"/>
+                        <xs:enumeration value="ЗП78ВП"/>
+                        <xs:enumeration value="27-11ВП"/>
+                        <xs:enumeration value="ЗП78ФЛ"/>
+                        <xs:enumeration value="27-12"/>
+                        <xs:enumeration value="ЗП78СС"/>
+                        <xs:enumeration value="28-СП"/>
+                        <xs:enumeration value="27-СП"/>
+                        <xs:enumeration value="ЗП80ПД"/>
+                        <xs:enumeration value="28-ПД"/>
+                        <xs:enumeration value="27-ПД"/>
+                        <xs:enumeration value="ЗП80РК"/>
+                        <xs:enumeration value="28-ПДРК"/>
+                        <xs:enumeration value="27-ПДРК"/>
+                        <xs:enumeration value="ЗП81ГД"/>
+                        <xs:enumeration value="28-ГД"/>
+                        <xs:enumeration value="27-ГД"/>
+                        <xs:enumeration value="ЗП81СМ"/>
+                        <xs:enumeration value="28-СМ"/>
+                        <xs:enumeration value="27-СМ"/>
+                        <xs:enumeration value="ХИРУРГД"/>
+                        <xs:enumeration value="28-ГДХР"/>
+                        <xs:enumeration value="27-ГДХР"/>
+                        <xs:enumeration value="ХИРУРСМ"/>
+                        <xs:enumeration value="28-СМХР"/>
+                        <xs:enumeration value="27-СМХР"/>
+                        <xs:enumeration value="ТВОРЧ15"/>
+                        <xs:enumeration value="ТВОРЧ20"/>
+                        <xs:enumeration value="ТВОРЧ25"/>
+                        <xs:enumeration value="ТВОРЧ30"/>
+                        <xs:enumeration value="САМОЛЕТ"/>
+                        <xs:enumeration value="СПЕЦАВ"/>
+                        <xs:enumeration value="СПАСАВ"/>
+                        <xs:enumeration value="УЧЛЕТ"/>
+                        <xs:enumeration value="ВЫСШПИЛ"/>
+                        <xs:enumeration value="НОРМАПР"/>
+                        <xs:enumeration value="НОРМСП"/>
+                        <xs:enumeration value="РЕАКТИВН"/>
+                        <xs:enumeration value="ЛЕТРАБ"/>
+                        <xs:enumeration value="ЛЕТИСП"/>
+                        <xs:enumeration value="ОПЫТИСП"/>
+                        <xs:enumeration value="ИСПКЛС1"/>
+                        <xs:enumeration value="ИТСИСП"/>
+                        <xs:enumeration value="ИТСМАВ"/>
+                        <xs:enumeration value="ИНСПЕКТ"/>
+                        <xs:enumeration value="УВД"/>
+                        <xs:enumeration value="27-14"/>
+                        <xs:enumeration value="ИТС"/>
+                        <xs:enumeration value="27-15"/>
+                      </xs:restriction>
+                    </xs:simpleType>
+                  </xs:element>
+                  <xs:group ref="ВС2:ГрВыработка">
+                    <xs:annotation>
+                      <xs:documentation>Группа элементов со сведениям о выработке</xs:documentation>
+                    </xs:annotation>
+                  </xs:group>
+                  <xs:element name="ДоляСтавки" type="ТипДоляСтавкиВЛ" minOccurs="0">
+                    <xs:annotation>
+                      <xs:documentation>Доля ставки</xs:documentation>
+                    </xs:annotation>
+                  </xs:element>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:simpleType name="ТипКоэффициентТУ">
+    <xs:annotation>
+      <xs:documentation>Коэффициент территориальных условий труда</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:decimal">
+      <xs:fractionDigits value="2"/>
+      <xs:totalDigits value="3"/>
+      <xs:minInclusive value="0.00"/>
+      <xs:maxInclusive value="2.00"/>
+      <xs:pattern value="\d{1}\.\d{2}"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="ТипДоляСтавкиВЛ">
+    <xs:annotation>
+      <xs:documentation>Доля ставки</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:decimal">
+      <xs:minInclusive value="0.00"/>
+      <xs:maxInclusive value="2.00"/>
+      <xs:fractionDigits value="2"/>
+      <xs:totalDigits value="3"/>
+      <xs:pattern value="\d{1}\.\d{2}"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="ТипСтажевыйПериод2017">
+    <xs:annotation>
+      <xs:documentation>Применяется для СЗВ-СТАЖ. Блок сведений о стажевом периоде, с кодами оснований:
+					                      - территориальных условий труда,
+					                      - особых условий труда,
+					                      - основания исчисления страхового стажа,
+					                      - дополнительных сведений  исчисления страхового стажа,
+					                      - условий досрочного назначения пенсии
+				  применяемыми с 2017 года.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="Период" type="УТ2:ТипВременнойПериод">
+        <xs:annotation>
+          <xs:documentation>Дата начала и дата окончания стажа работы застрахованного лица</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ЛьготныйСтаж" minOccurs="0" maxOccurs="unbounded">
+        <xs:annotation>
+          <xs:documentation>Сведения о льготном стаже и особенностях учета стажа работы застрахованного лица</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="ТУ" minOccurs="0">
+              <xs:annotation>
+                <xs:documentation>Сведения о территориальных условиях труда</xs:documentation>
+              </xs:annotation>
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="Основание">
+                    <xs:annotation>
+                      <xs:documentation>Код основания территориальных условий труда, применяемых с 2017 года.</xs:documentation>
+                    </xs:annotation>
+                    <xs:simpleType>
+                      <xs:restriction base="xs:normalizedString">
+                        <xs:maxLength value="4"/>
+                        <xs:enumeration value="РКС"/>
+                        <xs:enumeration value="МКС"/>
+                        <xs:enumeration value="РКСМ"/>
+                        <xs:enumeration value="МКСР"/>
+                        <xs:enumeration value="Ч31"/>
+                        <xs:enumeration value="Ч33"/>
+                        <xs:enumeration value="Ч34"/>
+                        <xs:enumeration value="Ч35"/>
+                        <xs:enumeration value="Ч36"/>
+                        <xs:enumeration value="СЕЛО"/>
+                      </xs:restriction>
+                    </xs:simpleType>
+                  </xs:element>
+                  <xs:element name="Коэффициент" minOccurs="0">
+                    <xs:annotation>
+                      <xs:documentation>Коэффициент территориальных условий труда</xs:documentation>
+                    </xs:annotation>
+                    <xs:simpleType>
+                      <xs:restriction base="ТипКоэффициентТУ">
+                        <xs:maxInclusive value="1.00"/>
+                      </xs:restriction>
+                    </xs:simpleType>
+                  </xs:element>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="ОУТ" minOccurs="0">
+              <xs:annotation>
+                <xs:documentation>Сведения об особых условиях труда (c кодами, действующими с 2017 года)</xs:documentation>
+              </xs:annotation>
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="Код">
+                    <xs:annotation>
+                      <xs:documentation>Код особых условий труда</xs:documentation>
+                    </xs:annotation>
+                    <xs:simpleType>
+                      <xs:restriction base="xs:normalizedString">
+                        <xs:enumeration value="27-1"/>
+                        <xs:enumeration value="27-2"/>
+                        <xs:enumeration value="27-3"/>
+                        <xs:enumeration value="27-4"/>
+                        <xs:enumeration value="27-5"/>
+                        <xs:enumeration value="27-6"/>
+                        <xs:enumeration value="27-7"/>
+                        <xs:enumeration value="27-8"/>
+                        <xs:enumeration value="27-9"/>
+                        <xs:enumeration value="27-10"/>
+                        <xs:enumeration value="27-ОС"/>
+                        <xs:enumeration value="27-ПЖ"/>
+                        <xs:enumeration value="28-СЕВ"/>
+                      </xs:restriction>
+                    </xs:simpleType>
+                  </xs:element>
+                  <xs:element name="ПозицияСписка" minOccurs="0" type="УТ2:ТипНепустаяСтрока">
+                    <xs:annotation>
+                      <xs:documentation>Код профессии в соответствии со Списками 1 и 2 производств, работ, профессий, должностей и показателей, дающих право на льготное обеспечение, утвержденными Постановлением Кабинета Министров СССР от 26.01.1991 № 10</xs:documentation>
+                    </xs:annotation>
+                  </xs:element>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="ИС" minOccurs="0">
+              <xs:annotation>
+                <xs:documentation>Сведения об исчисляемом стаже</xs:documentation>
+              </xs:annotation>
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="Основание" minOccurs="0">
+                    <xs:annotation>
+                      <xs:documentation>Код основания ИС</xs:documentation>
+                    </xs:annotation>
+                    <xs:simpleType>
+                      <xs:restriction base="xs:normalizedString">
+                        <xs:maxLength value="7"/>
+                        <xs:enumeration value="СЕЗОН"/>
+                        <xs:enumeration value="ПОЛЕ"/>
+                        <xs:enumeration value="УИК104"/>
+                        <xs:enumeration value="ВОДОЛАЗ"/>
+                        <xs:enumeration value="ВИРУС"/>
+                      </xs:restriction>
+                    </xs:simpleType>
+                  </xs:element>
+                  <xs:group ref="ВС2:ГрВыработка">
+                    <xs:annotation>
+                      <xs:documentation>Группа элементов со сведениям о выработке</xs:documentation>
+                    </xs:annotation>
+                  </xs:group>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="ДопСведенияИС" minOccurs="0">
+              <xs:annotation>
+                <xs:documentation>Код дополнительных сведений  исчисления страхового стажа, применяемые с 2017 года (сведения об отпуске по уходу за ребенком, отпуске по беременности и родам, работе по договорам гражданско-правового характера, работе в рамках увеличенного расчетного периода, дополнительном отпуске для особых категорий застрахованных лиц, отпуске без сохранения содержания, периоде временной нетрудоспособности)</xs:documentation>
+              </xs:annotation>
+              <xs:simpleType>
+                <xs:restriction base="xs:normalizedString">
+                  <xs:maxLength value="10"/>
+                  <xs:enumeration value="ДЕТИ"/>
+                  <xs:enumeration value="ДЕКРЕТ"/>
+                  <xs:enumeration value="ДОГОВОР"/>
+                  <xs:enumeration value="ДЛОТПУСК"/>
+                  <xs:enumeration value="ВАХТА"/>
+                  <xs:enumeration value="МЕСЯЦ"/>
+                  <xs:enumeration value="КВАЛИФ"/>
+                  <xs:enumeration value="ОБЩЕСТ"/>
+                  <xs:enumeration value="СДКРОВ"/>
+                  <xs:enumeration value="ОТСТРАН"/>
+                  <xs:enumeration value="ПРОСТОЙ"/>
+                  <xs:enumeration value="УЧОТПУСК"/>
+                  <xs:enumeration value="МЕДНЕТРУД"/>
+                  <xs:enumeration value="НЕОПЛДОГ"/>
+                  <xs:enumeration value="НЕОПЛАВТ"/>
+                  <xs:enumeration value="ДОПВЫХ"/>
+                  <xs:enumeration value="ЗГДС"/>
+                  <xs:enumeration value="ЗГД"/>
+                  <xs:enumeration value="ЗГГС"/>
+                  <xs:enumeration value="ЗМС"/>
+                  <xs:enumeration value="ЗМД"/>
+                  <xs:enumeration value="ДЛДЕТИ"/>
+                  <xs:enumeration value="ЧАЭС"/>
+                  <xs:enumeration value="НЕОПЛ"/>
+                  <xs:enumeration value="ДЕТИПРЛ"/>
+                  <xs:enumeration value="ВРНЕТРУД"/>
+                  <xs:enumeration value="ВОЕНСЛ"/>
+                </xs:restriction>
+              </xs:simpleType>
+            </xs:element>
+            <xs:element name="ВЛ" minOccurs="0">
+              <xs:annotation>
+                <xs:documentation>Сведения об условиях досрочного назначения пенсии</xs:documentation>
+              </xs:annotation>
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="Основание" minOccurs="0">
+                    <xs:annotation>
+                      <xs:documentation>Условия досрочного назначения пенсии: код основания</xs:documentation>
+                    </xs:annotation>
+                    <xs:simpleType>
+                      <xs:restriction base="xs:normalizedString">
+                        <xs:enumeration value="27-11ГР"/>
+                        <xs:enumeration value="27-11ВП"/>
+                        <xs:enumeration value="27-12"/>
+                        <xs:enumeration value="27-СП"/>
+                        <xs:enumeration value="27-ПД"/>
+                        <xs:enumeration value="27-ПДРК"/>
+                        <xs:enumeration value="27-ГД"/>
+                        <xs:enumeration value="27-СМ"/>
+                        <xs:enumeration value="27-ГДХР"/>
+                        <xs:enumeration value="27-СМХР"/>
+                        <xs:enumeration value="ТВОРЧ15"/>
+                        <xs:enumeration value="ТВОРЧ20"/>
+                        <xs:enumeration value="ТВОРЧ25"/>
+                        <xs:enumeration value="ТВОРЧ30"/>
+                        <xs:enumeration value="САМОЛЕТ"/>
+                        <xs:enumeration value="СПЕЦАВ"/>
+                        <xs:enumeration value="СПАСАВ"/>
+                        <xs:enumeration value="УЧЛЕТ"/>
+                        <xs:enumeration value="ВЫСШПИЛ"/>
+                        <xs:enumeration value="НОРМАПР"/>
+                        <xs:enumeration value="НОРМСП"/>
+                        <xs:enumeration value="РЕАКТИВН"/>
+                        <xs:enumeration value="ЛЕТРАБ"/>
+                        <xs:enumeration value="ЛЕТИСП"/>
+                        <xs:enumeration value="ИТСИСП"/>
+                        <xs:enumeration value="ИТСМАВ"/>
+                        <xs:enumeration value="ИНСПЕКТ"/>
+                        <xs:enumeration value="27-14"/>
+                        <xs:enumeration value="27-15"/>
+                      </xs:restriction>
+                    </xs:simpleType>
+                  </xs:element>
+                  <xs:group ref="ВС2:ГрВыработка">
+                    <xs:annotation>
+                      <xs:documentation>Группа элементов со сведениям о выработке</xs:documentation>
+                    </xs:annotation>
+                  </xs:group>
+                  <xs:element name="ДоляСтавки" type="ТипДоляСтавкиВЛ" minOccurs="0">
+                    <xs:annotation>
+                      <xs:documentation>Доля ставки</xs:documentation>
+                    </xs:annotation>
+                  </xs:element>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:simpleType name="ТипТипОДВ-1">
+    <xs:annotation>
+      <xs:documentation>Тип сведений ОДВ-1. Возможные значения:
+			0 - исходная,
+			1 - корректирующая,
+			2 - отменяющая.</xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:integer">
+      <xs:enumeration value="0"/>
+      <xs:enumeration value="1"/>
+      <xs:enumeration value="2"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="ТипСтажевыйПериодОбщий">
+    <xs:annotation>
+      <xs:documentation>Применяется для СЗВ-КОРР. Блок сведений о стажевом периоде, с кодами оснований:
+					                        - территориальных условий труда,
+					                        - особых условий труда,
+					                        - основания исчисления страхового стажа,
+					                        - дополнительных сведений  исчисления страхового стажа,
+					                        - условия досрочного назначения пенсии
+				  применяемыми как до 2017 года, так и после.</xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="Период" type="УТ2:ТипВременнойПериод">
+        <xs:annotation>
+          <xs:documentation>Дата начала и дата окончания стажа работы застрахованного лица</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="ЛьготныйСтаж" minOccurs="0" maxOccurs="unbounded">
+        <xs:annotation>
+          <xs:documentation>Сведения о льготном стаже и особенностях учета стажа работы застрахованного лица</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="ТУ" minOccurs="0">
+              <xs:annotation>
+                <xs:documentation>Сведения о территориальных условиях труда</xs:documentation>
+              </xs:annotation>
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="Основание">
+                    <xs:annotation>
+                      <xs:documentation>Код основания территориальных условий труда.</xs:documentation>
+                    </xs:annotation>
+                    <xs:simpleType>
+                      <xs:restriction base="xs:normalizedString">
+                        <xs:maxLength value="4"/>
+                        <xs:enumeration value="РКС"/>
+                        <xs:enumeration value="МКС"/>
+                        <xs:enumeration value="РКСМ"/>
+                        <xs:enumeration value="МКСР"/>
+                        <xs:enumeration value="Ч31"/>
+                        <xs:enumeration value="Ч33"/>
+                        <xs:enumeration value="Ч34"/>
+                        <xs:enumeration value="Ч35"/>
+                        <xs:enumeration value="Ч36"/>
+                        <xs:enumeration value="СЕЛО"/>
+                      </xs:restriction>
+                    </xs:simpleType>
+                  </xs:element>
+                  <xs:element name="Коэффициент" type="ТипКоэффициентТУ" minOccurs="0">
+                    <xs:annotation>
+                      <xs:documentation>Коэффициент территориальных условий труда</xs:documentation>
+                    </xs:annotation>
+                  </xs:element>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="ОУТ" minOccurs="0">
+              <xs:annotation>
+                <xs:documentation>Сведения об особых условиях труда</xs:documentation>
+              </xs:annotation>
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="Код">
+                    <xs:annotation>
+                      <xs:documentation>Код особых условий труда</xs:documentation>
+                    </xs:annotation>
+                    <xs:simpleType>
+                      <xs:restriction base="xs:normalizedString">
+                        <xs:enumeration value="ЗП12А"/>
+                        <xs:enumeration value="27-1"/>
+                        <xs:enumeration value="ЗП12Б"/>
+                        <xs:enumeration value="27-2"/>
+                        <xs:enumeration value="ЗП12В"/>
+                        <xs:enumeration value="27-3"/>
+                        <xs:enumeration value="ЗП12Г"/>
+                        <xs:enumeration value="27-4"/>
+                        <xs:enumeration value="ЗП12Д"/>
+                        <xs:enumeration value="27-5"/>
+                        <xs:enumeration value="ЗП12Е"/>
+                        <xs:enumeration value="27-6"/>
+                        <xs:enumeration value="ЗП12Ж"/>
+                        <xs:enumeration value="27-7"/>
+                        <xs:enumeration value="ЗП12З"/>
+                        <xs:enumeration value="27-8"/>
+                        <xs:enumeration value="ЗП12И"/>
+                        <xs:enumeration value="27-9"/>
+                        <xs:enumeration value="ЗП12К"/>
+                        <xs:enumeration value="27-10"/>
+                        <xs:enumeration value="ЗП12Л"/>
+                        <xs:enumeration value="ЗП12М"/>
+                        <xs:enumeration value="28-ОС"/>
+                        <xs:enumeration value="27-ОС"/>
+                        <xs:enumeration value="ЗП12О"/>
+                        <xs:enumeration value="28-ПЖ"/>
+                        <xs:enumeration value="27-ПЖ"/>
+                        <xs:enumeration value="СЕВ26"/>
+                        <xs:enumeration value="28-СЕВ"/>
+                      </xs:restriction>
+                    </xs:simpleType>
+                  </xs:element>
+                  <xs:element name="ПозицияСписка" minOccurs="0" type="УТ2:ТипНепустаяСтрока">
+                    <xs:annotation>
+                      <xs:documentation>Код профессии в соответствии со Списками 1 и 2 производств, работ, профессий, должностей и показателей, дающих право на льготное обеспечение, утвержденными Постановлением Кабинета Министров СССР от 26.01.1991 № 10</xs:documentation>
+                    </xs:annotation>
+                  </xs:element>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="ИС" minOccurs="0">
+              <xs:annotation>
+                <xs:documentation>Сведения об исчисляемом стаже</xs:documentation>
+              </xs:annotation>
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="Основание" minOccurs="0">
+                    <xs:annotation>
+                      <xs:documentation>Код основания исчисляемого стажа</xs:documentation>
+                    </xs:annotation>
+                    <xs:simpleType>
+                      <xs:restriction base="xs:normalizedString">
+                        <xs:maxLength value="7"/>
+                        <xs:enumeration value="СЕЗОН"/>
+                        <xs:enumeration value="ПОЛЕ"/>
+                        <xs:enumeration value="УИК104"/>
+                        <xs:enumeration value="ВОДОЛАЗ"/>
+                        <xs:enumeration value="ЛЕПРО"/>
+                        <xs:enumeration value="ВИРУС"/>
+                      </xs:restriction>
+                    </xs:simpleType>
+                  </xs:element>
+                  <xs:group ref="ВС2:ГрВыработка">
+                    <xs:annotation>
+                      <xs:documentation>Группа элементов со сведениям о выработке</xs:documentation>
+                    </xs:annotation>
+                  </xs:group>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="ДопСведенияИС" minOccurs="0">
+              <xs:annotation>
+                <xs:documentation>Код дополнительных сведений  исчисления страхового стажа (сведения об отпуске по уходу за ребенком, отпуске по беременности и родам, работе по договорам гражданско-правового характера, работе в рамках увеличенного расчетного периода, дополнительном отпуске для особых категорий застрахованных лиц, отпуске без сохранения содержания, периоде временной нетрудоспособности)</xs:documentation>
+              </xs:annotation>
+              <xs:simpleType>
+                <xs:restriction base="xs:normalizedString">
+                  <xs:maxLength value="10"/>
+                  <xs:enumeration value="ДЕТИ"/>
+                  <xs:enumeration value="ДЕКРЕТ"/>
+                  <xs:enumeration value="ДОГОВОР"/>
+                  <xs:enumeration value="УВПЕРИОД"/>
+                  <xs:enumeration value="ДЛОТПУСК"/>
+                  <xs:enumeration value="АДМИНИСТР"/>
+                  <xs:enumeration value="ВРНЕТРУД"/>
+                  <xs:enumeration value="ВАХТА"/>
+                  <xs:enumeration value="МЕСЯЦ"/>
+                  <xs:enumeration value="КВАЛИФ"/>
+                  <xs:enumeration value="ОБЩЕСТ"/>
+                  <xs:enumeration value="СДКРОВ"/>
+                  <xs:enumeration value="ОТСТРАН"/>
+                  <xs:enumeration value="ПРОСТОЙ"/>
+                  <xs:enumeration value="УЧОТПУСК"/>
+                  <xs:enumeration value="МЕДНЕТРУД"/>
+                  <xs:enumeration value="НЕОПЛДОГ"/>
+                  <xs:enumeration value="НЕОПЛАВТ"/>
+                  <xs:enumeration value="ДОПВЫХ"/>
+                  <xs:enumeration value="ДЛДЕТИ"/>
+                  <xs:enumeration value="ЧАЭС"/>
+                  <xs:enumeration value="НЕОПЛ"/>
+                  <xs:enumeration value="ДЕТИПРЛ"/>
+                  <xs:enumeration value="ЗГДС"/>
+                  <xs:enumeration value="ЗГД"/>
+                  <xs:enumeration value="ЗГГС"/>
+                  <xs:enumeration value="ЗМС"/>
+                  <xs:enumeration value="ЗМД"/>
+                  <xs:enumeration value="ВОЕНСЛ"/>
+                </xs:restriction>
+              </xs:simpleType>
+            </xs:element>
+            <xs:element name="ВЛ" minOccurs="0">
+              <xs:annotation>
+                <xs:documentation>Сведения об условиях досрочного назначения пенсии</xs:documentation>
+              </xs:annotation>
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="Основание" minOccurs="0">
+                    <xs:annotation>
+                      <xs:documentation>Условия досрочного назначения пенсии: код основания</xs:documentation>
+                    </xs:annotation>
+                    <xs:simpleType>
+                      <xs:restriction base="xs:normalizedString">
+                        <xs:enumeration value="ЗП78ГР"/>
+                        <xs:enumeration value="27-11ГР"/>
+                        <xs:enumeration value="ЗП78ВП"/>
+                        <xs:enumeration value="27-11ВП"/>
+                        <xs:enumeration value="ЗП78ФЛ"/>
+                        <xs:enumeration value="27-12"/>
+                        <xs:enumeration value="ЗП78СС"/>
+                        <xs:enumeration value="28-СП"/>
+                        <xs:enumeration value="27-СП"/>
+                        <xs:enumeration value="ЗП80ПД"/>
+                        <xs:enumeration value="28-ПД"/>
+                        <xs:enumeration value="27-ПД"/>
+                        <xs:enumeration value="ЗП80РК"/>
+                        <xs:enumeration value="28-ПДРК"/>
+                        <xs:enumeration value="27-ПДРК"/>
+                        <xs:enumeration value="ЗП81ГД"/>
+                        <xs:enumeration value="28-ГД"/>
+                        <xs:enumeration value="27-ГД"/>
+                        <xs:enumeration value="ЗП81СМ"/>
+                        <xs:enumeration value="28-СМ"/>
+                        <xs:enumeration value="27-СМ"/>
+                        <xs:enumeration value="ХИРУРГД"/>
+                        <xs:enumeration value="28-ГДХР"/>
+                        <xs:enumeration value="27-ГДХР"/>
+                        <xs:enumeration value="ХИРУРСМ"/>
+                        <xs:enumeration value="28-СМХР"/>
+                        <xs:enumeration value="27-СМХР"/>
+                        <xs:enumeration value="ТВОРЧ15"/>
+                        <xs:enumeration value="ТВОРЧ20"/>
+                        <xs:enumeration value="ТВОРЧ25"/>
+                        <xs:enumeration value="ТВОРЧ30"/>
+                        <xs:enumeration value="САМОЛЕТ"/>
+                        <xs:enumeration value="СПЕЦАВ"/>
+                        <xs:enumeration value="СПАСАВ"/>
+                        <xs:enumeration value="УЧЛЕТ"/>
+                        <xs:enumeration value="ВЫСШПИЛ"/>
+                        <xs:enumeration value="НОРМАПР"/>
+                        <xs:enumeration value="НОРМСП"/>
+                        <xs:enumeration value="РЕАКТИВН"/>
+                        <xs:enumeration value="ЛЕТРАБ"/>
+                        <xs:enumeration value="ЛЕТИСП"/>
+                        <xs:enumeration value="ОПЫТИСП"/>
+                        <xs:enumeration value="ИСПКЛС1"/>
+                        <xs:enumeration value="ИТСИСП"/>
+                        <xs:enumeration value="ИТСМАВ"/>
+                        <xs:enumeration value="ИНСПЕКТ"/>
+                        <xs:enumeration value="УВД"/>
+                        <xs:enumeration value="27-14"/>
+                        <xs:enumeration value="ИТС"/>
+                        <xs:enumeration value="27-15"/>
+                      </xs:restriction>
+                    </xs:simpleType>
+                  </xs:element>
+                  <xs:group ref="ВС2:ГрВыработка">
+                    <xs:annotation>
+                      <xs:documentation>Группа элементов со сведениям о выработке</xs:documentation>
+                    </xs:annotation>
+                  </xs:group>
+                  <xs:element name="ДоляСтавки" type="ТипДоляСтавкиВЛ" minOccurs="0">
+                    <xs:annotation>
+                      <xs:documentation>Доля ставки</xs:documentation>
+                    </xs:annotation>
+                  </xs:element>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>

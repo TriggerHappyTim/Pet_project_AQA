@@ -14,10 +14,14 @@ import io.qameta.allure.Epic;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Severity;
 import io.qameta.allure.SeverityLevel;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.time.Duration;
+import java.util.stream.Stream;
 
 import static com.bft.pw.Selenide.$x;
 
@@ -36,6 +40,7 @@ import static com.bft.pw.Selenide.$x;
  * @version 1.0
  * @since 1.0
  */
+@Tag("negative")
 @Epic("Негативные тесты")
 @Feature("Обработка ошибок и граничные случаи")
 public class NegativeTestCases extends UITestBase {
@@ -46,9 +51,7 @@ public class NegativeTestCases extends UITestBase {
      * Проверяет, что система корректно обрабатывает попытку входа с несуществующим логином.
      * Ожидается отображение сообщения об ошибке.
      */
-    @Test(groups = {"web", "negative", "login"},
-          testName = "#1 Авторизация с невалидным логином",
-          description = "Проверка обработки ошибки при попытке входа с несуществующим логином")
+    @Test
     @Severity(SeverityLevel.NORMAL)
     @AllureId("NEG-001")
     public void testLoginWithInvalidUsername() {
@@ -94,9 +97,7 @@ public class NegativeTestCases extends UITestBase {
      * 
      * Проверяет, что система корректно обрабатывает попытку входа с неверным паролем.
      */
-    @Test(groups = {"web", "negative", "login"},
-          testName = "#2 Авторизация с невалидным паролем",
-          description = "Проверка обработки ошибки при попытке входа с неверным паролем")
+    @Test
     @Severity(SeverityLevel.NORMAL)
     @AllureId("NEG-002")
     public void testLoginWithInvalidPassword() {
@@ -129,7 +130,7 @@ public class NegativeTestCases extends UITestBase {
      * 
      * Проверяет валидацию формы при попытке входа без заполнения полей.
      */
-    @Test(groups = {"web", "negative", "login", "validation"})
+    @Test
     @Description("Проверка валидации формы при попытке входа без заполнения полей")
     @Severity(SeverityLevel.NORMAL)
     @AllureId("NEG-003")
@@ -166,9 +167,7 @@ public class NegativeTestCases extends UITestBase {
      * 
      * Проверяет, что тест корректно обрабатывает ситуацию, когда элемент не найден.
      */
-    @Test(groups = {"web", "negative", "elements"},
-          testName = "#4 Проверка отсутствующего элемента",
-          description = "Проверка обработки ситуации, когда элемент не найден на странице")
+    @Test
     @Severity(SeverityLevel.NORMAL)
     @AllureId("NEG-004")
     public void testMissingElement() {
@@ -212,7 +211,7 @@ public class NegativeTestCases extends UITestBase {
      * 
      * Проверяет, что тест корректно обрабатывает ситуацию таймаута при ожидании элемента.
      */
-    @Test(groups = {"web", "negative", "timeout"})
+    @Test
     @Description("Проверка обработки таймаута при ожидании элемента, который не появится")
     @Severity(SeverityLevel.NORMAL)
     @AllureId("NEG-005")
@@ -257,9 +256,8 @@ public class NegativeTestCases extends UITestBase {
      * 
      * Проверяет валидацию email поля при вводе невалидного формата.
      */
-    @Test(groups = {"web", "negative", "validation", "email"},
-          testName = "#6 Проверка невалидного email формата",
-          description = "Проверка валидации email поля при вводе невалидного формата")
+    @Test
+    @Description("Проверка валидации email поля при вводе невалидного формата")
     @Severity(SeverityLevel.NORMAL)
     @AllureId("NEG-006")
     public void testInvalidEmailFormat() {
@@ -294,31 +292,29 @@ public class NegativeTestCases extends UITestBase {
     }
 
     /**
-     * DataProvider для тестов с различными невалидными данными
+     * Data provider for tests with various invalid credentials
      */
-    @DataProvider(name = "invalidCredentials")
-    public Object[][] invalidCredentialsProvider() {
-        return new Object[][] {
-            {"", "", "Пустые логин и пароль"},
-            {"user", "", "Пустой пароль"},
-            {"", "password", "Пустой логин"},
-            {"user@", "password", "Невалидный email (без домена)"},
-            {"@domain.com", "password", "Невалидный email (без имени)"},
-            {"user@domain", "password", "Невалидный email (без TLD)"},
-            {"very_long_username_that_exceeds_maximum_length_limit_12345678901234567890", "password", "Слишком длинный логин"},
-            {"user", "very_long_password_that_exceeds_maximum_length_limit_123456789012345678901234567890", "Слишком длинный пароль"},
-            {"<script>alert('xss')</script>", "password", "XSS попытка в логине"},
-            {"user@domain.com", "<script>alert('xss')</script>", "XSS попытка в пароле"},
-            {"user@domain.com", "password\n<script>", "SQL injection попытка"},
-        };
+    static Stream<Arguments> invalidCredentialsProvider() {
+        return Stream.of(
+            Arguments.of("", "", "Пустые логин и пароль"),
+            Arguments.of("user", "", "Пустой пароль"),
+            Arguments.of("", "password", "Пустой логин"),
+            Arguments.of("user@", "password", "Невалидный email (без домена)"),
+            Arguments.of("@domain.com", "password", "Невалидный email (без имени)"),
+            Arguments.of("user@domain", "password", "Невалидный email (без TLD)"),
+            Arguments.of("very_long_username_that_exceeds_maximum_length_limit_12345678901234567890", "password", "Слишком длинный логин"),
+            Arguments.of("user", "very_long_password_that_exceeds_maximum_length_limit_123456789012345678901234567890", "Слишком длинный пароль"),
+            Arguments.of("<script>alert('xss')</script>", "password", "XSS попытка в логине"),
+            Arguments.of("user@domain.com", "<script>alert('xss')</script>", "XSS попытка в пароле"),
+            Arguments.of("user@domain.com", "password\n<script>", "SQL injection попытка")
+        );
     }
 
     /**
-     * Параметризованный тест: Авторизация с различными невалидными данными
-     * 
-     * Проверяет обработку различных комбинаций невалидных данных.
+     * Parameterized test: Authorization with various invalid credentials
      */
-    @Test(dataProvider = "invalidCredentials", groups = {"web", "negative", "login", "data-driven"})
+    @ParameterizedTest(name = "Login with Invalid Credentials: {2}")
+    @MethodSource("invalidCredentialsProvider")
     @Description("Параметризованный тест для проверки различных невалидных комбинаций логина и пароля")
     @Severity(SeverityLevel.NORMAL)
     @AllureId("NEG-007")
@@ -348,27 +344,23 @@ public class NegativeTestCases extends UITestBase {
     }
 
     /**
-     * Тест: Проверка граничных значений для длины пароля
-     * 
-     * Проверяет валидацию пароля на граничных значениях длины.
+     * Data provider for password boundary value tests
      */
-    @DataProvider(name = "passwordBoundaryValues")
-    public Object[][] passwordBoundaryValuesProvider() {
-        return new Object[][] {
-            {0, false, "Пустой пароль"},
-            {1, false, "Пароль из 1 символа"},
-            {7, false, "Пароль из 7 символов (меньше минимума)"},
-            {8, true, "Пароль из 8 символов (минимум)"},
-            {9, true, "Пароль из 9 символов"},
-            {15, true, "Пароль из 15 символов"},
-            {16, true, "Пароль из 16 символов"},
-            {100, false, "Пароль из 100 символов (превышает максимум)"},
-        };
+    static Stream<Arguments> passwordBoundaryValuesProvider() {
+        return Stream.of(
+            Arguments.of(0, false, "Пустой пароль"),
+            Arguments.of(1, false, "Пароль из 1 символа"),
+            Arguments.of(7, false, "Пароль из 7 символов (меньше минимума)"),
+            Arguments.of(8, true, "Пароль из 8 символов (минимум)"),
+            Arguments.of(9, true, "Пароль из 9 символов"),
+            Arguments.of(15, true, "Пароль из 15 символов"),
+            Arguments.of(16, true, "Пароль из 16 символов"),
+            Arguments.of(100, false, "Пароль из 100 символов (превышает максимум)")
+        );
     }
 
-    @Test(dataProvider = "passwordBoundaryValues", groups = {"web", "negative", "validation", "boundary"},
-          testName = "#8 Проверка граничных значений для длины пароля",
-          description = "Проверка валидации пароля на граничных значениях длины")
+    @ParameterizedTest(name = "Password Boundary Values: {2}")
+    @MethodSource("passwordBoundaryValuesProvider")
     @Severity(SeverityLevel.NORMAL)
     @AllureId("NEG-008")
     public void testPasswordBoundaryValues(int passwordLength, boolean shouldBeValid, String description) {

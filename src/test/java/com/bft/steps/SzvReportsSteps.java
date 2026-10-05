@@ -4,7 +4,6 @@ import com.bft.enums.ReportFormType;
 import com.bft.enums.ReportXmlResource;
 import com.bft.enums.UIType;
 import com.bft.security.TestUsers;
-import org.springframework.stereotype.Component;
 
 /**
  * Фасад (композиция) шагов для работы с отчётами СЗВ в системе EVS.
@@ -18,7 +17,6 @@ import org.springframework.stereotype.Component;
  *   <li>{@link ReportDataEntrySteps} — заполнение форм отчётов</li>
  * </ul>
  */
-@Component
 public class SzvReportsSteps {
 
     private final AuthSteps authSteps = new AuthSteps();
@@ -160,6 +158,10 @@ public class SzvReportsSteps {
         reportNavSteps.createContinue();
     }
 
+    public void createContinueViaJs() {
+        reportNavSteps.createContinueViaJs();
+    }
+
     public void goToZL() {
         reportNavSteps.goToZL();
     }
@@ -176,10 +178,6 @@ public class SzvReportsSteps {
 
     public void addGeneralInfoISH() {
         reportDataEntrySteps.addGeneralInfoISH();
-    }
-
-    public void fillBasisSectionISH() {
-        reportDataEntrySteps.fillBasisSectionISH();
     }
 
     public void addGeneralInfoTD() {
@@ -206,6 +204,10 @@ public class SzvReportsSteps {
         reportDataEntrySteps.fillZL();
     }
 
+    public void fillSectionSTAZH() {
+        reportDataEntrySteps.fillSectionSTAZH();
+    }
+
     public void fillZLEFS() {
         reportDataEntrySteps.fillZLEFS();
     }
@@ -222,12 +224,86 @@ public class SzvReportsSteps {
         reportDataEntrySteps.saveZL();
     }
 
+    public void saveZLEFS() {
+        reportDataEntrySteps.saveZLEFS();
+    }
+
     public void saveEvent() {
         reportDataEntrySteps.saveEvent();
     }
 
     public void addSTAJ() {
         reportDataEntrySteps.addSTAJ();
+    }
+
+    // ===================== СЗВ-СТАЖ =====================
+
+    public void addGeneralInfoSTAGE() {
+        reportDataEntrySteps.addGeneralInfoSTAGE();
+    }
+
+    public void addPersonSTAGE() {
+        reportDataEntrySteps.addPersonSTAGE();
+    }
+
+    // ===================== СЗВ-ИСХ =====================
+
+    public void fillZLForISH() {
+        reportDataEntrySteps.fillZLForISH();
+    }
+
+    // ===================== ОДВ-1 =====================
+
+    public void addGeneralInfoODV1() {
+        reportDataEntrySteps.addGeneralInfoODV1();
+    }
+
+    public void fillOdv1Period() {
+        reportDataEntrySteps.fillOdv1Period();
+    }
+
+    // ===================== СЗВ-КОРР =====================
+
+    public void addGeneralInfoKORR() {
+        reportDataEntrySteps.addGeneralInfoKORR();
+    }
+
+    // ===================== СЗВ-К =====================
+
+    public void addGeneralInfoK() {
+        reportDataEntrySteps.addGeneralInfoK();
+    }
+
+    public void addZL_K() {
+        reportDataEntrySteps.addZL_K();
+    }
+
+    // ===================== СЗВ-DSO =====================
+
+    public void addGeneralInfoDSO() {
+        reportDataEntrySteps.addGeneralInfoDSO();
+    }
+
+    public void addZL_DSO() {
+        reportDataEntrySteps.addZL_DSO();
+    }
+
+    public void addPeriodDsol() {
+        reportDataEntrySteps.addPeriodDsol();
+    }
+
+    public void addPeriodDsou() {
+        reportDataEntrySteps.addPeriodDsou();
+    }
+
+    // ===================== ЕФС-1 (раздел СТАЖ) =====================
+
+    public void createEfsStajPerson() {
+        reportDataEntrySteps.createEfsStajPerson();
+    }
+
+    public void createEfsStajPeriod() {
+        reportDataEntrySteps.createEfsStajPeriod();
     }
 
     public void submitAndSend() {

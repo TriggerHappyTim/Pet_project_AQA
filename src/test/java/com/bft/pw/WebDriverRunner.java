@@ -1,5 +1,7 @@
 package com.bft.pw;
 
+import com.bft.utils.FormStructureParser;
+
 /**
  * Фасад для доступа к драйверу, совместимый с Selenide {@code WebDriverRunner}.
  */
@@ -30,6 +32,14 @@ public final class WebDriverRunner {
 
     public static String source() {
         return PwSession.page().content();
+    }
+
+    public static String saveSourceDump(String tag) {
+        try {
+            return FormStructureParser.saveHtmlToFile(PwSession.page().content(), "source-" + tag);
+        } catch (Throwable ignored) {
+            return null;
+        }
     }
 
     public static void closeWebDriver() {

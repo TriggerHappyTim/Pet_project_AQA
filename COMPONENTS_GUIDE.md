@@ -106,11 +106,11 @@ public void testButtonInteractions() {
                 () -> ButtonComponent.createModalButton("Подтвердить").click());
         },
 
-        (softAssert) -> {
+        (assertions) -> {
             // Валидация результатов
             performCheck("Проверка что кнопки доступны",
                 () -> {
-                    softAssert.assertTrue(
+                    assertions.assertTrue(
                         ButtonComponent.createButton("Сохранить").isEnabled(),
                         "Кнопка сохранения должна быть доступна");
                 });
@@ -178,9 +178,9 @@ public void testInputFields() {
     emailField.setValue("ivanov@example.com");
 
     // Валидация
-    softAssert.assertTrue(nameField.hasValue("Иванов"));
-    softAssert.assertTrue(emailField.isNotEmpty());
-    softAssert.assertFalse(emailField.isEmpty());
+    assertions.assertTrue(nameField.hasValue("Иванов"));
+    assertions.assertTrue(emailField.isNotEmpty());
+    assertions.assertFalse(emailField.isEmpty());
 }
 ```
 
@@ -245,8 +245,8 @@ public void testDropdownSelection() {
     citySelect.selectByText("Москва");
 
     // Валидация
-    softAssert.assertTrue(regionSelect.isOptionSelected("Московская область"));
-    softAssert.assertEquals(citySelect.getSelectedText(), "Москва");
+    assertions.assertTrue(regionSelect.isOptionSelected("Московская область"));
+    assertions.assertEquals(citySelect.getSelectedText(), "Москва");
 }
 ```
 
@@ -318,8 +318,8 @@ public void testCheckboxInteractions() {
     newsletterCheckbox.ensureUnchecked(); // Гарантированно не отмечен
 
     // Валидация
-    softAssert.assertTrue(termsCheckbox.isChecked());
-    softAssert.assertFalse(newsletterCheckbox.isChecked());
+    assertions.assertTrue(termsCheckbox.isChecked());
+    assertions.assertFalse(newsletterCheckbox.isChecked());
 }
 ```
 
@@ -377,15 +377,15 @@ public void testRadioButtonSelection() {
     maleRadio.select();
 
     // Проверка выбора
-    softAssert.assertTrue(maleRadio.isSelected());
-    softAssert.assertFalse(femaleRadio.isSelected());
+    assertions.assertTrue(maleRadio.isSelected());
+    assertions.assertFalse(femaleRadio.isSelected());
 
     // Смена выбора
     femaleRadio.select();
 
     // Повторная проверка
-    softAssert.assertFalse(maleRadio.isSelected());
-    softAssert.assertTrue(femaleRadio.isSelected());
+    assertions.assertFalse(maleRadio.isSelected());
+    assertions.assertTrue(femaleRadio.isSelected());
 }
 ```
 
@@ -449,10 +449,10 @@ public void testDateInput() {
     endDate.setDateRelative(365); // Через год
 
     // Валидация
-    softAssert.assertTrue(birthDate.hasDate("15-05-1990"));
-    softAssert.assertTrue(birthDate.isValidDate());
-    softAssert.assertTrue(birthDate.isPastDate());
-    softAssert.assertTrue(endDate.isFutureDate());
+    assertions.assertTrue(birthDate.hasDate("15-05-1990"));
+    assertions.assertTrue(birthDate.isValidDate());
+    assertions.assertTrue(birthDate.isPastDate());
+    assertions.assertTrue(endDate.isFutureDate());
 }
 ```
 
@@ -527,11 +527,11 @@ public void testTextareaInput() {
     );
 
     // Валидация
-    softAssert.assertTrue(commentField.containsText("тестовый"));
-    softAssert.assertFalse(commentField.isEmpty());
-    softAssert.assertEquals(commentField.getLineCount(), 2);
-    softAssert.assertTrue(commentField.getCharacterCount() > 50);
-    softAssert.assertTrue(descriptionField.getLineCount() == 3);
+    assertions.assertTrue(commentField.containsText("тестовый"));
+    assertions.assertFalse(commentField.isEmpty());
+    assertions.assertEquals(commentField.getLineCount(), 2);
+    assertions.assertTrue(commentField.getCharacterCount() > 50);
+    assertions.assertTrue(descriptionField.getLineCount() == 3);
 }
 ```
 
@@ -592,13 +592,13 @@ public void testFileUpload() {
     documentFile.uploadFromClasspath("test-document.pdf");
 
     // Валидация
-    softAssert.assertTrue(reportFile.hasFileSelected());
-    softAssert.assertTrue(documentFile.hasFileSelected());
-    softAssert.assertTrue(reportFile.getSelectedFileName().endsWith(".xml"));
-    softAssert.assertTrue(documentFile.getSelectedFileName().endsWith(".pdf"));
+    assertions.assertTrue(reportFile.hasFileSelected());
+    assertions.assertTrue(documentFile.hasFileSelected());
+    assertions.assertTrue(reportFile.getSelectedFileName().endsWith(".xml"));
+    assertions.assertTrue(documentFile.getSelectedFileName().endsWith(".pdf"));
 
     // Проверка типов файлов
-    softAssert.assertTrue(reportFile.getAcceptedTypes().contains("xml"));
+    assertions.assertTrue(reportFile.getAcceptedTypes().contains("xml"));
 }
 ```
 
@@ -671,8 +671,8 @@ public void testTableInteractions() {
     resultsTable.waitForLoad();
 
     // Проверка наличия данных
-    softAssert.assertTrue(resultsTable.isNotEmpty());
-    softAssert.assertTrue(resultsTable.hasAtLeastRows(1));
+    assertions.assertTrue(resultsTable.isNotEmpty());
+    assertions.assertTrue(resultsTable.hasAtLeastRows(1));
 
     // Получение информации о таблице
     int rowCount = resultsTable.getRowCount();
@@ -688,16 +688,16 @@ public void testTableInteractions() {
 
     // Получение данных из ячейки
     String cellValue = resultsTable.getCellText(0, 2);
-    softAssert.assertNotNull(cellValue);
-    softAssert.assertFalse(cellValue.isEmpty());
+    assertions.assertNotNull(cellValue);
+    assertions.assertFalse(cellValue.isEmpty());
 
     // Получение всей строки
     String[] rowData = resultsTable.getRowText(0);
-    softAssert.assertEquals(rowData.length, columnCount);
+    assertions.assertEquals(rowData.length, columnCount);
 
     // Проверка заголовка таблицы
     String tableTitle = resultsTable.getTableTitle();
-    softAssert.assertNotNull(tableTitle);
+    assertions.assertNotNull(tableTitle);
 }
 ```
 
@@ -765,7 +765,7 @@ public void testNavigation() {
     nav.openTab("Отчеты");
 
     // Проверка текущей вкладки
-    softAssert.assertTrue(nav.isOnTab("Отчеты"));
+    assertions.assertTrue(nav.isOnTab("Отчеты"));
 
     // Переход в раздел застрахованных лиц
     nav.goToInsuredPersons();
@@ -779,7 +779,7 @@ public void testNavigation() {
 
     // Проверка URL
     String currentUrl = nav.getCurrentUrl();
-    softAssert.assertTrue(currentUrl.contains("insured-persons"));
+    assertions.assertTrue(currentUrl.contains("insured-persons"));
 }
 ```
 
@@ -925,9 +925,9 @@ public void testUserRegistration() {
             });
         },
 
-        (softAssert) -> {
+        (assertions) -> {
             performCheck("Проверка успешной регистрации", () -> {
-                softAssert.assertTrue(isSuccessMessageDisplayed());
+                assertions.assertTrue(isSuccessMessageDisplayed());
             });
         },
 
@@ -969,12 +969,12 @@ performAction("Ожидание загрузки результатов", () -> 
 
 ```java
 // ✅ Хорошо - комплексная валидация
-(softAssert) -> {
+(assertions) -> {
     performCheck("Проверка формы", () -> {
-        softAssert.assertTrue(nameField.isValid(), "Поле имени должно быть валидным");
-        softAssert.assertTrue(emailField.isValid(), "Поле email должно быть валидным");
-        softAssert.assertTrue(agreementCheckbox.isChecked(), "Чекбокс согласия должен быть отмечен");
-        softAssert.assertTrue(submitButton.isEnabled(), "Кнопка отправки должна быть доступна");
+        assertions.assertTrue(nameField.isValid(), "Поле имени должно быть валидным");
+        assertions.assertTrue(emailField.isValid(), "Поле email должно быть валидным");
+        assertions.assertTrue(agreementCheckbox.isChecked(), "Чекбокс согласия должен быть отмечен");
+        assertions.assertTrue(submitButton.isEnabled(), "Кнопка отправки должна быть доступна");
     });
 }
 ```

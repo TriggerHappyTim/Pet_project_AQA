@@ -1,8 +1,9 @@
 package com.bft.monitoring;
 
+import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
+import org.junit.jupiter.api.extension.ExtensionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.testng.ITestResult;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -23,41 +24,31 @@ import java.util.concurrent.atomic.AtomicInteger;
  * 
  * <p><b>Пример использования:</b>
  * <pre>{@code
- * public class MyTest extends UITestBase {
- *     private static final FlakyTestDetector detector = FlakyTestDetector.getInstance();
- *     
- *     @AfterMethod
- *     public void trackTest(ITestResult result) {
- *         detector.recordTestResult(result);
- *     }
- *     
- *     @AfterSuite
- *     public void reportFlakyTests() {
- *         detector.reportFlakyTests();
- *     }
+ * @ExtendWith(FlakyTestDetector.class)
+ * public class MyTest {
+ *     // Результаты автоматически отслеживаются
  * }
  * }</pre>
  * 
  * @author QA Automation Team
- * @version 2.0
- * @since 2.0
+ * @version 3.0
+ * @since 3.0
  */
-public class FlakyTestDetector {
-    
+public class FlakyTestDetector implements AfterTestExecutionCallback {
+
     private static final Logger logger = LoggerFactory.getLogger(FlakyTestDetector.class);
     private static final FlakyTestDetector INSTANCE = new FlakyTestDetector();
-    
+
     /**
      * Пороговое значение для определения нестабильного теста
-     * Тест считается нестабильным, если процент успешных выполнений ниже этого значения
      */
-    private static final double FLAKY_THRESHOLD = 0.95; // 95%
-    
+    private static final double FLAKY_THRESHOLD = 0.95;
+
     /**
      * Минимальное количество выполнений для определения нестабильности
      */
     private static final int MIN_EXECUTIONS = 5;
-    
+
     /**
      * Класс для хранения статистики выполнения теста
      */
@@ -66,24 +57,23 @@ public class FlakyTestDetector {
         private final AtomicInteger successfulExecutions = new AtomicInteger(0);
         private final AtomicInteger failedExecutions = new AtomicInteger(0);
         private final Map<String, Integer> errorTypes = new ConcurrentHashMap<>();
-        
+
         public void recordSuccess() {
             totalExecutions.incrementAndGet();
             successfulExecutions.incrementAndGet();
         }
-        
+
         public void recordFailure(String errorMessage) {
             totalExecutions.incrementAndGet();
             failedExecutions.incrementAndGet();
-            
-            // Извлекаем тип ошибки из сообщения (первые 50 символов)
+
             String errorType = errorMessage != null && errorMessage.length() > 50
                 ? errorMessage.substring(0, 50)
                 : errorMessage != null ? errorMessage : "Unknown error";
-            
+
             errorTypes.put(errorType, errorTypes.getOrDefault(errorType, 0) + 1);
         }
-        
+
         public double getSuccessRate() {
             int total = totalExecutions.get();
             if (total == 0) {
@@ -91,7 +81,7 @@ public class FlakyTestDetector {
             }
             return (double) successfulExecutions.get() / total;
         }
-        
+
         public boolean isFlaky() {
             int total = totalExecutions.get();
             if (total < MIN_EXECUTIONS) {
@@ -99,112 +89,118 @@ public class FlakyTestDetector {
             }
             return getSuccessRate() < FLAKY_THRESHOLD;
         }
-        
+
         public int getTotalExecutions() {
             return totalExecutions.get();
         }
-        
+
         public int getSuccessfulExecutions() {
             return successfulExecutions.get();
         }
-        
+
         public int getFailedExecutions() {
             return failedExecutions.get();
         }
-        
+
         public Map<String, Integer> getErrorTypes() {
             return errorTypes;
         }
     }
-    
+
     /**
      * Хранилище статистики выполнения тестов
-     * Ключ: уникальный идентификатор теста (className#methodName)
-     * Значение: статистика выполнения теста
      */
     private final Map<String, TestStatistics> testStatistics = new ConcurrentHashMap<>();
-    
-    /**
-     * Приватный конструктор для Singleton pattern
-     */
+
     private FlakyTestDetector() {
     }
-    
-    /**
-     * Возвращает единственный экземпляр FlakyTestDetector
-     * 
-     * @return экземпляр FlakyTestDetector
-     */
+
     public static FlakyTestDetector getInstance() {
         return INSTANCE;
     }
-    
-    /**
-     * Записывает результат выполнения теста
-     * 
-     * @param result результат теста TestNG
-     */
-    public void recordTestResult(ITestResult result) {
-        String testId = getTestId(result);
+
+    @Override
+    public void afterTestExecution(ExtensionContext context) {
+        String testId = getTestId(context);
         TestStatistics stats = testStatistics.computeIfAbsent(testId, k -> new TestStatistics());
-        
-        if (result.isSuccess()) {
+
+        context.getExecutionException().ifPresentOrElse(
+            throwable -> {
+                String errorMessage = throwable.getMessage();
+                stats.recordFailure(errorMessage);
+
+                if (stats.isFlaky()) {
+                    logger.warn("Обнаружен нестабильный тест: {} (успешность: {}%)",
+                        testId, String.format("%.2f", stats.getSuccessRate() * 100));
+                }
+            },
+            stats::recordSuccess
+        );
+    }
+
+    /**
+     * Записывает результат выполнения теста напрямую
+     * 
+     * @param testId уникальный идентификатор теста
+     * @param success прошел ли тест успешно
+     * @param errorMessage сообщение об ошибке (null если тест прошел успешно)
+     */
+    public void recordTestResult(String testId, boolean success, String errorMessage) {
+        TestStatistics stats = testStatistics.computeIfAbsent(testId, k -> new TestStatistics());
+
+        if (success) {
             stats.recordSuccess();
         } else {
-            String errorMessage = result.getThrowable() != null
-                ? result.getThrowable().getMessage()
-                : "Unknown error";
             stats.recordFailure(errorMessage);
-            
-            // Если тест упал, проверяем, не стал ли он нестабильным
+
             if (stats.isFlaky()) {
-                logger.warn("Обнаружен нестабильный тест: {} (успешность: {:.2f}%)",
-                    testId, stats.getSuccessRate() * 100);
+                logger.warn("Обнаружен нестабильный тест: {} (успешность: {}%)",
+                    testId, String.format("%.2f", stats.getSuccessRate() * 100));
             }
         }
     }
-    
+
     /**
      * Проверяет, является ли тест нестабильным
      * 
-     * @param result результат теста TestNG
-     * @return true если тест считается нестабильным, false в противном случае
+     * @param context контекст теста JUnit 5
+     * @return true если тест считается нестабильным
      */
-    public boolean isFlaky(ITestResult result) {
-        String testId = getTestId(result);
+    public boolean isFlaky(ExtensionContext context) {
+        String testId = getTestId(context);
         TestStatistics stats = testStatistics.get(testId);
         return stats != null && stats.isFlaky();
     }
-    
+
     /**
      * Возвращает процент успешных выполнений теста
      * 
-     * @param result результат теста TestNG
+     * @param context контекст теста JUnit 5
      * @return процент успешных выполнений (0.0 - 1.0)
      */
-    public double getSuccessRate(ITestResult result) {
-        String testId = getTestId(result);
+    public double getSuccessRate(ExtensionContext context) {
+        String testId = getTestId(context);
         TestStatistics stats = testStatistics.get(testId);
         return stats != null ? stats.getSuccessRate() : 1.0;
     }
-    
+
     /**
      * Выводит отчет о нестабильных тестах в лог
      */
     public void reportFlakyTests() {
         logger.info("=== Отчет о нестабильных тестах ===");
-        
+
         long flakyCount = testStatistics.values().stream()
             .filter(TestStatistics::isFlaky)
             .count();
-        
+
         if (flakyCount == 0) {
             logger.info("Нестабильных тестов не обнаружено");
         } else {
             logger.warn("Обнаружено нестабильных тестов: {}", flakyCount);
-            logger.warn("Порог успешности: {}% (минимум выполнений: {})", 
+            logger.warn("Порог успешности: {}% (минимум выполнений: {})",
                 FLAKY_THRESHOLD * 100, MIN_EXECUTIONS);
-            
+
             testStatistics.entrySet().stream()
                 .filter(entry -> entry.getValue().isFlaky())
                 .sorted((e1, e2) -> Double.compare(
@@ -213,11 +209,11 @@ public class FlakyTestDetector {
                 .forEach(entry -> {
                     TestStatistics stats = entry.getValue();
                     logger.warn("Нестабильный тест: {}", entry.getKey());
-                    logger.warn("  Успешность: {:.2f}% ({}/{})",
-                        stats.getSuccessRate() * 100,
+                    logger.warn("  Успешность: {}% ({}/{})",
+                        String.format("%.2f", stats.getSuccessRate() * 100),
                         stats.getSuccessfulExecutions(),
                         stats.getTotalExecutions());
-                    
+
                     if (!stats.getErrorTypes().isEmpty()) {
                         logger.warn("  Типы ошибок:");
                         stats.getErrorTypes().entrySet().stream()
@@ -227,24 +223,24 @@ public class FlakyTestDetector {
                     }
                 });
         }
-        
+
         logger.info("=====================================");
     }
-    
+
     /**
      * Очищает всю статистику
      */
     public void clear() {
         testStatistics.clear();
     }
-    
+
     /**
      * Генерирует уникальный идентификатор теста
      * 
-     * @param result результат теста TestNG
+     * @param context контекст теста JUnit 5
      * @return уникальный идентификатор теста (className#methodName)
      */
-    private String getTestId(ITestResult result) {
-        return result.getTestClass().getName() + "#" + result.getMethod().getMethodName();
+    private String getTestId(ExtensionContext context) {
+        return context.getRequiredTestClass().getName() + "#" + context.getRequiredTestMethod().getName();
     }
 }

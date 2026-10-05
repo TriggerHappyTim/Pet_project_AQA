@@ -8,8 +8,7 @@
 
 ### base/
 - **UITestBase** — базовый класс UI-тестов (Arrange-Act-Assert)
-- ~~ApiTestBase~~ *(закомментирован)*
-- **DataDrivenTestBase** — параметризованные тесты
+- **BaseTest** — базовый класс всех тестов (junit-platform, Allure)
 
 ### annotations/
 - **TestType** — тип теста (UI, API и т.д.)
@@ -36,8 +35,9 @@
 - ~~ApiNegativeTestCases~~ *(закомментирован)*
 
 ### retry/
-- **RetryAnalyzer** — анализатор повторов для TestNG
-- **Retry** — аннотация повтора теста
+- **RetryAnalyzer** — JUnit 5 Extension для повторного запуска тестов
+
+BaseTest.java — базовый класс всех тестов (корень com.bft)
 
 ### examples/
 - ~~ImprovedTestExamples~~ *(закомментирован)*

@@ -3,7 +3,6 @@ package com.bft.config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -32,10 +31,6 @@ public class TestConfig {
     private boolean remote;
     private String remoteUrl;
 
-    // Paths
-    private String cryptoProPath;
-    private String cryptoProXpiPath;
-
     // Environment
     private String environment;
     private String testSuite;
@@ -59,14 +54,6 @@ public class TestConfig {
         String rUrl = getSystemOrEnvProperty("selenide.remote", "SELENIDE_REMOTE", null);
         this.remote = rUrl != null && !rUrl.trim().isEmpty();
         this.remoteUrl = rUrl;
-
-        // --- CryptoPro Paths ---
-        // Пути по умолчанию, если не заданы
-        String defaultCrx = "src/test/resources/chrome.crx";
-        String defaultXpi = "src/test/resources/firefox_cryptopro_extension_latest.xpi";
-
-        this.cryptoProPath = getSystemOrEnvProperty(null, "CRYPTOPRO_PATH", defaultCrx);
-        this.cryptoProXpiPath = getSystemOrEnvProperty(null, "CRYPTOPRO_XPI_PATH", defaultXpi);
 
         // --- Environment ---
         String env = getSystemOrEnvProperty("environment", "ENVIRONMENT", "dev");
@@ -113,22 +100,6 @@ public class TestConfig {
             log.warn("Неподдерживаемый браузер '{}'. Будет использован как есть, но возможны ошибки.", browser);
         }
 
-        // Проверка наличия расширения только если не задан BASE64
-        String base64Extension = System.getenv("CRYPTOPRO_BASE64");
-        if (base64Extension == null || base64Extension.isEmpty()) {
-            boolean crxExists = new File(cryptoProPath).exists();
-            boolean xpiExists = new File(cryptoProXpiPath).exists();
-
-            if (!crxExists && !xpiExists) {
-                log.warn("Файлы расширений КриптоПРО не найдены ни по пути CRX ({}), ни по пути XPI ({}). " +
-                        "Убедитесь, что путь верен, или задайте переменную CRYPTOPRO_BASE64.", cryptoProPath, cryptoProXpiPath);
-            } else {
-                log.debug("Расширение КриптоПРО найдено: CRX={}, XPI={}", crxExists, xpiExists);
-            }
-        } else {
-            log.info("Обнаружена переменная CRYPTOPRO_BASE64 (длина: {} симв.). Проверка файлов расширения пропускается.", base64Extension.length());
-        }
-
         log.info("Конфигурация тестов инициализирована: Browser={}, Env={}, Remote={}", browser, environment, remote);
         if (remote) {
             log.info("Remote URL: {}", remoteUrl);
@@ -142,8 +113,6 @@ public class TestConfig {
     public boolean isHeadless() { return headless; }
     public boolean isRemote() { return remote; }
     public String getRemoteUrl() { return remoteUrl; }
-    public String getCryptoProPath() { return cryptoProPath; }
-    public String getCryptoProXpiPath() { return cryptoProXpiPath; }
     public String getEnvironment() { return environment; }
     public String getTestSuite() { return testSuite; }
     public boolean isEnableVNC() { return enableVNC; }
@@ -177,16 +146,6 @@ public class TestConfig {
     public TestConfig setRemoteUrl(String remoteUrl) {
         this.remoteUrl = remoteUrl;
         this.remote = (remoteUrl != null && !remoteUrl.trim().isEmpty());
-        return this;
-    }
-
-    public TestConfig setCryptoProPath(String cryptoProPath) {
-        this.cryptoProPath = cryptoProPath;
-        return this;
-    }
-
-    public TestConfig setCryptoProXpiPath(String cryptoProXpiPath) {
-        this.cryptoProXpiPath = cryptoProXpiPath;
         return this;
     }
 

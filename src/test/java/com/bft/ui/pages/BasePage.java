@@ -2,13 +2,13 @@ package com.bft.ui.pages;
 
 import com.bft.pw.PwDriver;
 import com.bft.pw.PwElement;
-import org.testng.asserts.SoftAssert;
+import com.bft.test.TestAssertions;
 
 public class BasePage {
     protected PwDriver driver;
-    protected SoftAssert softAssert;
+    protected TestAssertions softAssert;
 
-    public BasePage(PwDriver driver, SoftAssert softAssert) {
+    public BasePage(PwDriver driver, TestAssertions softAssert) {
         this.driver = driver;
         this.softAssert = softAssert;
     }

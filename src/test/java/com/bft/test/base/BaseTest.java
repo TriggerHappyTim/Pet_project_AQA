@@ -1,11 +1,13 @@
 package com.bft.test.base;
 
+import com.bft.jupiter.extension.MakeScreenshotsExtension;
+import com.bft.jupiter.extension.TestResultWatcher;
 import com.bft.test.TestAssertions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
-import org.testng.asserts.SoftAssert;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.util.function.Consumer;
 
@@ -41,8 +43,8 @@ import java.util.function.Consumer;
  * @author QA Automation Team
  * @version 1.0
  * @see UITestBase для UI тестов
- * @see ApiTestBase для API тестов
  */
+@ExtendWith({MakeScreenshotsExtension.class, TestResultWatcher.class})
 public abstract class BaseTest {
 
     /** Логгер для текущего тестового класса */
@@ -54,16 +56,16 @@ public abstract class BaseTest {
     /**
      * Создаёт новый экземпляр {@link TestAssertions} перед каждым тестовым методом.
      */
-    @BeforeMethod
+    @BeforeEach
     protected void setupAssertions() {
         assertions = new TestAssertions();
     }
 
     /**
-     * Автоматически выполняет {@link SoftAssert#assertAll()} после каждого тестового метода,
+     * Автоматически выполняет assertAll() после каждого тестового метода,
      * собирая все мягкие проверки. Если проверок не было — метод безопасно пропускается.
      */
-    @AfterMethod
+    @AfterEach
     protected void verifyAssertions() {
         if (assertions != null) {
             assertions.assertAll();
@@ -82,7 +84,7 @@ public abstract class BaseTest {
      * @param act            действие
      * @param assertConsumer проверки результата (получает текущий {@link #assertions})
      */
-    protected void arrangeActAssert(Runnable arrange, Runnable act, Consumer<SoftAssert> assertConsumer) {
+    protected void arrangeActAssert(Runnable arrange, Runnable act, Consumer<TestAssertions> assertConsumer) {
         arrangeActAssert(arrange, act, assertConsumer, null);
     }
 
@@ -94,7 +96,7 @@ public abstract class BaseTest {
      * @param assertConsumer проверки результата (получает текущий {@link #assertions})
      * @param testName       имя теста для читаемого логирования (может быть null)
      */
-    protected void arrangeActAssert(Runnable arrange, Runnable act, Consumer<SoftAssert> assertConsumer,
+    protected void arrangeActAssert(Runnable arrange, Runnable act, Consumer<TestAssertions> assertConsumer,
                                     String testName) {
         String name = testName != null ? testName : getClass().getSimpleName();
         logger.info("=== ARRANGE-ACT-ASSERT: {} ===", name);

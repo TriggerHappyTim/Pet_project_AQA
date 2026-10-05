@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://пф.рф/СЗВ-ДСО/2022-07-08"
+	xmlns:УТ2="http://пф.рф/УТ/2017-08-21" xmlns:АФ5="http://пф.рф/АФ/2018-12-07"
+	targetNamespace="http://пф.рф/СЗВ-ДСО/2022-07-08" elementFormDefault="qualified" version="2.0">
+	<xs:import namespace="http://пф.рф/УТ/2017-08-21" schemaLocation="../../УнифТипы_2017-08-21.xsd"/>
+	<xs:import namespace="http://пф.рф/АФ/2018-12-07" schemaLocation="../../ТипыАФ_2018-12-07.xsd"/>
+	<xs:import namespace="http://www.w3.org/2000/09/xmldsig#"
+		schemaLocation="../../xmldsig_core_schema.xsd"/>
+	<xs:annotation>
+		<xs:documentation>Сведения о периодах работы, дающей право на доплату к пенсии, и сумме заработка, из которого исчисляется размер доплаты к пенсии застрахованного лица</xs:documentation>
+	</xs:annotation>
+	<xs:element name="ЭДПФР">
+		<xs:annotation>
+			<xs:documentation>Корневой элемент. Содержит сведения самого документа и служебную информацию об электронном документе.</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:all>
+				<xs:element name="СЗВ-ДСО">
+					<xs:annotation>
+						<xs:documentation>Сведения о периодах работы, дающей право на доплату к пенсии, и сумме заработка, из которого исчисляется размер доплаты к пенсии застрахованного лица</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="ТипСведений">
+								<xs:annotation>
+									<xs:documentation>Тип сведений. Возможные значения: ИСХД – исходная; КОРР – корректирующая; ОТМН – отменяющая; ПЕНС – назначение доплаты к пенсии</xs:documentation>
+								</xs:annotation>
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:enumeration value="ПЕНС"/>
+										<xs:enumeration value="ОТМН"/>
+										<xs:enumeration value="КОРР"/>
+										<xs:enumeration value="ИСХД"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="Работодатель">
+								<xs:annotation>
+									<xs:documentation>Блок сведений о страхователе, предоставившем форму</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="РегНомер">
+											<xs:annotation>
+												<xs:documentation>Регистрационный номер в СФР</xs:documentation>
+											</xs:annotation>
+											<xs:simpleType>
+												<xs:restriction base="xs:string">
+												<xs:pattern value="\d{3}-\d{3}-\d{6}"/>
+												<xs:pattern value="\d{10}"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="НаименованиеОрганизации"
+											type="УТ2:ТипНепустаяСтрока">
+											<xs:annotation>
+												<xs:documentation>Полное наименование работодателя</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:group ref="УТ2:ГрНН2"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="РаботодательЗаКоторого" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Блок сведений о работодателе, правопреемником которого является страхователь</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="РегНомер">
+											<xs:annotation>
+												<xs:documentation>Регистрационный номер</xs:documentation>
+											</xs:annotation>
+											<xs:simpleType>
+												<xs:restriction base="xs:string">
+												<xs:pattern value="\d{3}-\d{3}-\d{6}"/>
+												<xs:pattern value="\d{10}"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="НаименованиеОрганизации"
+											type="УТ2:ТипНепустаяСтрока">
+											<xs:annotation>
+												<xs:documentation>Полное наименование работодателя</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:group ref="УТ2:ГрНН2"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="Год" type="xs:gYear">
+								<xs:annotation>
+									<xs:documentation>Год отчетного периода</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element minOccurs="0" name="КоррОтмПериод" type="xs:gYear">
+								<xs:annotation>
+									<xs:documentation>Указывается год, за который корректируются или отменяются сведения</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="ЗЛ" maxOccurs="unbounded">
+								<xs:annotation>
+									<xs:documentation>Блок сведений о зарегистрированном лице</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element ref="УТ2:СНИЛС">
+											<xs:annotation>
+												<xs:documentation>Страховой номер индивидуального лицевого счета зарегистрированного лица</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element ref="УТ2:ФИО">
+											<xs:annotation>
+												<xs:documentation>Фамилия, имя, отчество (при наличии) зарегистрированного лица</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="КодДСО" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>Указывается категория застрахованного лица, имеющего право 
+на дополнительное социальное обеспечение. Возможные значения:
+ДСОЛ - члены летных экипажей воздушных судов гражданской авиации в соответствии с Федеральным законом № 155-ФЗ;
+ДСОУ - лица, работающие в организациях угольной промышленности, в соответствии с Федеральным законом № 84-ФЗ
+</xs:documentation>
+											</xs:annotation>
+											<xs:simpleType>
+												<xs:restriction base="xs:string">
+												<xs:enumeration value="ДСОЛ"/>
+												<xs:enumeration value="ДСОУ"/>
+												</xs:restriction>
+											</xs:simpleType>
+										</xs:element>
+										<xs:element name="ПериодыДСО" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>Блок сведений о периодах работы, включаемых в стаж (выслугу), дающий право на доплату к пенсии. Сведения о периодах работы могут быть заполнены только по одной из категорий застрахованных лиц "ДСОЛ" или "ДСОУ"</xs:documentation>
+											</xs:annotation>
+											<xs:complexType>
+												<xs:sequence>
+												<xs:element name="ДСОЛ" maxOccurs="unbounded"
+												minOccurs="0">
+												<xs:annotation>
+												<xs:documentation>Сведения о периодах работы, засчитываемых в выслугу лет для установления доплаты к пенсии в соответствии с Федеральным законом от 27 ноября 2001 г. № 155-ФЗ «О дополнительном социальном обеспечении членов летных экипажей воздушных судов гражданской авиации</xs:documentation>
+												</xs:annotation>
+												<xs:complexType>
+												<xs:choice>
+												<xs:element name="ПодпунктА">
+												<xs:annotation>
+												<xs:documentation>Период работы по пп. "а" п. 5 Правил исчисления выслуги лет, дающей право на ежемесячную доплату к пенсии (постановление Правительства Российской Федерации от 14.03.2003 № 155)</xs:documentation>
+												</xs:annotation>
+												<xs:complexType>
+												<xs:sequence>
+												<xs:element name="Период"
+												type="УТ2:ТипВременнойПериод">
+												<xs:annotation>
+												<xs:documentation>Блок сведений о периоде работы</xs:documentation>
+												</xs:annotation>
+												</xs:element>
+												<xs:element name="Налет">
+												<xs:annotation>
+												<xs:documentation>Указывается налет часов за указанный период</xs:documentation>
+												</xs:annotation>
+												<xs:complexType>
+												<xs:sequence>
+												<xs:element name="Часы"
+												type="xs:nonNegativeInteger">
+												<xs:annotation>
+												<xs:documentation>Количество часов налета</xs:documentation>
+												</xs:annotation>
+												</xs:element>
+												<xs:element name="Минуты" type="УТ2:ТипМинута">
+												<xs:annotation>
+												<xs:documentation>Количество минут налета</xs:documentation>
+												</xs:annotation>
+												</xs:element>
+												</xs:sequence>
+												</xs:complexType>
+												</xs:element>
+												</xs:sequence>
+												</xs:complexType>
+												</xs:element>
+												<xs:element name="ПодпунктБ">
+												<xs:annotation>
+												<xs:documentation>Период работы по пп. "б" п. 5 Правил исчисления выслуги лет, дающей право на ежемесячную доплату к пенсии (постановление Правительства Российской Федерации от 14.03.2003 № 155)</xs:documentation>
+												</xs:annotation>
+												<xs:complexType>
+												<xs:sequence>
+												<xs:element name="Период"
+												type="УТ2:ТипВременнойПериод">
+												<xs:annotation>
+												<xs:documentation>Блок сведений о периоде работы</xs:documentation>
+												</xs:annotation>
+												</xs:element>
+												<xs:element name="Налет">
+												<xs:annotation>
+												<xs:documentation>Указывается налет часов за указанный период</xs:documentation>
+												</xs:annotation>
+												<xs:complexType>
+												<xs:sequence>
+												<xs:element name="Часы"
+												type="xs:nonNegativeInteger">
+												<xs:annotation>
+												<xs:documentation>Количество часов налета</xs:documentation>
+												</xs:annotation>
+												</xs:element>
+												<xs:element name="Минуты" type="УТ2:ТипМинута">
+												<xs:annotation>
+												<xs:documentation>Количество минут налета</xs:documentation>
+												</xs:annotation>
+												</xs:element>
+												</xs:sequence>
+												</xs:complexType>
+												</xs:element>
+												</xs:sequence>
+												</xs:complexType>
+												</xs:element>
+												</xs:choice>
+												</xs:complexType>
+												</xs:element>
+												<xs:element name="ДСОУ" maxOccurs="unbounded"
+												minOccurs="0">
+												<xs:annotation>
+												<xs:documentation>Сведения о периодах работы, включаемой в стаж, дающей право на доплату к пенсии в соответствии с Федеральным законом от 10 мая 2010 г. № 84-ФЗ «О дополнительном социальном обеспечении отдельных категорий работников организаций угольной промышленности</xs:documentation>
+												</xs:annotation>
+												<xs:complexType>
+												<xs:choice>
+												<xs:element name="Ведущая"
+												type="УТ2:ТипВременнойПериод">
+												<xs:annotation>
+												<xs:documentation>Указывается период работы, предусмотренной статьей 1 Федерального закона № 84-ФЗ, в ведущих профессиях (горнорабочий очистного забоя, проходчик, забойщик на отбойных молотках, машинист горных выемочных машин)</xs:documentation>
+												</xs:annotation>
+												</xs:element>
+												<xs:element name="Неведущая"
+												type="УТ2:ТипВременнойПериод">
+												<xs:annotation>
+												<xs:documentation>Указывается период работы, предусмотренной статьей 1 Федерального закона № 84-ФЗ, в не ведущих профессиях (должностях), предусмотренных Списком работ и профессий, утвержденным постановлением Совета Министров РСФСР № 481</xs:documentation>
+												</xs:annotation>
+												</xs:element>
+												<xs:element name="ПоСписку"
+												type="УТ2:ТипВременнойПериод">
+												<xs:annotation>
+												<xs:documentation>Указывается период работы, выполняемой в рамках Федерального закона № 84-ФЗ в организациях угольной промышленности постоянно полный рабочий день на подземных горных работах по добыче угля и сланца (включая личный состав горноспасательных частей), предусмотренная Списком № 1 (раздел I «Горные работы», подраздел 1, пункты «а», «б», «г» «д», «е»), утвержденным постановлением Кабинета Министров СССР № 10 , за исключением лиц, занятых на указанных работах в геологоразведке и дренажных шахтах</xs:documentation>
+												</xs:annotation>
+												</xs:element>
+												</xs:choice>
+												</xs:complexType>
+												</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="СведенияОЗаработке" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>Сведения о сумме заработка, из которого исчисляется размер доплаты к пенсии в разрезе месяцев и сумма итого за период</xs:documentation>
+											</xs:annotation>
+											<xs:complexType>
+												<xs:sequence>
+												<xs:element name="ЗаМесяц" maxOccurs="12">
+												<xs:annotation>
+												<xs:documentation>Блок сведений о заработке, учитываемом при исчислении размера доплаты к пенсии в разрезе года. Может быть несколько записей</xs:documentation>
+												</xs:annotation>
+												<xs:complexType>
+												<xs:sequence>
+												<xs:element name="Месяц" type="УТ2:ТипМесяц">
+												<xs:annotation>
+												<xs:documentation>Месяц заработка</xs:documentation>
+												</xs:annotation>
+												</xs:element>
+												<xs:element name="Сумма" type="УТ2:ТипДеньги">
+												<xs:annotation>
+												<xs:documentation>Сумма заработка в руб.</xs:documentation>
+												</xs:annotation>
+												</xs:element>
+												</xs:sequence>
+												</xs:complexType>
+												</xs:element>
+												<xs:element name="Итого" type="УТ2:ТипДеньги">
+												<xs:annotation>
+												<xs:documentation>Итого сумма заработка за год</xs:documentation>
+												</xs:annotation>
+												</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="Руководитель" type="УТ2:ТипДолжностноеЛицо">
+								<xs:annotation>
+									<xs:documentation>Сведения о руководителе (уполномоченном представителе страхователя)</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="ДатаЗаполнения" type="xs:date">
+								<xs:annotation>
+									<xs:documentation>Дата заполнения сведений</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="СлужебнаяИнформация" type="АФ5:ТипСлужебнаяИнформацияЭП">
+					<xs:annotation>
+						<xs:documentation>Служебная информация об электронном документе</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element ref="Signature" xmlns="http://www.w3.org/2000/09/xmldsig#" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Электронная подпись (ЭП). Электронный документ, для которого законодательством Российской Федерации предусмотрена юридически значимая подпись, должен быть подписан усиленной квалифицированной электронной подписью в соответствии со спецификацией XMLDSig</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:all>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

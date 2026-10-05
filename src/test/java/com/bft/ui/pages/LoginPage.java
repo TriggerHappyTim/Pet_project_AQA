@@ -76,13 +76,10 @@ public class LoginPage {
     public LoginPage authorize(String login, String password) {
         logger.info("Выполняем авторизацию пользователя: {}", login);
 
-        /*$x(String.format("//*[@id= '%s')", login)).setValue(login);*/
-        /*$("input.loginInput#login").setValue(login);*/
-        $x("//div[@class = 'field loginControl']//input[@class = 'loginInput']").setValue(login);
-        /*$("input.loginInput#pass").setValue(password);*/
-        $x("//div[@class = 'field loginControl']//input[@class = 'loginInput secondInput']").setValue(password);
-        /*$("button.loginButton").click();*/
-        $x("//button[contains(@class,'button is-')]").click();
+        // Форма логина РПУ (portal.test.ecp/rpu): "Вход в систему / ТЕСТОВЫЙ контур"
+        $x("//input[@class = 'loginInput']").setValue(login);
+        $x("//input[contains(@class,'loginInput') and contains(@class,'secondInput')]").setValue(password);
+        $x("//button[contains(@class,'loginBtn') or normalize-space(.)='Войти']").click();
         waitForLoading();
         return this;
     }
@@ -474,7 +471,18 @@ public class LoginPage {
      * что является индикатором успешной авторизации.
      */
     private void waitForLoading() {
-        $x("//div[contains(@class, 'user-name')]").shouldBe(Condition.visible, Duration.ofSeconds(60));
+        // EVS/ЛК: после авторизации появляется user-name в шапке.
+        // РПУ: user-name отсутствует — ждём перехода в приложение РПУ (URL уходит от страницы логина).
+        try {
+            $x("//div[contains(@class, 'user-name')]").shouldBe(Condition.visible, Duration.ofSeconds(15));
+            return;
+        } catch (Exception e) {
+            logger.debug("user-name не появился за 15с — вероятно контур РПУ, ждём стабилизацию приложения");
+        }
+        com.bft.pw.Selenide.Wait().withTimeout(Duration.ofSeconds(60)).until(webDriver -> {
+            String url = com.bft.pw.WebDriverRunner.getWebDriver().getCurrentUrl();
+            return url.contains("/rpu/") && !url.contains("signin") && !url.contains("login");
+        });
     }
 
     /**

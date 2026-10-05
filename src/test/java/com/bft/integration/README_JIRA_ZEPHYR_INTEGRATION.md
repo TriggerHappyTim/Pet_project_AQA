@@ -109,7 +109,7 @@ mvn clean test
 
 **Использование:**
 ```java
-// Listener уже зарегистрирован в testng.xml
+// Listener зарегистрирован в Allure через allure-junit5
 @ZephyrTest(testKey = "EVS-T-101")
 @Test
 public void myTest() {

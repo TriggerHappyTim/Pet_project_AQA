@@ -104,20 +104,20 @@ public void efs_1_xml_bezdomniy() {
 ### Пример 2: Параметризованный тест с разными пользователями
 
 ```java
-@DataProvider(name = "testUsers")
-public Object[][] usersProvider() {
-    return new Object[][] {
-        {TestUsers.KRIVONOSOV_ALEXANDER},
-        {TestUsers.BEZDOMNIY_IVAN}
-    };
-}
-
-@Test(dataProvider = "testUsers")
+@ParameterizedTest
+@MethodSource("testUsers")
 public void efs_1_xml_multiuser(TestUsers user) {
     steps.authorizeEVS(UIType.EVS_UAT_LKS, user);
     steps.addReports();
     steps.selectReportType(ReportType.EFS1);
     steps.sendXml(ReportType.EFS_FULL_ECP);
+}
+
+static Stream<Arguments> testUsers() {
+    return Stream.of(
+        Arguments.of(TestUsers.KRIVONOSOV_ALEXANDER),
+        Arguments.of(TestUsers.BEZDOMNIY_IVAN)
+    );
 }
 ```
 

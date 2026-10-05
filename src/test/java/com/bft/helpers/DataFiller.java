@@ -4,13 +4,13 @@ import com.bft.ui.pages.BasePage;
 import com.bft.pw.By;
 import com.bft.pw.PwDriver;
 import com.bft.pw.PwElement;
-import org.testng.asserts.SoftAssert;
+import com.bft.test.TestAssertions;
 
 import static com.bft.testdata.TestDataConstants.Selectors.*;
 
 public class DataFiller extends BasePage {
 
-    public DataFiller(PwDriver driver, SoftAssert softAssert) {
+    public DataFiller(PwDriver driver, TestAssertions softAssert) {
         super(driver, softAssert);
     }
 

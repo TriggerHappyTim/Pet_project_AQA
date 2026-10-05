@@ -7,6 +7,12 @@ ps:
       url: 172.18.32.223:9092
   mdm:
     mdm-grpc-url: '172.18.32.20'
+  graphql-mesh:
+    url: 'http://localhost:20266'
+
+telegram:
+  bot-token: ''
+  chat-id: ''
 
 env:
   schemaRs:

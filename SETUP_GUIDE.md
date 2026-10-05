@@ -217,7 +217,7 @@ mvn dependency:tree
 
         <!-- Версии зависимостей -->
         <playwright.version>1.49.0</playwright.version>
-        <testng.version>7.8.0</testng.version>
+        <junit.version>5.10.2</junit.version>
         <allure.version>2.24.0</allure.version>
         <slf4j.version>2.0.9</slf4j.version>
         <logback.version>1.4.11</logback.version>
@@ -231,18 +231,24 @@ mvn dependency:tree
             <version>${playwright.version}</version>
         </dependency>
 
-        <!-- TestNG -->
+        <!-- JUnit 5 -->
         <dependency>
-            <groupId>org.testng</groupId>
-            <artifactId>testng</artifactId>
-            <version>${testng.version}</version>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
 
         <!-- Allure -->
         <dependency>
             <groupId>io.qameta.allure</groupId>
-            <artifactId>allure-testng</artifactId>
+            <artifactId>allure-junit5</artifactId>
             <version>${allure.version}</version>
         </dependency>
 
@@ -267,9 +273,9 @@ mvn dependency:tree
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.1.2</version>
                 <configuration>
-                    <suiteXmlFiles>
-                        <suiteXmlFile>testng.xml</suiteXmlFile>
-                    </suiteXmlFiles>
+                    <properties>
+                        <includeTags>smoke</includeTags>
+                    </properties>
                 </configuration>
             </plugin>
 
@@ -283,44 +289,17 @@ mvn dependency:tree
 </project>
 ```
 
-### 2. Конфигурация TestNG
+### 2. Конфигурация JUnit 5
 
-#### `testng.xml` - конфигурация тестов
+#### `junit-platform.properties` — конфигурация тестов
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<suite name="EVS Testing Suite" verbose="1" parallel="methods" thread-count="3">
-    <listeners>
-        <listener class-name="io.qameta.allure.testng.AllureTestNg"/>
-    </listeners>
+```properties
+# Включение-allure расширений
+junit.jupiter.extensions.autodetection.enabled=true
 
-    <test name="UI Tests" group-by-instances="true">
-        <groups>
-            <run>
-                <include name="smoke"/>
-                <include name="ui"/>
-            </run>
-        </groups>
-
-        <classes>
-            <class name="com.bft.LK_Insurence.CryptoProCertificateTest"/>
-            <class name="com.bft.test.examples.ImprovedTestExamples"/>
-        </classes>
-    </test>
-
-    <test name="API Tests" group-by-instances="true">
-        <groups>
-            <run>
-                <include name="api"/>
-                <include name="integration"/>
-            </run>
-        </groups>
-
-        <classes>
-            <!-- API тесты -->
-        </classes>
-    </test>
-</suite>
+# Параллельный запуск (опционально)
+# junit.jupiter.execution.parallel.enabled=true
+# junit.jupiter.execution.parallel.mode.default=concurrent
 ```
 
 ### 3. Конфигурация логирования
@@ -686,7 +665,7 @@ test:ui:
     REMOTE_URL: http://selenium__standalone-chrome:4444/wd/hub
     TEST_BROWSER: chrome
   script:
-    - mvn test -Dgroups=ui
+    - mvn test -DincludeTags=ui
   artifacts:
     reports:
       allure: allure-results/
@@ -698,7 +677,7 @@ test:api:
   stage: test
   image: maven:3.9.0-openjdk-17
   script:
-    - mvn test -Dgroups=api
+    - mvn test -DincludeTags=api
   artifacts:
     reports:
       allure: allure-results/
@@ -769,13 +748,13 @@ pipeline {
 
         stage('Unit Tests') {
             steps {
-                sh 'mvn test -Dgroups=unit'
+                sh 'mvn test -DincludeTags=unit'
             }
         }
 
         stage('Integration Tests') {
             steps {
-                sh 'mvn test -Dgroups=integration'
+                sh 'mvn test -DincludeTags=integration'
             }
         }
 
@@ -783,7 +762,7 @@ pipeline {
             steps {
                 script {
                     docker.image('selenium/standalone-chrome:4.0').withRun('-p 4444:4444') { c ->
-                        sh 'mvn test -Dgroups=ui -Dremote.url=http://localhost:4444/wd/hub'
+                        sh 'mvn test -DincludeTags=ui -Dremote.url=http://localhost:4444/wd/hub'
                     }
                 }
             }

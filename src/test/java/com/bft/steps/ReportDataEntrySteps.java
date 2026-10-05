@@ -6,13 +6,12 @@ import com.bft.testdata.TestDataConstants;
 import com.bft.ui.component.GracePeriodDialogComponent;
 import com.bft.ui.pages.MainPage;
 import com.bft.pw.Condition;
+import com.bft.pw.WebDriverRunner;
 import io.qameta.allure.Step;
-import org.springframework.stereotype.Component;
 
 import static com.bft.enums.TimeoutConstants.*;
 import static com.bft.pw.Selenide.$x;
 
-@Component
 public class ReportDataEntrySteps {
 
     private final SecureLogger logger = SecureLogger.getLogger(getClass());
@@ -29,19 +28,19 @@ public class ReportDataEntrySteps {
     public void addGeneralInfoISH() {
         new MainPage()
                 .clickMuiInputSpan("Календарный год", "2007")
-                .inputFieldPerson("directorLastName-label", TestDataConstants.InsuredPerson.LAST_NAME_1)
-                .inputFieldPerson("directorFirstName-label", TestDataConstants.InsuredPerson.FIRST_NAME_1)
-                .inputFieldPerson("directorMiddleName-label", TestDataConstants.InsuredPerson.MIDDLE_NAME_1)
-                .clickSpanId("pgs-help-label", TestDataConstants.InsuredPerson.JOB)
-                .clickMuiInputBase("personCount-label", "1");
+                .inputFieldPerson("directorLastName", TestDataConstants.InsuredPerson.LAST_NAME_1)
+                .inputFieldPerson("directorFirstName", TestDataConstants.InsuredPerson.FIRST_NAME_1)
+                .inputFieldPerson("directorMiddleName", TestDataConstants.InsuredPerson.MIDDLE_NAME_1)
+                .clickSpanId("directorPosition", TestDataConstants.InsuredPerson.JOB)
+                .clickMuiInputBase("personCount", "1");
         fillBasisSectionISH();
     }
 
     @Step(value = "Секция Основание СЗВ-ИСХ")
     public void fillBasisSectionISH() {
         new MainPage()
-                .clickMuiInputBase("basisTotalStaff", "1")
-                .clickMuiInputBase("basisActualEmployees", "1");
+                .clickMuiInputBase("totalWorkPlaceAmount", "1")
+                .clickMuiInputBase("totalActualWorkPlaceAmount", "1");
     }
 
     @Step(value = "Общие сведения ТД")
@@ -73,7 +72,7 @@ public class ReportDataEntrySteps {
                 .muiSpan("Вид мероприятия") //Прием
                 .inputDateLabel("activity_eventDate", "01.01.2025")
                 .clickMInputLabel("activity.basisEvent[0].number", "7542")
-                .clickMInputLabel("activity_basisEvent_0_date", "01.01.2025")
+                .inputDateByIdViaJs("activity_basisEvent_0_date", "01.01.2025")
                 .clickMInputLabel("activity.basisEvent[0].series", "4513")
                 .clickMInputLabel("activity.basisEvent[0].name", "Договор")
                 .clickMInputLabel("activity.position", "Директор")
@@ -89,7 +88,7 @@ public class ReportDataEntrySteps {
                 .clickMInputLabel("position", "Директор")
                 .muiSpanValue("Код выполняемой функции по ОКЗ", "option-0") //1111.7
                 .clickMInputLabel("documentList[0].name", "Договор")
-                .clickMInputLabel("documentList_0_date", "01.01.2025")
+                .inputDateByIdViaJs("documentList_0_date", "01.01.2025")
                 .clickMInputLabel("documentList[0].series", "4513")
                 .clickMInputLabel("documentList[0].number", "7542");
     }
@@ -131,6 +130,12 @@ public class ReportDataEntrySteps {
     public void saveZL() {
         new MainPage()
                 .clickBtnPrimary("Сохранить");
+    }
+
+    @Step(value = "Сохранение ЗЛ (второй первичной кнопкой)")
+    public void saveZLEFS() {
+        new MainPage()
+                .clickBtnPrimary_2("Сохранить");
     }
 
     @Step(value = "Сохранение мероприятия")
@@ -189,6 +194,201 @@ public class ReportDataEntrySteps {
                 .clickAddInTable();
 
         mainPage.clickBtnSecondary6("Добавить");*/
+    }
+
+    // ===================== СЗВ-СТАЖ =====================
+
+    @Step(value = "Общие сведения СЗВ-СТАЖ")
+    public void addGeneralInfoSTAGE() {
+        new MainPage()
+                .clickRadioInput("Исходная")
+                .clickMuiInputSpan("Календарный год", "2022")
+                .clickSpanId("directorPosition", TestDataConstants.InsuredPerson.JOB)
+                .clickMuiInputBase("personCount", "1");
+    }
+
+    @Step(value = "Заполнение раздела СТАЖ (структурные данные)")
+    public void fillSectionSTAZH() {
+        new MainPage()
+                .clickMuiInputBase("structuralUnitName", "Отдел")
+                .clickMuiInputBase("professionName", "Инженер")
+                .clickMuiInputBase("workPlaceAmount", "1")
+                .clickMuiInputBase("actualEmployeeAmount", "1")
+                .clickMuiInputBase("workConditionDescription", "Крайний Север")
+                .clickMuiInputBase("primaryDocumentsInOut", "Личная карточка")
+                .clickFirstMuiAutocompleteOption("outList[0].outCode");
+    }
+
+    @Step(value = "Добавление ЗЛ СТАЖА (ФИО/СНИЛС)")
+    public void addPersonSTAGE() {
+        new MainPage()
+                .inputFieldPerson("fioLastName", TestDataConstants.InsuredPerson.LAST_NAME_1)
+                .inputFieldPerson("fioFirstName", TestDataConstants.InsuredPerson.FIRST_NAME_1)
+                .inputFieldPerson("fioMiddleName", TestDataConstants.InsuredPerson.MIDDLE_NAME_1)
+                .clickMuiInputBase("fioSnils", TestDataConstants.InsuredPerson.SNILS_1);
+    }
+
+    // ===================== СЗВ-ИСХ =====================
+
+    @Step(value = "Заполнение ЗЛ ИСХ")
+    public void fillZLForISH() {
+        try {
+            new MainPage()
+                    .inputFieldPerson("lastName", TestDataConstants.InsuredPerson.LAST_NAME_1)
+                    .inputFieldPerson("firstName", TestDataConstants.InsuredPerson.FIRST_NAME_1)
+                    .inputFieldPerson("middleName", TestDataConstants.InsuredPerson.MIDDLE_NAME_1)
+                    .clickRadioInput("Трудовой")
+                    .clickMuiInputBase("snils", TestDataConstants.InsuredPerson.SNILS_1)
+                    .clickMuiInputBase("contractDetailsDate", "01.01.2024")
+                    .clickMuiInputBase("contractDetailsNumber", "1")
+                    .clickFirstMuiAutocompleteOption("reportingPeriodType")
+                    .clickFirstMuiAutocompleteOption("reportingPeriodYear")
+                    .clickMuiInputBase("paymentsSum", "100000");
+        } catch (Throwable t) {
+            WebDriverRunner.saveSourceDump("ish-zl-fill-fail");
+            throw t;
+        }
+    }
+
+    // ===================== ОДВ-1 =====================
+
+    @Step(value = "Общие сведения ОДВ-1")
+    public void addGeneralInfoODV1() {
+        new MainPage()
+                .muiSpanValue("Отчетный период", "option-0")
+                .clickMuiInputSpan("Календарный год", "2024")
+                .inputFieldPerson("directorLastName", TestDataConstants.InsuredPerson.LAST_NAME_1)
+                .inputFieldPerson("directorFirstName", TestDataConstants.InsuredPerson.FIRST_NAME_1)
+                .inputFieldPerson("directorMiddleName", TestDataConstants.InsuredPerson.MIDDLE_NAME_1)
+                .clickSpanId("directorPosition", TestDataConstants.InsuredPerson.JOB)
+                .clickRadioInput("Корректирующая");
+    }
+
+    @Step(value = "Период ОДВ-1 (сведения о подразделении)")
+    public void fillOdv1Period() {
+        new MainPage()
+                .clickMuiInputBase("structuralUnitName", "Отдел")
+                .clickMuiInputBase("professionName", "Инженер")
+                .clickMuiInputBase("workPlaceAmount", "1")
+                .clickMuiInputBase("actualEmployeeAmount", "1")
+                .clickMuiInputBase("workConditionDescription", "Обычные")
+                .clickMuiInputBase("primaryDocumentsInOut", "Приказ");
+    }
+
+    // ===================== СЗВ-КОРР =====================
+
+    @Step(value = "Общие сведения СЗВ-КОРР")
+    public void addGeneralInfoKORR() {
+        new MainPage()
+                .clickRadioInput("Исходная")
+                .clickMuiInputSpan("Календарный год", "2024")
+                .inputFieldPerson("directorLastName", TestDataConstants.InsuredPerson.LAST_NAME_1)
+                .inputFieldPerson("directorFirstName", TestDataConstants.InsuredPerson.FIRST_NAME_1)
+                .inputFieldPerson("directorMiddleName", TestDataConstants.InsuredPerson.MIDDLE_NAME_1)
+                .clickSpanId("directorPosition", TestDataConstants.InsuredPerson.JOB)
+                .clickMuiInputBase("personCount", "1")
+                .clickMuiInputBase("insuranceDebtBeginning", "1")
+                .clickMuiInputBase("insuranceDebtEnd", "1")
+                .clickMuiInputBase("insuranceAdded", "1")
+                .clickMuiInputBase("insurancePayed", "1")
+                .clickMuiInputBase("accumulativeDebtBeginning", "1")
+                .clickMuiInputBase("accumulativeDebtEnd", "1")
+                .clickMuiInputBase("accumulativeAdded", "1")
+                .clickMuiInputBase("accumulativePayed", "1")
+                .clickMuiInputBase("tarifDebtBeginning", "1")
+                .clickMuiInputBase("tarifDebtEnd", "1")
+                .clickMuiInputBase("tarifAdded", "1")
+                .clickMuiInputBase("tarifPayed", "1");
+    }
+
+    // ===================== СЗВ-К =====================
+
+    @Step(value = "Общие сведения СЗВ-К")
+    public void addGeneralInfoK() {
+        new MainPage()
+                .clickRadioInput("Исходная")
+                .clickSpanId("headPosition", TestDataConstants.InsuredPerson.JOB)
+                .inputFieldPerson("headSurname", TestDataConstants.InsuredPerson.LAST_NAME_1)
+                .inputFieldPerson("headName", TestDataConstants.InsuredPerson.FIRST_NAME_1)
+                .inputFieldPerson("headMiddlename", TestDataConstants.InsuredPerson.MIDDLE_NAME_1);
+    }
+
+    @Step(value = "Добавление ЗЛ К (ФИО/СНИЛС/ДР)")
+    public void addZL_K() {
+        new MainPage()
+                .inputFieldPerson("personSurname", TestDataConstants.InsuredPerson.LAST_NAME_1)
+                .inputFieldPerson("personName", TestDataConstants.InsuredPerson.FIRST_NAME_1)
+                .inputFieldPerson("personMiddlename", TestDataConstants.InsuredPerson.MIDDLE_NAME_1)
+                .clickMuiInputBase("snils", TestDataConstants.InsuredPerson.SNILS_1)
+                .clickMuiInputBase("birthDate", TestDataConstants.InsuredPerson.Birthday);
+    }
+
+    // ===================== СЗВ-DSO =====================
+
+    @Step(value = "Общие сведения СЗВ-DSO")
+    public void addGeneralInfoDSO() {
+        new MainPage()
+                .clickRadioInput("Исходная")
+                .clickSpanId("headPosition", TestDataConstants.InsuredPerson.JOB)
+                .inputFieldPerson("headSurname", TestDataConstants.InsuredPerson.LAST_NAME_1)
+                .inputFieldPerson("headName", TestDataConstants.InsuredPerson.FIRST_NAME_1)
+                .inputFieldPerson("headMidlename", TestDataConstants.InsuredPerson.MIDDLE_NAME_1)
+                .clickMuiInputSpan("Календарный год", "2024");
+    }
+
+    @Step(value = "Добавление ЗЛ DSO (ФИО/СНИЛС/ДР)")
+    public void addZL_DSO() {
+        new MainPage()
+                .inputFieldPerson("personSurname", TestDataConstants.InsuredPerson.LAST_NAME_1)
+                .inputFieldPerson("personName", TestDataConstants.InsuredPerson.FIRST_NAME_1)
+                .inputFieldPerson("personMidlname", TestDataConstants.InsuredPerson.MIDDLE_NAME_1)
+                .clickMuiInputBase("snils", TestDataConstants.InsuredPerson.SNILS_1)
+                .clickMuiInputBase("birthDate", TestDataConstants.InsuredPerson.Birthday);
+    }
+
+    @Step(value = "Период DSO-L (подпункт А/Б)")
+    public void addPeriodDsol() {
+        new MainPage()
+                .clickRadioInput("А")
+                .inputDateByIdViaJs("subitemAPeriodFrom", "01.01.2024")
+                .inputDateByIdViaJs("subitemAPeriodTo", "30.06.2024")
+                .inputDateByIdViaJs("subitemBPeriodFrom", "01.07.2024")
+                .inputDateByIdViaJs("subitemBPeriodTo", "31.12.2024")
+                .clickMuiInputBase("subpointANaletHours", "100")
+                .clickMuiInputBase("subpointANaletMinutes", "0")
+                .clickMuiInputBase("subpointBNaletHours", "50")
+                .clickMuiInputBase("subpointBNaletMinutes", "30");
+    }
+
+    @Step(value = "Период DSO-U (представитель/не представитель/по списку)")
+    public void addPeriodDsou() {
+        new MainPage()
+                .clickRadioInput("А")
+                .inputDateByIdViaJs("dsouPresenterPeriodFrom", "01.01.2024")
+                .inputDateByIdViaJs("dsouPresenterPeriodTo", "30.06.2024")
+                .inputDateByIdViaJs("dsouNotPresenterPeriodFrom", "01.07.2024")
+                .inputDateByIdViaJs("dsouNotPresenterPeriodTo", "31.12.2024")
+                .inputDateByIdViaJs("dsouByListPeriodFrom", "01.01.2024")
+                .inputDateByIdViaJs("dsouByListPeriodTo", "31.12.2024");
+    }
+
+    // ===================== ЕФС-1 (раздел СТАЖ) =====================
+
+    @Step(value = "ЗЛ СТАЖА ЕФС-1 (ФИО/СНИЛС/ИНН)")
+    public void createEfsStajPerson() {
+        new MainPage()
+                .inputFieldPerson("personSurname", TestDataConstants.InsuredPerson.LAST_NAME_1)
+                .inputFieldPerson("personName", TestDataConstants.InsuredPerson.FIRST_NAME_1)
+                .inputFieldPerson("personMiddlename", TestDataConstants.InsuredPerson.MIDDLE_NAME_1)
+                .clickMuiInputBase("personSnils", TestDataConstants.InsuredPerson.SNILS_1)
+                .clickMuiInputBase("personInn", TestDataConstants.InsuredPerson.INN_1);
+    }
+
+    @Step(value = "Период стажа ЕФС-1")
+    public void createEfsStajPeriod() {
+        new MainPage()
+                .inputDateByIdViaJs("experienceTimePeriodDateAt", "01.01.2024")
+                .inputDateByIdViaJs("experienceTimePeriodDateTo", "31.12.2024");
     }
 
     @Step(value = "Подписать и отправить")
