@@ -23,8 +23,23 @@ public class TestAssertions {
 
     private static final Logger log = LoggerFactory.getLogger(TestAssertions.class);
 
-    private final List<AssertionError> errors = new ArrayList<>();
-    private boolean screenshotTaken = false;
+    private static final ThreadLocal<List<AssertionError>> COLLECTED =
+            ThreadLocal.withInitial(ArrayList::new);
+    private static final ThreadLocal<Boolean> SCREENSHOT_TAKEN =
+            ThreadLocal.withInitial(() -> Boolean.FALSE);
+
+    /**
+     * Clears collected failures and the screenshot flag for the current thread.
+     * Called before each test so failures never leak between tests.
+     */
+    public static void reset() {
+        COLLECTED.get().clear();
+        SCREENSHOT_TAKEN.set(Boolean.FALSE);
+    }
+
+    private static void record(AssertionError error) {
+        COLLECTED.get().add(error);
+    }
 
     /**
      * Verifies a condition is true, recording a failure if not.
@@ -32,7 +47,7 @@ public class TestAssertions {
     public void assertTrue(boolean condition, String message) {
         if (!condition) {
             handleFailure(message);
-            errors.add(new AssertionError(message));
+            record(new AssertionError(message));
         }
     }
 
@@ -42,7 +57,7 @@ public class TestAssertions {
     public void assertFalse(boolean condition, String message) {
         if (condition) {
             handleFailure(message);
-            errors.add(new AssertionError(message));
+            record(new AssertionError(message));
         }
     }
 
@@ -53,7 +68,7 @@ public class TestAssertions {
         if (!Objects.equals(actual, expected)) {
             String fullMessage = message + String.format(" (Expected: '%s', Actual: '%s')", expected, actual);
             handleFailure(fullMessage);
-            errors.add(new AssertionError(fullMessage));
+            record(new AssertionError(fullMessage));
         }
     }
 
@@ -64,7 +79,7 @@ public class TestAssertions {
         if (Objects.equals(actual, expected)) {
             String fullMessage = message + String.format(" (Both values: '%s')", actual);
             handleFailure(fullMessage);
-            errors.add(new AssertionError(fullMessage));
+            record(new AssertionError(fullMessage));
         }
     }
 
@@ -74,7 +89,7 @@ public class TestAssertions {
     public void assertNotNull(Object actual, String message) {
         if (actual == null) {
             handleFailure(message);
-            errors.add(new AssertionError(message));
+            record(new AssertionError(message));
         }
     }
 
@@ -83,7 +98,7 @@ public class TestAssertions {
      */
     public void fail(String message) {
         handleFailure(message);
-        errors.add(new AssertionError(message));
+        record(new AssertionError(message));
     }
 
     /**
@@ -95,7 +110,7 @@ public class TestAssertions {
             element.shouldBe(com.bft.pw.Condition.visible);
         } catch (AssertionError e) {
             handleFailure(msg);
-            errors.add(new AssertionError(msg, e));
+            record(new AssertionError(msg, e));
         }
     }
 
@@ -108,7 +123,7 @@ public class TestAssertions {
             element.shouldNot(exist);
         } catch (AssertionError e) {
             handleFailure(msg);
-            errors.add(new AssertionError(msg, e));
+            record(new AssertionError(msg, e));
         }
     }
 
@@ -118,6 +133,7 @@ public class TestAssertions {
      * @throws AssertionError if any assertions failed
      */
     public void assertAll() {
+        List<AssertionError> errors = COLLECTED.get();
         try {
             if (!errors.isEmpty()) {
                 AssertionError combined = new AssertionError(
@@ -126,18 +142,19 @@ public class TestAssertions {
                 throw combined;
             }
         } finally {
-            screenshotTaken = false;
+            errors.clear();
+            SCREENSHOT_TAKEN.set(Boolean.FALSE);
         }
     }
 
     private void handleFailure(String message) {
         log.error("ASSERTION FAILED: {}", message);
-        if (!screenshotTaken) {
+        if (!SCREENSHOT_TAKEN.get()) {
             try {
                 String screenshotName = "failure_assert_" + System.currentTimeMillis();
                 Selenide.screenshot(screenshotName);
                 DebugUtils.savePageStateOnError("assert-failure-" + screenshotName, null);
-                screenshotTaken = true;
+                SCREENSHOT_TAKEN.set(Boolean.TRUE);
                 log.info("Screenshot saved: {}", screenshotName);
             } catch (Exception e) {
                 log.warn("Failed to take screenshot on assertion failure: {}", e.getMessage());

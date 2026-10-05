@@ -58,6 +58,7 @@ public abstract class BaseTest {
      */
     @BeforeEach
     protected void setupAssertions() {
+        TestAssertions.reset();
         assertions = new TestAssertions();
     }
 
