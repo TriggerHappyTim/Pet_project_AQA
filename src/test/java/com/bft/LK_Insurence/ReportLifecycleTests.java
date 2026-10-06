@@ -57,8 +57,8 @@ public class ReportLifecycleTests extends UITestBase {
     // ========== TC-LKS-INTEGRATION-001: Полный цикл ЕФС-1 ==========
 
     @Test
-    @Disabled("Стенд test: grpc-сервис Efs1XmlProcessService не зарегистрирован (NOT_FOUND) — "
-            + "XML-загрузка ЕФС-1 недоступна (обнаружено 06.10.2026)")
+    @Disabled("UAT: отправка на подпись падает на бэкенде (graphql-mesh: 'асинхронный метод INTERNAL'), "
+            + "кнопка 'Подписать' не появляется — обнаружено 06.10.2026")
     @AllureId("LIFECYCLE-001")
     @Story("Полный цикл ЕФС-1")
     @Description("Проверяет полный цикл обработки отчёта ЕФС-1: загрузка через XML → подписание ЭЦП → проверка протокола УПП")
@@ -326,8 +326,8 @@ public class ReportLifecycleTests extends UITestBase {
     // ========== TC-LKS-INTEGRATION-002: Протоколы УПП успешные ==========
 
     @Test
-    @Disabled("Стенд test: grpc-сервис Efs1XmlProcessService не зарегистрирован (NOT_FOUND) — "
-            + "XML-загрузка ЕФС-1 недоступна (обнаружено 06.10.2026)")
+    @Disabled("UAT: отправка на подпись падает на бэкенде (graphql-mesh: 'асинхронный метод INTERNAL'), "
+            + "кнопка 'Подписать' не появляется — обнаружено 06.10.2026")
     @AllureId("INT-002")
     @Story("Протоколы УПП")
     @Description("Проверка, что после обработки отчёта протокол УПП содержит положительный статус")

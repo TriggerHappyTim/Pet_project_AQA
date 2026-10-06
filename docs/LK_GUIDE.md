@@ -38,14 +38,14 @@ mvn -B test -Dgroups="lk-insurer & regress"
 mvn -B test -Dgroups="lk-insurer"
 ```
 
-## Известные ограничения тестового стенда
+## Известные ограничения стендов
 
-- **06.10.2026, test:** импорт XML отчётов недоступен — бэкенд отвечает ошибками
-  («Ошибка поиска страхователя в РС»; для ЕФС-1 — `NOT_FOUND` grpc-сервиса
-  `ru.gov.pfr.ecp.uos.efs1.xml.client.Efs1XmlProcessService`).
-  Затронуты: `ReportXmlUploadTest` (отключён целиком), `ReportLifecycleTests#fullCycleEfs1WithProtocol`
-  и `#checkProtocolsPositive` (отключены точечно) — помечены `@Disabled` с этой причиной.
-  После восстановления импорта на стенде: снять `@Disabled` и проверить тесты.
+- **UAT (рабочий контур, 06.10.2026):** импорт XML всех 9 типов — работает (`ReportXmlUploadTest` 9/9).
+  Отправка на подпись падает на бэкенде (`graphql-mesh: Ошибка во время вызова асинхронного метода INTERNAL`),
+  поэтому `ReportLifecycleTests#fullCycleEfs1WithProtocol` и `#checkProtocolsPositive` помечены `@Disabled`.
+- **TEST (06.10.2026):** импорт XML недоступен — сервис РС нестабилен (`UNAVAILABLE: io exception`,
+  `Страхователь не найден в РС`), для ЕФС-1 — `NOT_FOUND` grpc-сервиса `Efs1XmlProcessService`.
+  Локальные прогоны UI-тестов ЛКС вести на UAT: `mvn test -P uat ...`.
 
 ## Чек-лист: новый ЛК за один день
 
