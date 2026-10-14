@@ -10,13 +10,19 @@
 
 **EVS Testing Framework** — фреймворк для автоматизированного UI-тестирования системы ЕВС (Единая Вычислительная Система). Построен на Java 11 + JUnit 5 + Playwright + Allure. Поддерживает два ЛК: **ЛК Страхователя** и **ЛК Архивной организации**.
 
+> ⚠️ README местами устарел. Источник истины — код, [CONTRIBUTING.md](CONTRIBUTING.md),
+> [docs/LK_GUIDE.md](docs/LK_GUIDE.md), [AGENTS.md](AGENTS.md).
+>
+> 🌐 **Контуры:** основной контур для UI-smoke — **UAT** (`mvn test -P uat -Dgroups="lk-insurer & smoke"`).
+> Контур TEST сейчас нестабилен (РС, регистрация gRPC ЕФС-1) — подробности в `docs/LK_GUIDE.md`.
+
 ### 🎯 Основные возможности
 
 - **Многоуровневая архитектура** с четким разделением ответственности
 - **12 переиспользуемых UI-компонентов** (Button, Input, Select, Checkbox, Table и др.)
 - **Page Object + Steps** — два уровня абстракции для UI
 - **Интеграция с Allure** для отчетности, скриншоты при падениях
-- **3 браузера** — Chrome, Firefox, Yandex (локально и удаленно через Selenoid)
+- **Playwright-браузеры** — Chrome, Firefox, Yandex (запуск напрямую, без WebDriver/Selenoid)
 - **Безопасность** — CredentialManager, SecureLogger, маскировка данных
 - **Мониторинг** — отслеживание медленных и нестабильных тестов
 - **GitLab CI/CD** с выбором ЛК, группы тестов, контура и браузера
@@ -57,92 +63,33 @@
 
 ```
 src/test/java/com/bft/
-├── BaseTest.java                # Базовый класс всех тестов
-├── config/                      # Конфигурация фреймворка (7 файлов)
-│   ├── TestConfiguration.java       # Главная конфигурация
-│   ├── TestContext.java             # Контекст выполнения тестов
-│   ├── TestConfig.java              # Настройки теста (браузер, таймауты)
-│   ├── TestStrategy.java            # Интерфейс стратегий
-│   ├── BaseTestStrategy.java        # Базовая реализация стратегии
-│   ├── UITestStrategy.java          # Стратегия UI тестов
-│   └── TestStrategyType.java        # Enum типов стратегий
-├── ui/                          # Пользовательский интерфейс (18 файлов)
-│   ├── pages/                       # Page Objects (BasePage, LoginPage, MainPage)
-│   ├── component/                   # 12 переиспользуемых UI-компонентов
-│   └── core/                        # BasePage, SmartElement, WaitStrategies
-├── LK_Insurence/                # Тесты ЛК Страхователя (14 файлов)
-│   ├── ReportXmlUploadTest.java     # Универсальный smoke XML-загрузки
-│   ├── EFS_1/, SZV_M/, SZV_TD/, SZV_ISH/
-│   └── CredentialsTest.java
-├── LK_Archive/                  # Тесты ЛК Архивной организации
-│   └── ArchivesTest.java            # 5 тестов (РПУ → ЕВС → подписание)
-├── security/                    # Безопасность (13 файлов)
-│   ├── CredentialManager.java, CredentialProvider.java
-│   ├── EnvironmentCredentialProvider.java, TestUsers.java
-│   ├── OrganizationProfile.java
-│   ├── masking/                     # SecureLogger, DataMasker
-│   └── providers/                   # PropertiesCredentialProvider
-├── helpers/                     # Вспомогательные классы (9 файлов)
-│   ├── ConfigReader.java            # Чтение конфигурации с кешированием
-│   ├── StandardWaits.java           # Типовые ожидания для UI
-│   ├── DataFiller.java, TestDataGenerator.java
-│   └── forms/                       # FormElements, FormFacade, FormValidator
-├── strategy/                    # Стратегии тестирования (8 файлов)
-│   ├── TestStrategyManager.java, TestExecutionStrategy.java
-│   ├── BaseTestExecutionStrategy.java
-│   └── CryptoProValidationStrategy.java
-├── test/                        # Тестовая инфраструктура (16 файлов)
-│   ├── base/                        # UITestBase, BaseTest
-│   ├── annotations/                 # @TestType, @TestPriority, @Requirement и др.
-│   ├── examples/                    # 🎓 Обучающие примеры (@Disabled, см. BEGINNERS_GUIDE.md)
-│   ├── logging/                     # TestLogger, AllureIntegration
-│   ├── helpers/                     # TestSetupHelper, LoginHelper, SmartWaits
-│   ├── negative/                    # NegativeTestCases
-│   ├── retry/                       # RetryAnalyzer
-├── service/                       # Сервисный слой полного стека
-│   ├── graphql/                     # Подписание ЭЦП через GraphQL/Camunda (без КриптоПРО)
-│   │   ├── GraphQLClient.java         # REST-обёртка graphql-mesh
-│   │   ├── SignRequest.java           # Шаблоны mutations
-│   │   └── SignService(+Impl).java    # API-подписание (evs.sign.mode=api|ui)
-│   ├── db/                          # Прямой доступ к БД (Apache Phoenix)
-│   │   ├── DbConfig.java              # -Ddb.url=...
-│   │   └── DbClient.java              # Параметризованные SELECT/UPDATE + Allure
-│   ├── kafka/                       # Асинхронные события
-│   │   ├── KafkaConfig.java           # -Dkafka.servers=...
-│   │   └── KafkaEventConsumer.java    # waitForMessage / readRecent
-│   └── grpc/                        # Внутренние сервисы ЕВС
-│       ├── GrpcConfig.java            # Реестр эндпоинтов (порты CI port-forward)
-│       ├── GrpcChannelFactory.java    # Каналы plaintext/TLS
-│       └── GrpcHealthCheck.java       # Connectivity-проверки без стабов
-├── testdata/                    # TestData builders (3 файла)
-│   ├── TestDataBuilder.java, UserTestDataBuilder.java, ReportTestDataBuilder.java
-├── monitoring/                  # Мониторинг (2 файла)
-│   ├── PerformanceMonitor.java, FlakyTestDetector.java
-├── helpers/                     # Утилиты
-│   ├── TelegramNotifier.java        # Уведомления о результатах в Telegram
-│   ├── VisualComparator.java        # Визуальная регрессия (эталоны в resources/screens/)
-│   ├── InfrastructureCheck.java     # Pre-flight проверки сервисов
-│   └── ConfigReader.java, StandardWaits.java, DataFiller.java ...
-├── integration/
-│   ├── tms/                         # Jira TMS: автообновление статусов по @TmsLink
-│   │   ├── TmsConfig.java, TmsClient.java, TmsStatusMapper.java
-│   └── ...                          # (исторический skeleton Zephyr — не активен)
-├── enums/                       # Перечисления (6 файлов)
-│   ├── UIType.java, UITypeSelector.java, ReportType.java
-│   ├── ReportFormType.java, ReportXmlResource.java, TabType.java
-├── constants/                   # Константы (2 файла)
-│   ├── TimeoutConstants.java, UrlConstants.java
-├── steps/                       # Бизнес-шаги (5 файлов)
-│   ├── AuthSteps.java
-│   ├── ReportNavigationSteps.java
-│   ├── ReportDataEntrySteps.java
-│   ├── ArchiveSteps.java
-│   └── SzvReportsSteps.java
-├── browser/factory/             # Фабрики браузеров (6 файлов)
-│   ├── ChromeBrowserFactory, FirefoxBrowserFactory, YandexBrowserFactory
-└── utils/                       # Утилиты (3 файла)
-    ├── FormStructureParser.java, FormFieldMetadata.java
-    └── CryptoProPluginVerifier.java
+├── test/                # Базовая инфраструктура тестов
+│   ├── base/                # BaseTest (без UI), UITestBase (UI, Playwright)
+│   ├── annotations/         # @TestType, @TestPriority, @Requirement…
+│   ├── negative/            # NegativeTestCases
+│   ├── retry/               # RetryAnalyzer
+│   ├── logging/             # TestLogger
+│   ├── helpers/             # SmartWaits, LoginHelper…
+│   ├── examples/            # обучающие примеры
+│   └── template/            # NewFeatureTestTemplate
+├── jupiter/
+│   ├── annotation/          # @DisabledByIssue, @DisabledByInfrastructure, @DisabledOnEnvironment
+│   └── extension/           # скриншоты при падении, TestResultWatcher
+├── LK_Insurence/        # 27 тестов ЛК Страхователя (SZV_M, EFS_1, ODV_1, …)
+├── LK_Archive/          # тесты ЛК Архивной организации
+├── ui/
+│   ├── pages/               # Page Objects
+│   ├── component/           # переиспользуемые UI-компоненты
+│   └── core/                # BasePage, SmartElement, ожидания
+├── steps/               # 11 бизнес-шагов (AuthSteps, SzvReportsSteps, …)
+├── pw/                  # обёртка над Playwright: PwSession, PwElement, PwWait, Condition
+│                        #   + Selenide-совместимый адаптер (Selenide / SelenideElement)
+├── service/             # graphql (подписание), db (Phoenix), kafka, grpc, sedo, sign
+├── security/            # TestUsers, CredentialManager, маскировка логов
+├── testdata/            # UserTestDataBuilder, ReportTestDataBuilder
+├── monitoring/          # PerformanceMonitor, FlakyTestDetector
+├── integration/         # tms (Jira, активен); zephyr — исторический skeleton
+└── config/ enums/ constants/ helpers/ utils/ strategy/ browser/
 ```
 
 ## 🚀 Быстрый старт
@@ -164,26 +111,28 @@ cd evs-testing-framework
 # 2. Установить зависимости
 mvn clean install
 
-# 3. Запустить простой тест (smoke: XML-загрузка отчёта)
-mvn test -Dtest=ReportXmlUploadTest
+# 3. UI smoke на основном контуре (UAT)
+mvn test -P uat -Dgroups="lk-insurer & smoke"
 
-# Или один метод конкретного класса:
-mvn test -Dtest=ArchivesTest#createRequestInRPU
+# Или один тест/метод конкретного класса:
+mvn test -P uat -Dtest=ReportXmlUploadTest
+mvn test -Dtest="Efs1#efs_szv_td"
 
 # 4. Сгенерировать отчет Allure
 mvn allure:serve
 ```
 
-### Docker запуск
+### Браузеры (Playwright)
+
+Playwright сам управляет браузером (WebDriver/Grid не нужен). Установите браузеры один раз:
 
 ```bash
-# Сборка образа
-docker build -t evs-testing-framework .
-
-# Запуск с Selenium Grid
-docker-compose up -d
-docker run --network evs-testing-network evs-testing-framework
+mvn exec:java -e -Dexec.mainClass=com.microsoft.playwright.CLI -Dexec.args="install"
 ```
+
+> ⚠️ `Dockerfile` и `docker-compose.yml` в корне остались от прежней Selenium-версии
+> (ChromeDriver, Selenium Grid) и **не актуальны** для текущего Playwright-стека —
+> см. раздел «Docker и CI» ниже.
 
 ## 📚 Документация
 
@@ -194,6 +143,7 @@ docker run --network evs-testing-network evs-testing-framework
 - **[Руководство разработчика](DEVELOPMENT_GUIDE.md)** — SOLID, Arrange-Act-Assert, best practices
 - **[API Reference](API_REFERENCE.md)** — справочник всех классов и методов
 - **[Contributing](CONTRIBUTING.md)** — правила написания тестов, quality gates, DoD
+- **[Гайд по обёртке Playwright](docs/PW_GUIDE.md)** — `com.bft.pw`: `$`, `Condition`, ожидания
 - **[Гайд по ЛК](docs/LK_GUIDE.md)** — конвенции ЛК, масштабирование до 9 кабинетов
 
 ### Дополнительно
@@ -232,8 +182,8 @@ public class ReportXmlUploadTest extends BaseTest {
 ### Использование компонентов
 
 ```java
-// Вместо низкоуровневых селекторов
-$x("//button[contains(text(), 'Добавить')]").click();
+// Вместо низкоуровневых селекторов (приоритет: data-testid → role/text → CSS)
+$("button:has-text('Добавить')").click();
 
 // Используем высокоуровневые компоненты
 ButtonComponent.createButton("Добавить").click();
@@ -379,59 +329,35 @@ CredentialManager manager = CredentialManager.getInstance();
 Credentials creds = manager.getCredentials("test-user");
 ```
 
-## 🐳 Docker поддержка
+## 🐳 Docker и CI
 
-### Локальная разработка
+UI-тесты на Playwright **не используют Selenium/Grid**: браузером управляет сам Playwright,
+поэтому `selenium-hub` и драйверы не нужны. Локально достаточно один раз установить браузеры:
 
-```yaml
-# docker-compose.yml
-version: '3.8'
-services:
-  selenium-hub:
-    image: selenium/hub:4.0
-    ports:
-      - "4444:4444"
-
-  chrome:
-    image: selenium/node-chrome:4.0
-    depends_on:
-      - selenium-hub
-    environment:
-      - SE_EVENT_BUS_HOST=selenium-hub
-      - SE_EVENT_BUS_PUBLISH_PORT=4443
-      - SE_EVENT_BUS_SUBSCRIBE_PORT=4442
-
-  tests:
-    build: .
-    depends_on:
-      - selenium-hub
-    environment:
-      - REMOTE_URL=http://selenium-hub:4444/wd/hub
+```bash
+mvn exec:java -e -Dexec.mainClass=com.microsoft.playwright.CLI -Dexec.args="install"
 ```
 
-### CI/CD интеграция
+> ⚠️ `Dockerfile` / `docker-compose.yml` в репозитории описывают **старый Selenium-стек**
+> (ChromeDriver, GeckoDriver, Selenium Grid, `SELENIDE_REMOTE`) и с текущим фреймворком
+> не работают. Их нужно переписать под Playwright (базовый образ вида
+> `mcr.microsoft.com/playwright/java:v1.49.0-jammy` + `playwright install`).
+> До этого Docker-запуск не используем.
 
-```gitlab-ci
-stages:
-  - test
-  - report
+### CI
 
-test:
-  stage: test
-  image: openjdk:11
-  services:
-    - selenium/standalone-chrome
-  script:
-    - mvn clean test
-  artifacts:
-    reports:
-      allure: allure-results/
+Актуальные пайплайны:
 
-report:
-  stage: report
-  script:
-    - mvn allure:aggregate
+- **GitLab CI** — `.gitlab-ci.yml`, job `quality` (Checkstyle + hard-waits ratchet).
+- **GitHub Actions** — `.github/workflows/quality.yml` (те же гейты).
+
+Локально те же проверки:
+
+```bash
+bash scripts/verify-quality.sh
 ```
+
+Allure-результаты складываются в `allure-results/`.
 
 ## 🤝 Разработка
 
@@ -555,7 +481,7 @@ mvn allure:report -Dallure.results.directory=allure-results
 | JUnit 5 | 5.10.2 | Тестовый фреймворк |
 | Playwright | 1.49.0 | UI-автоматизация |
 | Allure | 2.22.2 | Отчетность |
-| Spring Boot | 2.6.14 | Базовый фреймворк |
+| Spring Boot | 2.6.14 | Минимальная заглушка `src/main` (в UI-тестах не используется) |
 | Lombok | 1.18.20 | Сокращение boilerplate |
 | JavaFaker | 1.0.2 | Генерация тестовых данных |
 | Maven | 3.6+ | Сборка |

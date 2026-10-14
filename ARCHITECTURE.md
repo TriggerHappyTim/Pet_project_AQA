@@ -88,7 +88,7 @@ browser/
 
 **Ответственность:**
 - Управление браузерами и их конфигурацией
-- Настройка WebDriver'ов
+- Настройка браузеров (Playwright: Chromium/Firefox/WebKit)
 - Поддержка разных браузеров и режимов (локальный, удаленный)
 
 ### Security Layer (Безопасность)
@@ -314,7 +314,7 @@ TestConfiguration.initialize()
     ↓
 Инициализация браузера через BrowserFactoryManager
     ↓
-Создание WebDriver
+Запуск браузера Playwright (PwDriver)
     ↓
 Тест готов к выполнению
 ```
@@ -332,7 +332,7 @@ Page Object вызывает UI Components
     ↓
 Components работают через SmartElement'ы
     ↓
-SmartElement'ы используют Selenide
+SmartElement'ы используют com.bft.pw (Selenide-совместимый адаптер над Playwright)
     ↓
 Assert: валидация через SoftAssert
     ↓
@@ -463,7 +463,7 @@ Page Objects / Components
     ↓ (uses)
 SmartElement / ElementFactory
     ↓ (uses)
-Selenide WebDriver
+Playwright (движок UI; доступ через com.bft.pw)
 ```
 
 ### Runtime зависимости

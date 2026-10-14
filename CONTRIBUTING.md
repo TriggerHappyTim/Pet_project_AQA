@@ -26,6 +26,26 @@ mvn -B test -Dtest=ReportFixtureIntegrityTest
 mvn -B test -Dtest="Efs1#efs_szv_td"
 ```
 
+## Окружения (контуры)
+
+Профили контуров из `pom.xml` задают базовые URL и `*.ui.type`:
+
+| Профиль | Контур | Статус |
+|---|---|---|
+| `-P test` (по умолчанию) | TEST | ⚠️ Нестабилен для UI: РС/регистрация ЕФС-1 (gRPC) не работают |
+| `-P uat` | UAT | ✅ **Рабочий контур** для UI-smoke |
+| `-P int` | INT | Резервный |
+
+- Профили запуска: `smoke_web`, `regress_web`, `smoke_manual`, `regress_manual`, `all_tests`.
+- Для UI-smoke используй **UAT** и явно указывай профиль:
+
+```bash
+mvn -B test -P uat -Dgroups="lk-insurer & smoke"
+```
+
+**Windows/PowerShell:** `-D…`-аргументы манглятся без `--%`. Пиши
+`mvn -o test --% -Dtest=... -Dservice.graphql-mesh.url=...` (см. `docs/MEMORY.md`, разд. 11).
+
 ## Quality gates (обязательны, блокируют CI)
 
 | Гейт | Команда | Что проверяет |
@@ -78,6 +98,34 @@ mvn -B test -Dtest="Efs1#efs_szv_td"
 - Инфраструктурные проблемы — `@DisabledByInfrastructure`.
 - `FlakyTestDetector` помогает собирать статистику; не игнорируй его отчёты.
   Подключается точечно: `@ExtendWith(FlakyTestDetector.class)` на проблемном классе.
+
+## Отключение тестов (`@Disabled`)
+
+Отключай тест **осознанно** и всегда с причиной. «Тихое» `@Disabled` без объяснения недопустимо.
+Используй готовые расширения из `com.bft.jupiter.annotation`:
+
+| Ситуация | Аннотация |
+|---|---|
+| Баг/недоделка в продукте | `@DisabledByIssue("TICKET-123")` |
+| Проблема стенда/инфраструктуры | `@DisabledByInfrastructure("<причина>")` |
+| Тест не подходит конкретному контуру | `@DisabledOnEnvironment({"TEST"})` |
+
+Правила:
+
+- Причину описывай **на русском** и конкретно: что именно не работает, где (контур, сервис, TraceId).
+- Тест с `@Disabled` должен оставаться **самодостаточным**: когда блокер снимут — он заработает без переписывания.
+- Не оставляй `@Disabled` «на всякий случай» без тикета/причины.
+- В `@DisabledByInfrastructure` указывай затронутый контур (обычно TEST) и что при этом работает на UAT.
+
+Пример:
+
+```java
+@Test
+@Tag("lk-insurer")
+@Tag("smoke")
+@DisabledByIssue("EVS-1234") // UAT: graphql-mesh INTERNAL на «Подписать» (TraceId …)
+void signAndSend() { ... }
+```
 
 ## Параллелизм (пилот)
 
