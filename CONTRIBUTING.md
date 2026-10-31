@@ -46,6 +46,28 @@ mvn -B test -P uat -Dgroups="lk-insurer & smoke"
 **Windows/PowerShell:** `-D…`-аргументы манглятся без `--%`. Пиши
 `mvn -o test --% -Dtest=... -Dservice.graphql-mesh.url=...` (см. `docs/MEMORY.md`, разд. 11).
 
+### Внешние свойства (локальный запуск)
+
+Часть настроек приходит не из профилей, а из системных свойств `-D…`. На чистой машине
+их нужно задать явно — иначе тест либо не запустится, либо пойдёт не туда:
+
+| Свойство | Зачем | По умолчанию |
+|---|---|---|
+| `environment` | Контур для `TestConfig` и `@DisabledOnEnvironment` | `uat` (из `pom.xml`) |
+| `evt.auth.bypass` | Обход ESIA-логина для локального фронта (`true`/`false`) | `false` — реальный вход |
+| `evs.auth.bypass.cookie` | Session-cookie `_oauth2_proxy` для bypass | из `auth-bypass.properties` / yml фронта |
+| `evs.auth.bypass.configFile` | Путь к `application-auth-dev.yml` локального фронта | `D:\evs-oi-ipu-usv-front\…` |
+
+- `evt.auth.bypass=true` нужен **только** для локального фронта (`AuthBypassConfig`).
+  На TEST/UAT логин идёт через ESIA, cookie берётся из `credentials.properties` / CI-переменных.
+- Cookie и `userId` в репозиторий не коммитим: `auth-bypass.properties` — локальный файл.
+- Свойства GraphQL-mesh, СЭДО, Kafka и подписания — в [docs/MEMORY.md](docs/MEMORY.md).
+
+```bash
+# локальный запуск с обходом ESIA
+mvn test --% -Devt.auth.bypass=true -Devs.auth.bypass.cookie=<cookie> -Dtest=...
+```
+
 ## Quality gates (обязательны, блокируют CI)
 
 | Гейт | Команда | Что проверяет |

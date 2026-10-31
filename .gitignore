@@ -8,6 +8,7 @@
 
 # Credentials and sensitive files
 credentials.properties
+auth-bypass.properties
 *.key
 *.pem
 *.p12
