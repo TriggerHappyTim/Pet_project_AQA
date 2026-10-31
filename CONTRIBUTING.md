@@ -82,6 +82,11 @@ mvn test --% -Devt.auth.bypass=true -Devs.auth.bypass.cookie=<cookie> -Dtest=...
 - Checkstyle **привязан к фазе `validate`** и валит сборку при нарушениях. Нарушений сейчас 0 — держим планку.
 - Те же гейты автоматически гоняются в **GitLab CI** (job `quality`, стадия `.pre`, блокирующий)
   и в **GitHub Actions** (`.github/workflows/quality.yml`).
+- **GitHub Actions тесты не запускает** — только гейты: там нет доступа к стендам и секретам.
+  Зелёная галочка GitHub означает «стиль, ожидания и теги в порядке», а не «тесты прошли».
+- **Тесты выполняет GitLab CI** (job `maven test`: `mvn clean test` с профилем контура и `-Dtest=…`)
+  и локальный запуск. Важно: job `maven test` объявлен с `allow_failure: true`, поэтому его падение
+  **не блокирует** пайплайн — результат смотри в логе job и в Allure, а не только по статусу пайплайна.
 - Hard waits запрещены в тестовом коде, кроме инфраструктуры ожиданий (`com.bft.pw.*`, `SmartWaits`).
   Текущие вхождения заморожены в `scripts/hard-waits-baseline.txt`; файл можно только **уменьшать**.
   Если hard wait временно необходим — обнови baseline (`scripts/check-hard-waits.sh --update`)

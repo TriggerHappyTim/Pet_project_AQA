@@ -54,6 +54,8 @@ bash scripts/verify-quality.sh   # все гейты разом (нужен Git 
    и каждый профиль обязан выбирать хотя бы один тест (иначе «зелёный» прогон выполнит 0 тестов).
 
 Те же проверки гоняются в GitHub Actions (`.github/workflows/quality.yml`) и GitLab CI (job `quality`, стадия `.pre`).
+**GitHub Actions тесты не запускает** (нет стендов/секретов): зелёная галочка там = гейты пройдены.
+Тесты выполняет GitLab CI (job `maven test`, `allow_failure: true`) и локальный запуск.
 
 ## Структура (реальная)
 
