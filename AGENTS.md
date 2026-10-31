@@ -30,7 +30,9 @@ mvn allure:serve                                     # Allure-отчёт (отк
 ```
 
 - Профили запуска из `pom.xml`: `smoke_web`, `regress_web`, `smoke_manual`, `regress_manual`, `all_tests`.
-- Профили контуров: `-Ptest` (по умолчанию) / `-Puat` / `-Pint` — задают `evs.ui.type`, `rpu.ui.type`, `uos.ui.type`.
+- Профили контуров: `-Puat` (**по умолчанию**, `activeByDefault`) / `-Ptest` / `-Pint`.
+  Профиль задаёт `test.environment` (метка контура в отчётах) и `evs/rpu/uos.ui.type` (URL).
+  `-Pint` пока работает как `uat`: INT-стенд не сконфигурирован (в `UIType` нет INT-значений).
 - Иногда полезно: `-Dheadless=true`.
 
 **Windows/PowerShell:** `-D…`-аргументы манглятся без `--%`. Пишите:

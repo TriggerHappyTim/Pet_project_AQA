@@ -21,6 +21,9 @@
         <maven.surifire.plugin.version>3.1.0</maven.surifire.plugin.version>
         <lombok.version>1.18.28</lombok.version>
         <telegrambots.version>6.8.0</telegrambots.version>
+        <!-- Контур по умолчанию; переопределяется профилями test/uat/int.
+             Единственный источник для метки environment в отчётах и для TestConfig. -->
+        <test.environment>uat</test.environment>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>11</java.version>
         <maven.compiler.source>11</maven.compiler.source>
@@ -245,7 +248,9 @@
                     </argLine>
                     <systemPropertyVariables>
                         <allure.results.directory>${project.build.directory}/allure-results</allure.results.directory>
-                        <environment>uat</environment>
+                        <!-- Контур берётся из профиля (test/uat), а не зашит: иначе отчёт
+                             помечается uat при прогоне на другом контуре. -->
+                        <environment>${test.environment}</environment>
                         <evt.auth.bypass>${evt.auth.bypass}</evt.auth.bypass>
                     </systemPropertyVariables>
                 </configuration>
@@ -393,7 +398,9 @@
             </build>
         </profile>
 
-        <!-- Environment profiles: задают evs/rpu/uos.ui.type для UITypeSelector -->
+        <!-- Environment profiles.
+             Контур задаётся в одном месте: test.environment (метка environment в отчётах)
+             + evs/rpu/uos.ui.type (URL для UITypeSelector). Профиль uat активен по умолчанию. -->
         <profile>
             <id>test</id>
             <properties>
@@ -421,6 +428,9 @@
 
         <profile>
             <id>uat</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
             <properties>
                 <test.environment>uat</test.environment>
                 <evs.ui.type>EVS_UAT_LKS</evs.ui.type>
@@ -444,11 +454,33 @@
             </build>
         </profile>
 
+        <!-- INT-контур не сконфигурирован: в UIType нет INT-значений и неизвестны URL стенда.
+             Пока профиль int работает как uat (те же адреса) и помечает отчёт uat — так отчёт
+             не врёт о контуре. Когда появится INT-стенд: добавить значения в UIType и заменить
+             test.environment + evs/rpu/uos.ui.type здесь. -->
         <profile>
             <id>int</id>
             <properties>
-                <test.environment>int</test.environment>
+                <test.environment>uat</test.environment>
+                <evs.ui.type>EVS_UAT_LKS</evs.ui.type>
+                <rpu.ui.type>RPU_UAT</rpu.ui.type>
+                <uos.ui.type>UOS_UAT</uos.ui.type>
             </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <systemPropertyVariables>
+                                <evs.ui.type>EVS_UAT_LKS</evs.ui.type>
+                                <rpu.ui.type>RPU_UAT</rpu.ui.type>
+                                <uos.ui.type>UOS_UAT</uos.ui.type>
+                            </systemPropertyVariables>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
 
         <profile>

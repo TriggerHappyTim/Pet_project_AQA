@@ -28,13 +28,15 @@ mvn -B test -Dtest="Efs1#efs_szv_td"
 
 ## Окружения (контуры)
 
-Профили контуров из `pom.xml` задают базовые URL и `*.ui.type`:
+Контур задаётся в одном месте — профилем в `pom.xml`: `test.environment` (метка `environment`
+в отчётах, `TestConfig`, `@DisabledOnEnvironment`) плюс `evs/rpu/uos.ui.type` (URL для `UITypeSelector`).
+Без `-P` активен `uat` (`activeByDefault`).
 
 | Профиль | Контур | Статус |
 |---|---|---|
-| `-P test` (по умолчанию) | TEST | ⚠️ Нестабилен для UI: РС/регистрация ЕФС-1 (gRPC) не работают |
-| `-P uat` | UAT | ✅ **Рабочий контур** для UI-smoke |
-| `-P int` | INT | Резервный |
+| `-P uat` (по умолчанию) | UAT | ✅ **Рабочий контур** для UI-smoke |
+| `-P test` | TEST | ⚠️ Нестабилен для UI: РС/регистрация ЕФС-1 (gRPC) не работают |
+| `-P int` | пока UAT | ❌ INT-стенд не сконфигурирован: в `UIType` нет INT-значений, URL неизвестны. Профиль работает как `uat`, отчёт помечается `uat` (а не `int`) |
 
 - Профили запуска: `smoke_web`, `regress_web`, `smoke_manual`, `regress_manual`, `all_tests`.
 - Для UI-smoke используй **UAT** и явно указывай профиль:
