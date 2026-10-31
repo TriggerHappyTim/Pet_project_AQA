@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Test;
  *       <code>com.bft.LK_Archive</code>) и переименуйте класс в соответствии с проверяемым
  *       функционалом (например, {@code NewReportCreationTest}).</li>
  *   <li>Замените примеры {@code // TODO} реальными шагами из {@code com.bft.steps.*}.</li>
- *   <li>Добавьте {@code @Test}-метод с понятным именем и корректной группой (см. README_new_tests.md).</li>
+ *   <li>Добавьте {@code @Test}-метод с понятным именем и корректной группой (см. NEW_TESTS_GUIDE.md).</li>
  * </ol>
  *
  * <p>Класс находится в пакете {@code com.bft.test.template} — примеры ниже не выполняются
@@ -49,7 +49,7 @@ public class NewFeatureTestTemplate extends UITestBase {
      * @Severity(SeverityLevel.CRITICAL)
      * public void myFeatureTest() {
      *     // Arrange: авторизация нужного пользователя на выбранном контуре
-     *     authSteps.authorizeEVS(UITypeSelector.getSelectedUIType(), TestUsers.KRIVONOSOV_ALEXANDER);
+     *     authSteps.authorizeEVS(UITypeSelector.getSelectedUIType(), TestUsers.DEFAULT_USER);
      *
      *     // Act: шаги через steps-классы (а не напрямую через страницы в тесте)
      *     reportNavSteps.navigateToReports();
@@ -57,7 +57,9 @@ public class NewFeatureTestTemplate extends UITestBase {
      *
      *     // Assert: мягкие проверки через assertions (assertAll выполняется автоматически)
      *     assertions.assertTrue(true, "Условие должно выполниться");
-     *     assertions.assertVisible($x("//div[contains(text(), 'Ожидаемый текст')]"),
+     *     // Локаторы: data-testid → role/text → CSS. XPath — крайний случай
+     *     // (например, сложные оси, для которых нет CSS-аналога).
+     *     assertions.assertVisible($("[data-testid='save-success']"),
      *             "Сообщение об успешном сохранении");
      * }
      */

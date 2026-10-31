@@ -1981,7 +1981,7 @@ java.lang.NullPointerException
 1. **TestAssertions в BaseTest** — `assertions` теперь тип `com.bft.test.TestAssertions` (наследник SoftAssert); создаётся перед каждым тестом, `assertAll()` выполняется автоматически. `assertEquals` сделан null-safe.
 2. **Декомпозиция MainPage** — date-функциональность (ввод дат через календарь/JS, диалог «Льготный стаж», `pressEscape`) вынесена в `com.bft.ui.component.DatePickerComponent`; `MainPage` делегирует в компонент, публичный fluent-API сохранён.
 3. **NewFeatureTestTemplate** — шаблон нового теста в `com.bft.test.template` (пакет не входит в testng.xml, примеры не выполняются).
-4. **README_new_tests.md** — гайд по написанию новых тестов (структура, правила, запуск, чек-лист).
+4. **NEW_TESTS_GUIDE.md** — гайд по написанию новых тестов (структура, правила, запуск, чек-лист).
 
 ---
 
@@ -2002,9 +2002,9 @@ java.lang.NullPointerException
 - Составить детальную пошаговую инструкцию по проекту для нового члена команды:
   - как развернуть окружение (JDK 11/17, Maven, браузер, credentials/`evs.*` переменные),
   - как устроен проект (пакеты, шаги, страницы, компоненты, базовые классы),
-  - как написать и запустить первый тест (по `NewFeatureTestTemplate` + `README_new_tests.md`),
+  - как написать и запустить первый тест (по `NewFeatureTestTemplate` + `NEW_TESTS_GUIDE.md`),
   - как прогонять тесты локально и в CI (команды `mvn test -Dtest=...`, `-Dsuite=...`),
   - частые ошибки и их решение (JDK 24/Lombok, невидимые sidebar-элементы, выбор типа отчёта и т.п.).
-- При необходимости расширить/упростить `README_new_tests.md` или выделить отдельный `ONBOARDING.md`.
+- При необходимости расширить/упростить `NEW_TESTS_GUIDE.md` или выделить отдельный `ONBOARDING.md`.
 
 ---
