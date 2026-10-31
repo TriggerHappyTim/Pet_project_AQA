@@ -31,6 +31,7 @@ import org.junit.jupiter.api.Test;
 @Tag("lk-archive")
 @Tag("archive")
 @Tag("web")
+@Tag("regression")
 @Epic("ЛК Архивной организации")
 @Feature("Реестр запросов в архивы")
 public class ArchivesTest extends UITestBase {

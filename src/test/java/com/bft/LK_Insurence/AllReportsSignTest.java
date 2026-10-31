@@ -48,6 +48,7 @@ import static com.bft.pw.Selenide.refresh;
 @Tag("signing")
 @Tag("all-reports")
 @Tag("web")
+@Tag("regression")
 @Epic("Формы отчетности")
 @Feature("Подписание всех типов отчётов ЕВС")
 public class AllReportsSignTest extends UITestBase {

@@ -40,6 +40,7 @@ import static com.bft.pw.Selenide.refresh;
 @Tag("xml-upload")
 @Tag("web")
 @Tag("signing")
+@Tag("regression")
 @Epic("Формы отчетности")
 public abstract class AbstractReportUploadSignTest extends UITestBase {
 

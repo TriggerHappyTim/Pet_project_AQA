@@ -45,6 +45,7 @@ import static java.time.Duration.ofSeconds;
 @Tag("lk-insurer")
 @Tag("smoke")
 @Tag("web")
+@Tag("regression")
 @Epic("Жизненный цикл отчётов")
 @Feature("Управление отчётами")
 public class ReportLifecycleTests extends UITestBase {

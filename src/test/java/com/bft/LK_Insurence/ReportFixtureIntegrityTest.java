@@ -42,6 +42,7 @@ import org.junit.jupiter.api.Tag;
  */
 @DisplayName("Целостность XML-фикстур отчётов ЕВС")
 @Tag("lk-insurer")
+@Tag("regression")
 class ReportFixtureIntegrityTest {
 
     private static final String RESOURCE_PREFIX = "application";

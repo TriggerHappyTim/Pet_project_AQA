@@ -32,6 +32,7 @@ import static java.time.Duration.ofSeconds;
 @Tag("lk-insurer")
 @Tag("web")
 @Tag("efs")
+@Tag("regression")
 @Epic("Формы отчетности")
 @Feature("EFS-1 Reports")
 public class Efs1 extends UITestBase {

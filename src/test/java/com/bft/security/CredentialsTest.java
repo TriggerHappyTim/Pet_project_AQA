@@ -19,6 +19,7 @@ import org.junit.jupiter.api.Test;
  * для EVS и EPGU систем.
  */
 @Tag("smoke")
+@Tag("regression")
 @Epic("Configuration")
 @Feature("Credentials Management")
 public class CredentialsTest extends BaseTest {

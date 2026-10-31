@@ -6,7 +6,7 @@
 ## Быстрый старт
 
 ```bash
-# все quality-гейты разом (Checkstyle + hard-waits)
+# все quality-гейты разом (Checkstyle + hard-waits + XPath + теги)
 bash scripts/verify-quality.sh
 
 # компиляция + статический анализ
@@ -75,6 +75,7 @@ mvn test --% -Devt.auth.bypass=true -Devs.auth.bypass.cookie=<cookie> -Dtest=...
 | Checkstyle | `mvn -B checkstyle:check` | wildcard-импорты, пустые catch; 0 нарушений |
 | Hard-waits ratchet | `bash scripts/check-hard-waits.sh` | новые `Thread.sleep` / `sleep()` в тестах |
 | XPath ratchet | `bash scripts/check-xpath.sh` | рост числа XPath-локаторов в тестах |
+| Tag consistency | `bash scripts/check-tags.sh` | теги в документации = `<groups>` в `pom.xml` = `@Tag` в тестах; профиль не должен выбирать 0 тестов |
 
 - Checkstyle **привязан к фазе `validate`** и валит сборку при нарушениях. Нарушений сейчас 0 — держим планку.
 - Те же гейты автоматически гоняются в **GitLab CI** (job `quality`, стадия `.pre`, блокирующий)
@@ -86,6 +87,9 @@ mvn test --% -Devt.auth.bypass=true -Devs.auth.bypass.cookie=<cookie> -Dtest=...
 - **XPath-локаторы** заморожены в `scripts/xpath-baseline.txt`; файл можно только **уменьшать**.
   Новые локаторы: `data-testid` → role/text → CSS (`:has-text`, `:text-is`); XPath — крайний случай
   (см. `docs/PW_GUIDE.md`). Обновлять baseline (`--update`) допустимо только при **снижении** общего числа.
+- **Теги** сверяются скриптом `scripts/check-tags.sh`: каждый тег из `<groups>` в `pom.xml` должен быть
+  описан в `AGENTS.md` и использован хотя бы в одном `@Tag`, а каждый профиль — выбирать хотя бы один класс.
+  Канонический тег регресса — `regression` (не `regress`), он же используется в профилях `regress_web` / `regress_manual`.
 
 ## Как писать тесты
 
@@ -100,7 +104,7 @@ mvn test --% -Devt.auth.bypass=true -Devs.auth.bypass.cookie=<cookie> -Dtest=...
 6. **Локаторы** — приоритет: `data-testid` > role/text/label > CSS > XPath. XPath — только когда иначе нельзя.
 7. **Теги обязательны:**
    - ЛК: `lk-insurer`, `lk-archive`, … (см. `docs/LK_GUIDE.md`)
-   - Тип: `web`, `smoke`, `regress`, `xml-upload`, `report-sign`, `negative`, `manual`, `example`
+   - Тип: `web`, `smoke`, `regression`, `xml-upload`, `report-sign`, `negative`, `manual`, `example`
    - Проблемные: `flaky` (только с тикетом)
 8. **Мягкие проверки** — `assertions` из `BaseTest` (автоматический `assertAll` после теста).
 

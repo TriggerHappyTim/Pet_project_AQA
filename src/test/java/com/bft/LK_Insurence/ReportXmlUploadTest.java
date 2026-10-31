@@ -34,6 +34,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 @Tag("lk-insurer")
 @Tag("smoke")
 @Tag("xml-upload")
+@Tag("web")
+@Tag("regression")
 @Epic("Формы отчетности")
 @Feature("Report XML Upload (unified)")
 public class ReportXmlUploadTest extends UITestBase {

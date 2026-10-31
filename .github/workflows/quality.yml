@@ -32,3 +32,7 @@ jobs:
       # Ratchet: XPath usages may only decrease
       - name: XPath ratchet
         run: bash scripts/check-xpath.sh
+
+      # Tags in docs = <groups> in pom.xml = @Tag in test sources
+      - name: Tag consistency
+        run: bash scripts/check-tags.sh

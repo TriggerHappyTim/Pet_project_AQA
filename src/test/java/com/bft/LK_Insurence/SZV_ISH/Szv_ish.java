@@ -30,6 +30,7 @@ import org.junit.jupiter.api.Test;
 @Tag("lk-insurer")
 @Tag("web")
 @Tag("xml-upload")
+@Tag("regression")
 @Epic("Формы отчетности")
 @Feature("СЗВ-ИСХ Reports")
 public class Szv_ish extends UITestBase {

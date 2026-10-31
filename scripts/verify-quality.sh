@@ -16,4 +16,7 @@ bash scripts/check-hard-waits.sh
 echo "== XPath ratchet =="
 bash scripts/check-xpath.sh
 
+echo "== Tag consistency =="
+bash scripts/check-tags.sh
+
 echo "OK: all quality gates passed."

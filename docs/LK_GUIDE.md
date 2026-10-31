@@ -32,7 +32,7 @@ mvn -B test -Dgroups="lk-insurer & smoke"
 mvn -B test -Dgroups="lk-insurer & web"
 
 # регресс конкретного ЛК
-mvn -B test -Dgroups="lk-insurer & regress"
+mvn -B test -Dgroups="lk-insurer & regression"
 
 # всё по ЛК (без smoke-фильтра)
 mvn -B test -Dgroups="lk-insurer"

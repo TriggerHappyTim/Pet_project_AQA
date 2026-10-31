@@ -33,6 +33,8 @@ import static com.bft.pw.Selenide.$x;
  */
 @Tag("lk-insurer")
 @Tag("negative")
+@Tag("web")
+@Tag("regression")
 @Epic("Формы отчетности")
 @Feature("Негативные сценарии")
 public class NegativeTests extends UITestBase {

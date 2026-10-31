@@ -27,6 +27,7 @@ import org.junit.jupiter.api.Test;
  */
 @Tag("lk-insurer")
 @Tag("web")
+@Tag("regression")
 @Epic("Формы отчетности")
 @Feature("СЗВ-ТД Reports")
 public class Szv_td extends UITestBase {

@@ -21,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * получение credentials и организаций.
  */
 @Tag("smoke")
+@Tag("regression")
 public class TestUsersTest {
     
     private CredentialManager credentialManager;
