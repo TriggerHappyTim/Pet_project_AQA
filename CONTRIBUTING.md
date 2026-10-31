@@ -52,6 +52,7 @@ mvn -B test -P uat -Dgroups="lk-insurer & smoke"
 |---|---|---|
 | Checkstyle | `mvn -B checkstyle:check` | wildcard-импорты, пустые catch; 0 нарушений |
 | Hard-waits ratchet | `bash scripts/check-hard-waits.sh` | новые `Thread.sleep` / `sleep()` в тестах |
+| XPath ratchet | `bash scripts/check-xpath.sh` | рост числа XPath-локаторов в тестах |
 
 - Checkstyle **привязан к фазе `validate`** и валит сборку при нарушениях. Нарушений сейчас 0 — держим планку.
 - Те же гейты автоматически гоняются в **GitLab CI** (job `quality`, стадия `.pre`, блокирующий)
@@ -60,6 +61,9 @@ mvn -B test -P uat -Dgroups="lk-insurer & smoke"
   Текущие вхождения заморожены в `scripts/hard-waits-baseline.txt`; файл можно только **уменьшать**.
   Если hard wait временно необходим — обнови baseline (`scripts/check-hard-waits.sh --update`)
   и обоснуй это в MR.
+- **XPath-локаторы** заморожены в `scripts/xpath-baseline.txt`; файл можно только **уменьшать**.
+  Новые локаторы: `data-testid` → role/text → CSS (`:has-text`, `:text-is`); XPath — крайний случай
+  (см. `docs/PW_GUIDE.md`). Обновлять baseline (`--update`) допустимо только при **снижении** общего числа.
 
 ## Как писать тесты
 

@@ -39,13 +39,15 @@ mvn allure:serve                                     # Allure-отчёт (отк
 ## Quality gates (обязательны, блокируют CI)
 
 ```bash
-bash scripts/verify-quality.sh   # оба гейта разом (нужен Git Bash на Windows)
+bash scripts/verify-quality.sh   # все гейты разом (нужен Git Bash на Windows)
 ```
 
 1. **Checkstyle** — привязан к фазе `validate`, `config/checkstyle/checkstyle.xml`, тестовые исходники включены.
    Сейчас 0 нарушений — держим планку. `mvn -B -DskipTests validate`.
 2. **Hard-waits ratchet** — `Thread.sleep` / `sleep()` в тестах запрещены (кроме `com.bft.pw.*` и `SmartWaits`).
    `scripts/hard-waits-baseline.txt` можно только **уменьшать**; `--update` — лишь с обоснованием в MR.
+3. **XPath ratchet** — число XPath-локаторов заморожено в `scripts/xpath-baseline.txt`;
+   файл можно только **уменьшать**. Новые локаторы — `data-testid` → role/text → CSS.
 
 Те же проверки гоняются в GitHub Actions (`.github/workflows/quality.yml`) и GitLab CI (job `quality`, стадия `.pre`).
 

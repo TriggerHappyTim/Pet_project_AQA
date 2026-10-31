@@ -28,3 +28,7 @@ jobs:
       # Ratchet: no new Thread.sleep / sleep() in test code
       - name: Hard-waits ratchet
         run: bash scripts/check-hard-waits.sh
+
+      # Ratchet: XPath usages may only decrease
+      - name: XPath ratchet
+        run: bash scripts/check-xpath.sh

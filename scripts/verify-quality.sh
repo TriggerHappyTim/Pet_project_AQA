@@ -13,4 +13,7 @@ mvn -B -DskipTests validate
 echo "== Hard-waits ratchet =="
 bash scripts/check-hard-waits.sh
 
+echo "== XPath ratchet =="
+bash scripts/check-xpath.sh
+
 echo "OK: all quality gates passed."
