@@ -59,6 +59,10 @@ bash scripts/verify-quality.sh   # все гейты разом (нужен Git 
 **GitHub Actions тесты не запускает** (нет стендов/секретов): зелёная галочка там = гейты пройдены.
 Тесты выполняет GitLab CI (job `maven test`, `allow_failure: true`) и локальный запуск.
 
+Кроме скриншота и trace, в Allure пишется журнал решений (`agent-decisions`): контур,
+имя теста, шаги и явные пометки «что сделали и почему». Как его пополнять —
+в [CONTRIBUTING.md](CONTRIBUTING.md#артефакты-что-видно-в-отчёте).
+
 ## Структура (реальная)
 
 | Путь | Содержимое |
@@ -101,4 +105,5 @@ bash scripts/verify-quality.sh   # все гейты разом (нужен Git 
 - [BEGINNERS_GUIDE.md](BEGINNERS_GUIDE.md) — учебник «с нуля до первого теста»
 - [docs/LK_GUIDE.md](docs/LK_GUIDE.md) — конвенции ЛК (масштабирование до 9 кабинетов)
 - [docs/MEMORY.md](docs/MEMORY.md) — подписание, доступы, статус E2E
+- [docs/FLAKY.md](docs/FLAKY.md) — журнал разборов флейков
 - [COMPONENTS_GUIDE.md](COMPONENTS_GUIDE.md) — UI-компоненты

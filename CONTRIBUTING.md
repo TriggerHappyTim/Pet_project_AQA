@@ -181,6 +181,25 @@ mvn test --% -Devt.auth.bypass=true -Devs.auth.bypass.cookie=<cookie> -Dtest=...
 void signAndSend() { ... }
 ```
 
+## Артефакты: что видно в отчёте
+
+При падении в Allure уже есть скриншот, trace и лог. Чего не хватало — следа решений:
+на каком контуре шёл тест, что он делал и почему. Этот след пишет `AgentDecisionLog`
+во вложение `agent-decisions` (рядом со скриншотом) и в метки `environment`,
+`agent.contour`, `agent.test`.
+
+Что нужно писать явно (из кода это не выводится):
+
+```java
+AgentDecisionLog.decision("подписываем через API", "КриптоПРО на стенде недоступен");
+AgentDecisionLog.step("скачали XML из архива");
+AgentDecisionLog.note("стенд отвечал 502 — повторили один раз");
+```
+
+Автоматически в журнал попадают фазы `arrangeActAssert` и `performAction`/`performCheck`
+из `BaseTest`, а также `TestLogger.step/check/action`. Тесты, не наследующие `BaseTest`,
+журнал не получают — им нужно добавить `@ExtendWith(AgentDecisionExtension.class)`.
+
 ## Параллелизм (пилот)
 
 Пока тесты идут последовательно. Пилотный запуск — форками JVM (каждый форк = свой браузер,

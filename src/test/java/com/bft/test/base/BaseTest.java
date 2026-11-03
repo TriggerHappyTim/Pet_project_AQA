@@ -1,8 +1,10 @@
 package com.bft.test.base;
 
+import com.bft.jupiter.extension.AgentDecisionExtension;
 import com.bft.jupiter.extension.MakeScreenshotsExtension;
 import com.bft.jupiter.extension.TestResultWatcher;
 import com.bft.test.TestAssertions;
+import com.bft.test.logging.AgentDecisionLog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.junit.jupiter.api.AfterEach;
@@ -44,7 +46,7 @@ import java.util.function.Consumer;
  * @version 1.0
  * @see UITestBase для UI тестов
  */
-@ExtendWith({MakeScreenshotsExtension.class, TestResultWatcher.class})
+@ExtendWith({MakeScreenshotsExtension.class, TestResultWatcher.class, AgentDecisionExtension.class})
 public abstract class BaseTest {
 
     /** Логгер для текущего тестового класса */
@@ -101,18 +103,22 @@ public abstract class BaseTest {
                                     String testName) {
         String name = testName != null ? testName : getClass().getSimpleName();
         logger.info("=== ARRANGE-ACT-ASSERT: {} ===", name);
+        AgentDecisionLog.step("ARRANGE-ACT-ASSERT: " + name);
 
         try {
             if (arrange != null) {
                 logger.info("--- Arrange: {} ---", name);
+                AgentDecisionLog.step("Arrange: " + name);
                 arrange.run();
             }
             if (act != null) {
                 logger.info("--- Act: {} ---", name);
+                AgentDecisionLog.step("Act: " + name);
                 act.run();
             }
             if (assertConsumer != null) {
                 logger.info("--- Assert: {} ---", name);
+                AgentDecisionLog.step("Assert: " + name);
                 assertConsumer.accept(assertions);
             }
         } catch (AssertionError e) {
@@ -132,6 +138,7 @@ public abstract class BaseTest {
      */
     protected void performAction(String description, Runnable action) {
         logger.info("ACTION: {}", description);
+        AgentDecisionLog.step("ACTION: " + description);
         if (action != null) {
             action.run();
         }
@@ -145,6 +152,7 @@ public abstract class BaseTest {
      */
     protected void performCheck(String description, Runnable check) {
         logger.info("CHECK: {}", description);
+        AgentDecisionLog.step("CHECK: " + description);
         if (check != null) {
             check.run();
         }

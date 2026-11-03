@@ -92,6 +92,7 @@ public class TestLogger {
         try {
             Allure.step(stepName, () -> {
                 log(LogLevel.INFO, "Шаг: " + stepName, null);
+                AgentDecisionLog.step(stepName);
                 stepAction.run();
             });
         } catch (Exception e) {
@@ -106,6 +107,7 @@ public class TestLogger {
     public void action(String actionName, Runnable action, boolean success) {
         String status = success ? "✅" : "❌";
         log(LogLevel.INFO, status + " Действие: " + actionName, null);
+        AgentDecisionLog.step("Действие: " + actionName + " — " + (success ? "OK" : "FAIL"));
 
         if (!success) {
             attachScreenshot("action_failed_" + actionName.replaceAll("[^a-zA-Z0-9]", "_"));
@@ -119,6 +121,7 @@ public class TestLogger {
         String status = result ? "✅" : "❌";
         log(result ? LogLevel.INFO : LogLevel.ERROR,
             status + " Проверка: " + checkName, null);
+        AgentDecisionLog.step("Проверка: " + checkName + " — " + (result ? "OK" : "FAIL"));
     }
 
     /**
