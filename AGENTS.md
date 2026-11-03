@@ -48,8 +48,9 @@ bash scripts/verify-quality.sh   # все гейты разом (нужен Git 
 
 1. **Checkstyle** — привязан к фазе `validate`, `config/checkstyle/checkstyle.xml`, тестовые исходники включены.
    Сейчас 0 нарушений — держим планку. `mvn -B -DskipTests validate`.
-2. **Hard-waits ratchet** — `Thread.sleep` / `sleep()` в тестах запрещены (кроме `com.bft.pw.*` и `SmartWaits`).
-   `scripts/hard-waits-baseline.txt` можно только **уменьшать**; `--update` — лишь с обоснованием в MR.
+2. **Hard-waits ratchet** — новые `Thread.sleep` / `sleep()` в тестах запрещены (исключения —
+   примитивы ожидания `com.bft.pw.*` и `SmartWaits`). Старые вхождения заморожены
+   в `scripts/hard-waits-baseline.txt`; baseline можно только **уменьшать**; `--update` — лишь с обоснованием в MR.
 3. **XPath ratchet** — число XPath-локаторов заморожено в `scripts/xpath-baseline.txt`;
    файл можно только **уменьшать**. Новые локаторы — `data-testid` → role/text → CSS.
 4. **Tag consistency** — `scripts/check-tags.sh`: теги в `CONTRIBUTING.md` = `<groups>` в `pom.xml` = `@Tag` в тестах,

@@ -106,7 +106,8 @@ mvn test --% -Devt.auth.bypass=true -Devs.auth.bypass.cookie=<cookie> -Dtest=...
 2. **Слои:** `Test` (что проверяем) → `Steps` (бизнес-шаги) → `Pages/Pw` (взаимодействие с UI).
    Бизнес-логика — в steps, а не в page-объектах и не в тестах. *Проверка: ревью.*
 3. **Ожидания — только умные:** `SmartWaits`, `PwWait`, `Condition`, polling по состоянию.
-   Никаких `Thread.sleep`/`sleep()`. *Проверка: гейт `scripts/check-hard-waits.sh`.*
+   Новые `Thread.sleep`/`sleep()` запрещены. *Проверка: гейт `scripts/check-hard-waits.sh`
+   (ratchet: старые вхождения заморожены в `scripts/hard-waits-baseline.txt`, счётчик можно только уменьшать).*
 4. **Независимость.** Каждый тест сам готовит данные и не зависит от порядка выполнения.
    Данные — через билдеры `com.bft.testdata.*`, уникальные (timestamp/uuid), с очисткой.
    *Проверка: ревью + параллельный прогон.*
