@@ -36,3 +36,7 @@ jobs:
       # Tags in docs = <groups> in pom.xml = @Tag in test sources
       - name: Tag consistency
         run: bash scripts/check-tags.sh
+
+      # flaky tag must have a disable reason; @Retry only from allow-list
+      - name: Flaky/retry gate
+        run: bash scripts/check-flaky.sh

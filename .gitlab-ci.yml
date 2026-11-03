@@ -473,6 +473,7 @@ quality:
     - bash scripts/check-hard-waits.sh
     - bash scripts/check-xpath.sh
     - bash scripts/check-tags.sh
+    - bash scripts/check-flaky.sh
   rules:
     - if: $CI_COMMIT_BRANCH =~ /master/
     - if: $CI_PIPELINE_SOURCE =~ /web|pipeline/

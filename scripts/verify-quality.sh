@@ -19,4 +19,7 @@ bash scripts/check-xpath.sh
 echo "== Tag consistency =="
 bash scripts/check-tags.sh
 
+echo "== Flaky/retry =="
+bash scripts/check-flaky.sh
+
 echo "OK: all quality gates passed."
