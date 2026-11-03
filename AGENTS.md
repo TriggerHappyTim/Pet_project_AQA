@@ -50,8 +50,10 @@ bash scripts/verify-quality.sh   # все гейты разом (нужен Git 
    `scripts/hard-waits-baseline.txt` можно только **уменьшать**; `--update` — лишь с обоснованием в MR.
 3. **XPath ratchet** — число XPath-локаторов заморожено в `scripts/xpath-baseline.txt`;
    файл можно только **уменьшать**. Новые локаторы — `data-testid` → role/text → CSS.
-4. **Tag consistency** — `scripts/check-tags.sh`: теги в `AGENTS.md` = `<groups>` в `pom.xml` = `@Tag` в тестах,
+4. **Tag consistency** — `scripts/check-tags.sh`: теги в `CONTRIBUTING.md` = `<groups>` в `pom.xml` = `@Tag` в тестах,
    и каждый профиль обязан выбирать хотя бы один тест (иначе «зелёный» прогон выполнит 0 тестов).
+5. **Flaky/retry** — `scripts/check-flaky.sh`: `flaky` только с `@DisabledByIssue`/`@DisabledByInfrastructure`,
+   `@Retry` — только из `scripts/retry-allowlist.txt`.
 
 Те же проверки гоняются в GitHub Actions (`.github/workflows/quality.yml`) и GitLab CI (job `quality`, стадия `.pre`).
 **GitHub Actions тесты не запускает** (нет стендов/секретов): зелёная галочка там = гейты пройдены.
@@ -77,22 +79,9 @@ bash scripts/verify-quality.sh   # все гейты разом (нужен Git 
 
 ## Конвенции кода и тестов
 
-1. **Слои:** `Test` (что проверяем) → `Steps` (бизнес-логика) → `Page/Pw` (взаимодействие с UI).
-   Бизнес-логику не писать в тестах и page-объектах.
-2. **Теги обязательны**: ЛК — `lk-insurer`, `lk-archive`; тип — `web`, `smoke`, `regression`, `xml-upload`,
-   `report-sign`, `negative`, `manual`, `example`; проблемные — `flaky` (только с тикетом).
-   Список сверяется с `<groups>` в `pom.xml` скриптом `scripts/check-tags.sh`.
-3. **Ожидания — только умные**: `SmartWaits`, `PwWait`, `Condition`, polling по состоянию. Никаких `sleep`.
-4. **Локаторы**, по приоритету: `data-testid` → role/text/label → CSS → XPath (XPath — крайний случай).
-5. **Тестовые данные**: builders из `com.bft.testdata.*`, уникальные (timestamp/uuid), с cleanup.
-   Тест не зависит от порядка выполнения и других тестов.
-6. **Учётные данные**: только `TestUsers` / `CredentialManager` / env. Секреты в репозиторий не коммитить.
-7. **Мягкие проверки** — через `assertions` из `BaseTest` (авто-`assertAll` после теста).
-8. **Flaky** — не ретраить молча: тег `flaky` + issue + `@DisabledByIssue("TICKET-123")`,
-   инфраструктура — `@DisabledByInfrastructure`. `@Retry` — только осознанно.
-9. **Имена и описания** — осмысленные, `@DisplayName`/`@Description` на русском.
-10. Не создавать дубликаты существующих сценариев; новый ЛК — по чек-листу `docs/LK_GUIDE.md`;
-    новые тесты — по `NEW_TESTS_GUIDE.md` и шаблону `NewFeatureTestTemplate.java`.
+Единственный список — в [CONTRIBUTING.md](CONTRIBUTING.md#как-писать-тесты): 10 пунктов,
+у каждого помечено, чем он проверяется (гейт `scripts/check-*.sh` / Checkstyle или ревью).
+Не дублировать список здесь — правки только в CONTRIBUTING.md.
 
 ## Ловушки окружения
 

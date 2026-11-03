@@ -78,6 +78,7 @@ mvn test --% -Devt.auth.bypass=true -Devs.auth.bypass.cookie=<cookie> -Dtest=...
 | Hard-waits ratchet | `bash scripts/check-hard-waits.sh` | новые `Thread.sleep` / `sleep()` в тестах |
 | XPath ratchet | `bash scripts/check-xpath.sh` | рост числа XPath-локаторов в тестах |
 | Tag consistency | `bash scripts/check-tags.sh` | теги в документации = `<groups>` в `pom.xml` = `@Tag` в тестах; профиль не должен выбирать 0 тестов |
+| Flaky/retry | `bash scripts/check-flaky.sh` | `flaky` без `@DisabledByIssue`/`@DisabledByInfrastructure`; `@Retry` вне `scripts/retry-allowlist.txt` |
 
 - Checkstyle **привязан к фазе `validate`** и валит сборку при нарушениях. Нарушений сейчас 0 — держим планку.
 - Те же гейты автоматически гоняются в **GitLab CI** (job `quality`, стадия `.pre`, блокирующий)
@@ -101,31 +102,45 @@ mvn test --% -Devt.auth.bypass=true -Devs.auth.bypass.cookie=<cookie> -Dtest=...
 ## Как писать тесты
 
 1. **JUnit 5 + теги.** Базовые классы: `BaseTest` (без UI) и `UITestBase` (UI, Playwright-сессия на тест).
+   *Проверка: гейт `scripts/check-tags.sh`.*
 2. **Слои:** `Test` (что проверяем) → `Steps` (бизнес-шаги) → `Pages/Pw` (взаимодействие с UI).
-   Бизнес-логика — в steps, а не в page-объектах и не в тестах.
+   Бизнес-логика — в steps, а не в page-объектах и не в тестах. *Проверка: ревью.*
 3. **Ожидания — только умные:** `SmartWaits`, `PwWait`, `Condition`, polling по состоянию.
-   Никаких `Thread.sleep`/`sleep()` (см. гейт выше).
+   Никаких `Thread.sleep`/`sleep()`. *Проверка: гейт `scripts/check-hard-waits.sh`.*
 4. **Независимость.** Каждый тест сам готовит данные и не зависит от порядка выполнения.
    Данные — через билдеры `com.bft.testdata.*`, уникальные (timestamp/uuid), с очисткой.
-5. **Учётные записи** — через `TestUsers` / `CredentialManager`; пароли в код не коммитим.
+   *Проверка: ревью + параллельный прогон.*
+5. **Учётные записи** — через `TestUsers` / `CredentialManager`; пароли в код не коммитим. *Проверка: ревью.*
 6. **Локаторы** — приоритет: `data-testid` > role/text/label > CSS > XPath. XPath — только когда иначе нельзя.
+   *Проверка: гейт `scripts/check-xpath.sh` (ratchet) + ревью приоритета.*
 7. **Теги обязательны:**
    - ЛК: `lk-insurer`, `lk-archive`, … (см. `docs/LK_GUIDE.md`)
    - Тип: `web`, `smoke`, `regression`, `xml-upload`, `report-sign`, `negative`, `manual`, `example`
    - Проблемные: `flaky` (только с тикетом)
-8. **Мягкие проверки** — `assertions` из `BaseTest` (автоматический `assertAll` после теста).
+   *Проверка: гейт `scripts/check-tags.sh`.*
+8. **Мягкие проверки** — `assertions` из `BaseTest` (автоматический `assertAll` после теста). *Проверка: ревью.*
+9. **Flaky — не ретраить молча:** тег `flaky` + issue + `@DisabledByIssue("TICKET-123")`;
+   инфраструктура — `@DisabledByInfrastructure`; `@Retry` — только из `scripts/retry-allowlist.txt`.
+   *Проверка: гейт `scripts/check-flaky.sh`.*
+10. **Имена и новые тесты.** Осмысленные имена и `@DisplayName`/`@Description` на русском;
+    новый тест — по `NEW_TESTS_GUIDE.md` и шаблону `NewFeatureTestTemplate.java`, новый ЛК —
+    по `docs/LK_GUIDE.md`; не дублировать существующие сценарии. *Проверка: ревью.*
 
 ## Definition of Done для теста
 
-- [ ] Независим: проходит в любом порядке и параллельно с другими
-- [ ] Сам создаёт и чистит тестовые данные; данные уникальны
-- [ ] Зелёный локально (`mvn test -Dtest=...`) и в CI
-- [ ] Нет hard waits; ожидания — умные
-- [ ] Есть теги ЛК и типа (`lk-*`, `web`/`smoke`/…)
-- [ ] Осмысленное имя и `@DisplayName`/`@Description`
-- [ ] Checkstyle без нарушений, hard-waits ratchet не растёт
-- [ ] При падении достаточно артефактов (скриншот/trace — уже встроено)
-- [ ] Ревью пройдено; дубликаты существующих сценариев не созданы
+У каждого пункта указан способ проверки: **гейт** (машина) или **ревью** (человек).
+
+- [ ] Независим: проходит в любом порядке и параллельно с другими — **ревью** (+ прогон с `-DforkCount=2`)
+- [ ] Сам создаёт и чистит тестовые данные; данные уникальны — **ревью**
+- [ ] Зелёный локально (`mvn test -Dtest=...`) — **прогон**; в GitLab CI job `maven test` — **лог/Allure**
+      (job объявлен с `allow_failure: true`, поэтому падение не блокирует пайплайн — смотри результат, а не статус)
+- [ ] Нет hard waits; ожидания — умные — **гейт** `scripts/check-hard-waits.sh`
+- [ ] Есть теги ЛК и типа (`lk-*`, `web`/`smoke`/…) — **гейт** `scripts/check-tags.sh`
+- [ ] Осмысленное имя и `@DisplayName`/`@Description` — **ревью**
+- [ ] Checkstyle без нарушений, XPath не растёт — **гейт** `mvn -B checkstyle:check` + `scripts/check-xpath.sh`
+- [ ] При падении достаточно артефактов (скриншот/trace — уже встроено) — **ревью**:
+      единственный пункт, который нельзя проверить автоматически до самого падения
+- [ ] Ревью пройдено; дубликаты существующих сценариев не созданы — **ревью**
 
 ## Флейки и quarantine
 
@@ -135,6 +150,8 @@ mvn test --% -Devt.auth.bypass=true -Devs.auth.bypass.cookie=<cookie> -Dtest=...
 - Инфраструктурные проблемы — `@DisabledByInfrastructure`.
 - `FlakyTestDetector` помогает собирать статистику; не игнорируй его отчёты.
   Подключается точечно: `@ExtendWith(FlakyTestDetector.class)` на проблемном классе.
+- Разборы сбоев и «что после этого изменили в правилах» копятся в [docs/FLAKY.md](docs/FLAKY.md).
+  Запись добавляется в том же MR, что и отключение теста.
 
 ## Отключение тестов (`@Disabled`)
 
