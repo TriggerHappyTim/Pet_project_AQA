@@ -7,6 +7,7 @@
     <groupId>com.example</groupId>
     <artifactId>EVS-autotest</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <name>EVS Testing Framework</name>
 
     <properties>
         <spring-boot.version>2.6.14</spring-boot.version>
@@ -20,7 +21,6 @@
         <maven.compiler.plugin.version>3.11.0</maven.compiler.plugin.version>
         <maven.surifire.plugin.version>3.1.0</maven.surifire.plugin.version>
         <lombok.version>1.18.28</lombok.version>
-        <telegrambots.version>6.8.0</telegrambots.version>
         <!-- Контур по умолчанию; переопределяется профилями test/uat/int.
              Единственный источник для метки environment в отчётах и для TestConfig. -->
         <test.environment>uat</test.environment>

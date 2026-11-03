@@ -6,9 +6,11 @@
 ## О проекте
 
 **EVS Testing Framework** — автотесты системы ЕВС (русскоязычный UI): ЛК Страхователя и ЛК Архивной организации.
+Единое имя проекта задано в `pom.xml` (`<name>`), артефакт — `com.example:EVS-autotest`.
 
-- Стек: **Java 11, Maven 3.6+, JUnit 5.10.2, Playwright 1.49, Allure 2.22.2**, Lombok, JavaFaker.
-- Артефакт: `com.example:EVS-autotest`. Рабочая ветка: `migration/playwright`.
+- Стек: Java 11, Maven, JUnit 5, Playwright, Allure, Lombok, JavaFaker. Версии — в `pom.xml`
+  (`<properties>`); здесь не дублируются, чтобы не разъезжаться при обновлении.
+- Рабочая ветка: `migration/playwright`.
 - Весь код — в `src/test/java/com/bft`; `src/main` практически пуст (только Spring Boot `Application`).
 - `com.bft.pw` — собственная Selenide-подобная обёртка над Playwright (`PwSession`, `PwElement`, `PwWait`, `Condition`).
   Selenide как зависимость не подключён и добавлять его не нужно.
@@ -73,7 +75,7 @@ bash scripts/verify-quality.sh   # все гейты разом (нужен Git 
 | `LK_Insurence/` | Тесты ЛК Страхователя: подпакеты по типам отчётов (`SZV_M`, `EFS_1`, `ODV_1`, …) |
 | `LK_Archive/` | Тесты ЛК Архивной организации |
 | `steps/` | Бизнес-шаги (`AuthSteps`, `ReportSignSteps`, `SzvReportsSteps`, `ArchiveSteps`, …) |
-| `ui/pages/`, `ui/component/`, `ui/core/` | Page Objects, 14 UI-компонентов, SmartElement/ожидания |
+| `ui/pages/`, `ui/component/`, `ui/core/` | Page Objects, UI-компоненты (`ls src/test/java/com/bft/ui/component/*.java \| wc -l`), SmartElement/ожидания |
 | `pw/` | Обёртка над Playwright (движок UI-тестов) |
 | `service/` | Подписание (GraphQL mesh, СЭДО, PFX/xmldsig ГОСТ), БД (Phoenix), Kafka, gRPC |
 | `security/` | `TestUsers`, `CredentialManager`, маскировка логов |

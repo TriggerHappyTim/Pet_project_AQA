@@ -1,4 +1,4 @@
-# Contributing to Pet_project_AQA
+# Contributing to EVS Testing Framework
 
 Правила для всех, кто пишет и ревьюит автотесты. Цель — стабильные зелёные прогоны
 и предсказуемое масштабирование на ~9 ЛК.
@@ -6,7 +6,7 @@
 ## Быстрый старт
 
 ```bash
-# все quality-гейты разом (Checkstyle + hard-waits + XPath + теги)
+# все quality-гейты разом (Checkstyle + hard-waits + XPath + теги + flaky/retry)
 bash scripts/verify-quality.sh
 
 # компиляция + статический анализ
