@@ -140,7 +140,7 @@ mvn test -Dtest=SzvMNewScenarioTest \
     -Devs.ui.type=EVS_TEST_LKS
 
 # смотреть браузер своими глазами (по умолчанию headless в CI):
-mvn test -Dtest=SzvMNewScenarioTest -Dheadless=false
+mvn test -Dtest=SzvMNewScenarioTest -Dselenide.headless=false
 ```
 
 ## I.6. Проверка в CI

@@ -52,7 +52,7 @@ mvn test -Dtest=SzvMXmlUploadSignTest \
   -Dservice.graphql-mesh.url=http://localhost:20266 \
   -Devs.sign.mode=api -Devs.sign.transport=graphql \
   -Devs.sign.xmldsig=true -Devs.sign.variant=common \
-  -Devs.sign.pem-dir=src/test/resources/certs -Dheadless=true
+  -Devs.sign.pem-dir=src/test/resources/certs -Dselenide.headless=true
 ```
 Сборка (offline): `mvn -o test-compile`. ГОСТ self-check: `XmlDsigSignerSelfCheck` (`sigValid=true, refDigestValid=true`).
 
@@ -203,7 +203,7 @@ mvn -o test --% -Dtest=SzvMXmlUploadSignTest ^
   -Devs.sign.graphql-via-browser=true ^
   -Devs.sign.graphql-via-browser-url=https://ui.mesh-java.uat.ecp/graphql ^
   -Devs.sign.graphql-basic=reader-user:reader-user ^
-  -Devs.sign.xmldsig.upload-field=file -Dheadless=true
+  -Devs.sign.xmldsig.upload-field=file -Dselenide.headless=true
 ```
 Все типы: `-Dtest=AllReportsSignTest` + `-Devs.sign.report-type-code=1..9`.
 
@@ -413,7 +413,7 @@ same-origin из аутентифицированной сессии (cookie `_u
 ```
 mvn -o test --% -Dtest=SzvMXmlUploadSignTest `
   -Devs.sign.mode=api -Devs.sign.transport=rest `
-  -Devs.sign.pem-dir=src/test/resources/certs -Dheadless=true
+  -Devs.sign.pem-dir=src/test/resources/certs -Dselenide.headless=true
 # опц. смена формата подписи: -Devs.sign.n2o-signature-format=cms
 # mesh :20266 должен быть доступен (port-forward), логин ESIA — пройден.
 ```
