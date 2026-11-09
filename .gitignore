@@ -42,3 +42,4 @@ local_history*
 test-run-*.log
 *.jfr
 hs_err_pid*.log
+project-onboarding-*.zip
