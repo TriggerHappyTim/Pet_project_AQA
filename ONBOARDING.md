@@ -117,13 +117,13 @@ mvn -B test -Dtest=ReportFixtureIntegrityTest
 по умолчанию), но лучше задать явно:
 
 ```bash
-mvn -B test -Dtest="ReportXmlUploadTest" -Dselenide.headless=false
+mvn -B test -Dtest="Efs1#efs_szv_td" -Dselenide.headless=false
 ```
 
-Один конкретный метод:
+Полная матрица загрузки XML по 9 типам отчётов (дольше, 9 прогонов):
 
 ```bash
-mvn -B test -Dtest="Efs1#efs_szv_td" -Dselenide.headless=false
+mvn -B test -Dtest="ReportXmlUploadTest" -Dselenide.headless=false
 ```
 
 В IDE (IntelliJ IDEA) можно запускать тест-класс/метод кнопкой Run — JUnit 5 и Allure
