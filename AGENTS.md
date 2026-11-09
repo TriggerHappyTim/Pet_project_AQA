@@ -35,7 +35,7 @@ mvn allure:serve                                     # Allure-отчёт (отк
 - Профили контуров: `-Puat` (**по умолчанию**, `activeByDefault`) / `-Ptest` / `-Pint`.
   Профиль задаёт `test.environment` (метка контура в отчётах) и `evs/rpu/uos.ui.type` (URL).
   `-Pint` пока работает как `uat`: INT-стенд не сконфигурирован (в `UIType` нет INT-значений).
-- Иногда полезно: `-Dheadless=true`.
+- Иногда полезно: `-Dselenide.headless=true` (именно так; `-Dheadless` код не читает).
 
 **Windows/PowerShell:** `-D…`-аргументы манглятся без `--%`. Пишите:
 `mvn -o test --% -Dtest=... -Dservice.graphql-mesh.url=...` (см. `docs/MEMORY.md`, раздел 11).
@@ -103,6 +103,8 @@ bash scripts/verify-quality.sh   # все гейты разом (нужен Git 
 
 ## Полезные документы
 
+- [ONBOARDING.md](ONBOARDING.md) — с чего начать: установка, переменные, первый тест
+- [AI_TESTING_CONTEXT.md](AI_TESTING_CONTEXT.md) — контекст и golden examples для ИИ-ассистента
 - [CONTRIBUTING.md](CONTRIBUTING.md) — правила, DoD теста, quality gates
 - [NEW_TESTS_GUIDE.md](NEW_TESTS_GUIDE.md) — как добавить тест
 - [BEGINNERS_GUIDE.md](BEGINNERS_GUIDE.md) — учебник «с нуля до первого теста»
